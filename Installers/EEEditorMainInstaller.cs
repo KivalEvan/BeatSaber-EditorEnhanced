@@ -2,14 +2,13 @@ using EditorEnhanced.Gizmo;
 using EditorEnhanced.UI;
 using Zenject;
 
-namespace EditorEnhanced.Installers
+namespace EditorEnhanced.Installers;
+
+public class EEEditorMainInstaller : Installer
 {
-    public class EEEditorMainInstaller : Installer
+    public override void InstallBindings()
     {
-        public override void InstallBindings()
-        {
-            Container.BindInterfacesAndSelfTo<GizmoAssets>().AsSingle();
-            Container.BindInterfacesTo<GizmoManager>().AsSingle();
-        }
+        Container.BindInterfacesAndSelfTo<GizmoAssets>().AsSingle();
+        Container.BindInterfacesTo<GizmoManager>().AsSingle();
     }
 }

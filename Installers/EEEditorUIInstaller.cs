@@ -2,14 +2,13 @@ using EditorEnhanced.Gizmo;
 using EditorEnhanced.UI;
 using Zenject;
 
-namespace EditorEnhanced.Installers
+namespace EditorEnhanced.Installers;
+
+public class EEEditorUIInstaller : Installer
 {
-    public class EEEditorUIInstaller : Installer
+    public override void InstallBindings()
     {
-        public override void InstallBindings()
-        {
-            Container.BindInterfacesTo<CameraPresetViewController>().AsSingle();
-            Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();
-        }
+        Container.BindInterfacesTo<CameraPresetViewController>().AsSingle();
+        Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();
     }
 }

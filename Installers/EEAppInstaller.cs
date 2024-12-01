@@ -1,19 +1,18 @@
 using Zenject;
 
-namespace EditorEnhanced.Installers
-{
-    internal class EEAppInstaller : Installer
-    {
-        private readonly PluginConfig pluginConfig;
+namespace EditorEnhanced.Installers;
 
-        public EEAppInstaller(PluginConfig pluginConfig)
-        {
-            this.pluginConfig = pluginConfig;
-        }
+internal class EEAppInstaller : Installer
+{
+    private readonly EEConfig _eeConfig;
+
+    public EEAppInstaller(EEConfig eeConfig)
+    {
+        _eeConfig = eeConfig;
+    }
         
-        public override void InstallBindings()
-        {
-            Container.BindInstance(pluginConfig).AsSingle();
-        }
+    public override void InstallBindings()
+    {
+        Container.BindInstance(_eeConfig).AsSingle();
     }
 }

@@ -1,6 +1,5 @@
-namespace EditorEnhanced.Gizmo
+namespace EditorEnhanced.Gizmo;
+
+internal abstract class BaseGizmo
 {
-    internal abstract class BaseGizmo
-    {
-    }
 }

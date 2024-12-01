@@ -9,29 +9,28 @@ using EditorEnhanced.Installers;
 using IPALogger = IPA.Logging.Logger;
 using IPAConfig = IPA.Config.Config;
 
-namespace EditorEnhanced
+namespace EditorEnhanced;
+
+[Plugin(RuntimeOptions.SingleStartInit), NoEnableDisable]
+internal class Plugin
 {
-    [Plugin(RuntimeOptions.SingleStartInit), NoEnableDisable]
-    internal class Plugin
+    internal static IPALogger Log { get; private set; }
+
+    [Init]
+    public Plugin(IPALogger ipaLogger, IPAConfig ipaConfig, Zenjector zenjector, PluginMetadata pluginMetadata)
     {
-        internal static IPALogger Log { get; private set; }
+        Log = ipaLogger;
+        zenjector.UseLogger(Log);
+            
+        var pluginConfig = ipaConfig.Generated<EEConfig>();
+            
+        zenjector.Install<EEAppInstaller>(Location.App, pluginConfig);
+        zenjector.Install<EEMenuInstaller>(Location.Menu);
 
-        [Init]
-        public Plugin(IPALogger ipaLogger, IPAConfig ipaConfig, Zenjector zenjector, PluginMetadata pluginMetadata)
-        {
-            Log = ipaLogger;
-            zenjector.UseLogger(Log);
+        zenjector.Install<EECommandInstaller, CommandInstaller>();
+        zenjector.Install<EEEditorUIInstaller, BeatmapEditorViewControllersInstaller>();
+        zenjector.Install<EEEditorMainInstaller, BeatmapLevelEditorInstaller>();
             
-            var pluginConfig = ipaConfig.Generated<PluginConfig>();
-            
-            zenjector.Install<EEAppInstaller>(Location.App, pluginConfig);
-            zenjector.Install<EEMenuInstaller>(Location.Menu);
-
-            zenjector.Install<EECommandInstaller, CommandInstaller>();
-            zenjector.Install<EEEditorUIInstaller, BeatmapEditorViewControllersInstaller>();
-            zenjector.Install<EEEditorMainInstaller, BeatmapLevelEditorInstaller>();
-            
-            Log.Info($"{pluginMetadata.Name} {pluginMetadata.HVersion} initialized.");
-        }
+        Log.Info($"{pluginMetadata.Name} {pluginMetadata.HVersion} initialized.");
     }
 }
