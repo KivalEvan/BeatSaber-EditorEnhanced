@@ -21,9 +21,7 @@ internal class LolighterViewController(SignalBus signalBus) : IInitializable, ID
 
         var uiWrapper =
             GameObject.Find(
-                "/Wrapper/ViewControllers/EditBeatmapViewController/StatusBarView/StatusBarControls/BasicControlsWrapper/SlidersWrapper");
-
-        var cameraWrapper = GameObject.Find("/Wrapper/BeatmapEditorUICameraWrapper");
+                "/Wrapper/ViewControllers/EditBeatmapNavigationViewController/EventsToolbar");
 
         _ui = [];
 
