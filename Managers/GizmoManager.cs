@@ -29,24 +29,26 @@ internal class GizmoManager(
     private FloatFxGroupEffectManager _fxManager;
     private readonly List<GameObject> _gameObjects = [];
 
+    private static T TryGetManager<T>(string[] objNames) where T : MonoBehaviour
+    {
+        return (from name in objNames
+            select GameObject.Find(name)
+            into gameObject
+            where gameObject != null
+            select gameObject.GetComponent<T>()).FirstOrDefault();
+    }
+
     public void Initialize()
     {
-        var lightColorGroupEffectManager = GameObject.Find("Environment/LightColorGroupEffectManager");
-        if (lightColorGroupEffectManager == null) return;
-        _colorManager =
-            lightColorGroupEffectManager.GetComponent<LightColorGroupEffectManager>();
-        var lightRotationGroupEffectManager = GameObject.Find("Environment/LightRotationGroupEffectManager");
-        if (lightRotationGroupEffectManager == null) return;
+        _colorManager = TryGetManager<LightColorGroupEffectManager>(["Environment/LightColorGroupEffectManager"]);
         _rotationManager =
-            lightRotationGroupEffectManager.GetComponent<LightRotationGroupEffectManager>();
-        var lightTranslationGroupEffectManager = GameObject.Find("Environment/LightTranslationGroupEffectManager");
-        if (lightTranslationGroupEffectManager == null) return;
+            TryGetManager<LightRotationGroupEffectManager>(["Environment/LightRotationGroupEffectManager"]);
         _translationManager =
-            lightTranslationGroupEffectManager.GetComponent<LightTranslationGroupEffectManager>();
-        var floatFxGroupEffectManager = GameObject.Find("Environment/FloatFxGroupEffectManager");
-        if (floatFxGroupEffectManager == null) return;
+            TryGetManager<LightTranslationGroupEffectManager>(["Environment/LightTranslationGroupEffectManager"]);
         _fxManager =
-            floatFxGroupEffectManager.GetComponent<FloatFxGroupEffectManager>();
+            TryGetManager<FloatFxGroupEffectManager>([
+                "Environment/VfxGroupEffectManager", "Environment/FloatFxGroupEffectManager"
+            ]);
 
         signalBus.Subscribe<EditEventBoxGroupSignal>(AddGizmo);
         signalBus.Subscribe<ExitEditEventBoxGroupSignal>(RemoveGizmo);

@@ -15,19 +15,19 @@ internal enum GizmoType
     Fx
 }
 
-internal class GizmoAssets : IInitializable
+internal class GizmoAssets : IInitializable, IDisposable
 {
-    private List<Material> materials;
-    private List<GameObject> colorObjects = new List<GameObject>();
-    private List<GameObject> rotationObjects = new List<GameObject>();
-    private List<GameObject> translationObjects = new List<GameObject>();
-    private List<GameObject> fxObjects = new List<GameObject>();
+    private List<Material> _materials;
+    private readonly List<GameObject> _colorObjects = [];
+    private readonly List<GameObject> _rotationObjects = [];
+    private readonly List<GameObject> _translationObjects = [];
+    private readonly List<GameObject> _fxObjects = [];
 
     public void Initialize()
     {
         var colors = new List<Color>
             { Color.red, Color.green, Color.blue, Color.white };
-        materials = [];
+        _materials = [];
 
         foreach (var color in colors)
         {
@@ -39,23 +39,36 @@ internal class GizmoAssets : IInitializable
             sharedMat.SetInt("_Cull", 0);
             sharedMat.SetInt("_ZWrite", 0);
             sharedMat.SetInt("_ZTest", 8);
-            materials.Add(sharedMat);
+            _materials.Add(sharedMat);
         }
 
-        ColorGizmo.SObject = ColorGizmo.Create(materials[0]);
-        RotationGizmo.SObject = RotationGizmo.Create(materials[0]);
-        TranslationGizmo.SObject = TranslationGizmo.Create(materials[0]);
-        FxGizmo.SObject = FxGizmo.Create(materials[0]);
+        ColorGizmo.SObject = ColorGizmo.Create(_materials[0]);
+        RotationGizmo.SObject = RotationGizmo.Create(_materials[0]);
+        TranslationGizmo.SObject = TranslationGizmo.Create(_materials[0]);
+        FxGizmo.SObject = FxGizmo.Create(_materials[0]);
+    }
+
+    public void Dispose()
+    {
+        _colorObjects.ForEach(Object.Destroy);
+        _rotationObjects.ForEach(Object.Destroy);
+        _translationObjects.ForEach(Object.Destroy);
+        _fxObjects.ForEach(Object.Destroy);
+
+        _colorObjects.Clear();
+        _rotationObjects.Clear();
+        _translationObjects.Clear();
+        _fxObjects.Clear();
     }
 
     public GameObject GetOrCreate(GizmoType gizmoType, int colorIdx)
     {
         var objects = gizmoType switch
         {
-            GizmoType.Color => colorObjects,
-            GizmoType.Rotation => rotationObjects,
-            GizmoType.Translation => translationObjects,
-            GizmoType.Fx => fxObjects,
+            GizmoType.Color => _colorObjects,
+            GizmoType.Rotation => _rotationObjects,
+            GizmoType.Translation => _translationObjects,
+            GizmoType.Fx => _fxObjects,
             _ => throw new ArgumentOutOfRangeException(nameof(gizmoType), gizmoType, null)
         };
 
@@ -75,7 +88,7 @@ internal class GizmoAssets : IInitializable
 
         foreach (var renderer in go.GetComponentsInChildren<Renderer>())
         {
-            renderer.material = materials[colorIdx];
+            renderer.material = _materials[colorIdx];
         }
 
         go.SetActive(true);
