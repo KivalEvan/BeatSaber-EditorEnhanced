@@ -16,6 +16,7 @@ public class EECommandInstaller
         // this is the dumbest way i ever had to deal with DI
         Container.BindInterfacesAndSelfTo<CustomCommandManager>().AsSingle();
         InstallCommands<ReorderEventBoxSignal, ReorderEventBoxCommand>(Container);
+        InstallCommands<LolighterSignal, LolighterCommand>(Container);
     }
 
     private static void InstallCommands<TSignal, TCommand>(DiContainer container) where TCommand : IBeatmapEditorCommand

@@ -11,5 +11,7 @@ public class CustomCommandManager(BeatmapEditorCommandRunnerSignalBinder signalB
     {
         signalBinder._commandContainer
             .BindFactory<ReorderEventBoxCommand, PlaceholderFactory<ReorderEventBoxCommand>>();
+        signalBinder._commandContainer
+            .BindFactory<LolighterCommand, PlaceholderFactory<LolighterCommand>>();
     }
 }
