@@ -4,6 +4,8 @@ using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
+using BeatmapEditor3D.LevelEditor;
+using BeatmapEditor3D.Types;
 using EditorEnhanced.Helpers;
 using UnityEngine;
 using Zenject;
@@ -45,22 +47,18 @@ internal class GizmoManager(
                 "Environment/VfxGroupEffectManager", "Environment/FloatFxGroupEffectManager"
             ]);
 
-        signalBus.Subscribe<EditEventBoxGroupSignal>(AddGizmo);
-        signalBus.Subscribe<ExitEditEventBoxGroupSignal>(RemoveGizmo);
+        signalBus.Subscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
         signalBus.Subscribe<ModifyEventBoxSignal>(UpdateGizmo);
         signalBus.Subscribe<InsertEventBoxSignal>(UpdateGizmo);
         signalBus.Subscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);
         signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
         signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
         signalBus.Subscribe<DeleteEventBoxSignal>(UpdateGizmo);
-        // signalBus.Subscribe<SwitchBeatmapEditingModeSignal>(new Action(RemoveGizmo));
     }
 
     public void Dispose()
     {
-        RemoveGizmo();
-        signalBus.TryUnsubscribe<EditEventBoxGroupSignal>(AddGizmo);
-        signalBus.TryUnsubscribe<ExitEditEventBoxGroupSignal>(RemoveGizmo);
+        signalBus.TryUnsubscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
         signalBus.TryUnsubscribe<ModifyEventBoxSignal>(UpdateGizmo);
         signalBus.TryUnsubscribe<InsertEventBoxSignal>(UpdateGizmo);
         signalBus.TryUnsubscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);
@@ -91,10 +89,15 @@ internal class GizmoManager(
 
     private void RemoveGizmo()
     {
-        // if (switchBeatmapEditingModeSignal.mode == BeatmapEditingMode.EventBoxes) return;
-        // foreach (var gameObject in _gameObjects)
-            // gameObject.SetActive(false);
+        foreach (var gameObject in _gameObjects)
+            gameObject.SetActive(false);
         _gameObjects.Clear();
+    }
+
+    private void UpdateGizmoWithSignal(BeatmapEditingModeSwitched signal)
+    {
+        if (signal.mode != BeatmapEditingMode.EventBoxes) RemoveGizmo();
+        if (signal.mode == BeatmapEditingMode.EventBoxes) AddGizmo();
     }
 
     private void UpdateGizmo()
