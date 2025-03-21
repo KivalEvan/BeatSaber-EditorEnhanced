@@ -1,5 +1,0 @@
-<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='https://monkeymanboy.github.io/BSML-Docs/BSMLSchema.xsd'>
-    <vertical>
-        <text id="example-text" text="xdd" font-size="10" align="Center"/>
-    </vertical>
-</bg>

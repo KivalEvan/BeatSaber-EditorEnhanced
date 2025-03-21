@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Input;
 using BeatmapEditor3D;
 using EditorEnhanced.Commands;
 using Zenject;
@@ -14,7 +10,7 @@ public class EECommandInstaller
     public override void InstallBindings()
     {
         // this is the dumbest way i ever had to deal with DI
-        Container.BindInterfacesAndSelfTo<CustomCommandManager>().AsSingle();
+        Container.BindInterfacesAndSelfTo<EECommandInitializer>().AsSingle();
         InstallCommands<ReorderEventBoxSignal, ReorderEventBoxCommand>(Container);
         InstallCommands<LolighterSignal, LolighterCommand>(Container);
     }

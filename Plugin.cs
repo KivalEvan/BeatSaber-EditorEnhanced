@@ -1,6 +1,4 @@
 ﻿using BeatmapEditor3D;
-using BeatmapEditor3D.BpmEditor;
-using BeatmapEditor3D.DataModels;
 using IPA;
 using IPA.Config.Stores;
 using IPA.Loader;
@@ -25,11 +23,11 @@ internal class Plugin
         var pluginConfig = ipaConfig.Generated<EEConfig>();
             
         zenjector.Install<EEAppInstaller>(Location.App, pluginConfig);
-        zenjector.Install<EEMenuInstaller>(Location.Menu);
-
-        zenjector.Install<EECommandInstaller, CommandInstaller>();
-        zenjector.Install<EEEditorUIInstaller, BeatmapEditorViewControllersInstaller>();
+        // zenjector.Install<EEMenuInstaller>(Location.Menu);
+        
         zenjector.Install<EEEditorMainInstaller, BeatmapLevelEditorInstaller>();
+        zenjector.Install<EEEditorUIInstaller, BeatmapEditorViewControllersInstaller>();
+        zenjector.Install<EECommandInstaller, CommandInstaller>();
             
         Log.Info($"{pluginMetadata.Name} {pluginMetadata.HVersion} initialized.");
     }

@@ -1,18 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization.Formatters;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
-using BeatmapEditor3D.LevelEditor;
-using BeatmapEditor3D.Types;
-using BeatmapSaveDataVersion4;
 using EditorEnhanced.Helpers;
 using UnityEngine;
 using Zenject;
 using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupType;
-using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.Gizmo;
 
@@ -97,8 +92,8 @@ internal class GizmoManager(
     private void RemoveGizmo()
     {
         // if (switchBeatmapEditingModeSignal.mode == BeatmapEditingMode.EventBoxes) return;
-        foreach (var gameObject in _gameObjects)
-            gameObject.SetActive(false);
+        // foreach (var gameObject in _gameObjects)
+            // gameObject.SetActive(false);
         _gameObjects.Clear();
     }
 

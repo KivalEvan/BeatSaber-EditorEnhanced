@@ -1,5 +1,4 @@
 using EditorEnhanced.Gizmo;
-using EditorEnhanced.UI;
 using Zenject;
 
 namespace EditorEnhanced.Installers;

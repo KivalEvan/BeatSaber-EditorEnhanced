@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using IPA.Config.Stores;
-using UnityEngine;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 namespace EditorEnhanced;

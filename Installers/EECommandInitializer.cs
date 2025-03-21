@@ -1,10 +1,10 @@
-using System;
 using BeatmapEditor3D;
+using EditorEnhanced.Commands;
 using Zenject;
 
-namespace EditorEnhanced.Commands;
+namespace EditorEnhanced.Installers;
 
-public class CustomCommandManager(BeatmapEditorCommandRunnerSignalBinder signalBinder)
+public class EECommandInitializer(BeatmapEditorCommandRunnerSignalBinder signalBinder)
     : IInitializable
 {
     public void Initialize()

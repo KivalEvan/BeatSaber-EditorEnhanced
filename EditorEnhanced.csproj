@@ -36,9 +36,6 @@
     <Reference Include="BeatSaber.ViewSystem">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\BeatSaber.ViewSystem.dll</HintPath>
     </Reference>
-    <Reference Include="BSML">
-      <HintPath>$(BeatSaberDir)\Plugins\BSML.dll</HintPath>
-    </Reference>
     <Reference Include="Colors">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Colors.dll</HintPath>
     </Reference>
@@ -90,6 +87,9 @@
     <Reference Include="System">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\System.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq">
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\System.Xml.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\System.Core.dll</HintPath>
     </Reference>
@@ -117,12 +117,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Folder.DotSettings.user" />
     <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')"/>
     <Content Include="EditorEnhanced.csproj.user" Condition="Exists('EditorEnhanced.csproj.user')"/>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="UI\BSML\example.bsml" />
+    <None Remove="Resources\camera1.png" />
+    <EmbeddedResource Include="Resources\camera1.png" />
+    <None Remove="Resources\camera2.png" />
+    <EmbeddedResource Include="Resources\camera2.png" />
+    <None Remove="Resources\cameraBase.png" />
+    <EmbeddedResource Include="Resources\cameraBase.png" />
+    <None Remove="Resources\cameraLoad.png" />
+    <EmbeddedResource Include="Resources\cameraLoad.png" />
+    <None Remove="Resources\cameraPrev.png" />
+    <EmbeddedResource Include="Resources\cameraPrev.png" />
+    <None Remove="Resources\cameraSave.png" />
+    <EmbeddedResource Include="Resources\cameraSave.png" />
   </ItemGroup>
   
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
