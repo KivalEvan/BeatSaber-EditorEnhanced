@@ -1,4 +1,5 @@
-﻿using BeatmapEditor3D;
+﻿using System.Reflection;
+using BeatmapEditor3D;
 using IPA;
 using IPA.Config.Stores;
 using IPA.Loader;
@@ -30,5 +31,11 @@ internal class Plugin
         zenjector.Install<EECommandInstaller, CommandInstaller>();
             
         Log.Info($"{pluginMetadata.Name} {pluginMetadata.HVersion} initialized.");
+
+        var asm = Assembly.GetExecutingAssembly();
+        foreach (var manifestResourceName in asm.GetManifestResourceNames())
+        {
+            Log.Info($"{manifestResourceName}");
+        }
     }
 }

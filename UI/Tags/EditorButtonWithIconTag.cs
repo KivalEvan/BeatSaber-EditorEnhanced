@@ -32,7 +32,7 @@ public class EditorButtonWithIconTag : IUIButton, IUIText
         if (_buttonPrefab == null)
             _buttonPrefab = PrefabButton;
         var button = (NoTransitionsButton)Object.Instantiate(_buttonPrefab, parent, false);
-        button.name = "BSMLEditorButtonWithTag";
+        button.name = "EEEditorButtonWithTag";
         button.interactable = true;
 
         Object.Destroy(button.GetComponent<NoTransitionButtonSelectableStateController>());

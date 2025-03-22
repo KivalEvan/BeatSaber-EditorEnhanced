@@ -30,8 +30,6 @@ internal class CameraPresetManager : IInitializable
         var comp = cameraWrapper.GetComponent<BeatmapEditor360CameraController>();
         _defaultPosition = Vector3.zero + comp._uiCameraMovementTransform.position;
         _defaultRotation = Quaternion.identity * comp._uiCameraTransform.transform.rotation;
-
-        Plugin.Log.Info("hi");
     }
 
     public void SetCamera(CameraType cameraType)

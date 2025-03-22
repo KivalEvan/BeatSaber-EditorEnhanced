@@ -31,7 +31,7 @@ public class EditorButtonTag : IUIButton, IUIText
         if (_buttonPrefab == null)
             _buttonPrefab = PrefabButton;
         var button = (NoTransitionsButton)Object.Instantiate(_buttonPrefab, parent, false);
-        button.name = "BSMLEditorButton";
+        button.name = "EEEditorButton";
         button.interactable = true;
         OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
 

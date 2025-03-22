@@ -106,54 +106,52 @@ internal class GizmoManager(
         AddGizmo();
     }
 
-    private void DoTheFunny(IEnumerable<Transform> transforms, EventBoxGroupType groupType, int axis,
+    private void DoTheFunny(IEnumerable<(int index, int offset, bool distributed, Transform transform)> data,
+        EventBoxGroupType groupType,
+        LightAxis axis,
         bool mirror)
     {
-        foreach (var t in transforms)
+        foreach (var items in data)
         {
-            var go = groupType switch
+            var (idx, offset, distributed, transform) = items;
+            var colorIdx = distributed
+                ? GizmoAssets.HUE_RANGE / 2 * offset + idx * 2 % GizmoAssets.HUE_RANGE
+                : (GizmoAssets.WHITE_INDEX + offset * GizmoAssets.HUE_RANGE / 12) % GizmoAssets.HUE_RANGE;
+
+            var axisIdx = axis switch
             {
-                EventBoxGroupType.Color => gizmoAssets.GetOrCreate(GizmoType.Color, axis),
-                EventBoxGroupType.Rotation => gizmoAssets.GetOrCreate(GizmoType.Rotation, axis),
-                EventBoxGroupType.Translation => gizmoAssets.GetOrCreate(GizmoType.Translation, axis),
-                EventBoxGroupType.FloatFx => gizmoAssets.GetOrCreate(GizmoType.Fx, axis),
-                _ => throw new ArgumentOutOfRangeException(nameof(groupType), groupType, null)
+                LightAxis.X => GizmoAssets.RED_INDEX,
+                LightAxis.Y => GizmoAssets.GREEN_INDEX,
+                LightAxis.Z => GizmoAssets.BLUE_INDEX,
+                _ => GizmoAssets.WHITE_INDEX
             };
-            go.transform.SetParent(t.transform, false);
-            if (groupType == EventBoxGroupType.Rotation)
+
+            var baseGizmo = gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
+            baseGizmo.transform.SetParent(transform.transform, false);
+            var modGizmo = groupType switch
             {
-                go.transform.localRotation = axis switch
-                {
-                    0 => mirror
-                        ? Quaternion.Euler(180, 0, 90)
-                        : Quaternion.Euler(0, 0, 90),
-                    1 => mirror
-                        ? Quaternion.Euler(0, 270, 0)
-                        : Quaternion.Euler(0, 90, 0),
-                    2 => mirror
-                        ? Quaternion.Euler(90, 0, 0)
-                        : Quaternion.Euler(270, 0, 0),
-                    _ => Quaternion.identity
-                };
-            }
-            else
+                EventBoxGroupType.Rotation => gizmoAssets.GetOrCreate(GizmoType.Rotation, axisIdx),
+                EventBoxGroupType.Translation => gizmoAssets.GetOrCreate(GizmoType.Translation, axisIdx),
+                _ => null
+            };
+            if (modGizmo != null)
             {
-                go.transform.localRotation = axis switch
+                modGizmo.transform.SetParent(baseGizmo.transform, false);
+                modGizmo.transform.localRotation = groupType switch
                 {
-                    0 => mirror
-                        ? Quaternion.Euler(0, 270, 0)
-                        : Quaternion.Euler(0, 90, 0),
-                    1 => mirror
-                        ? Quaternion.Euler(90, 0, 0)
-                        : Quaternion.Euler(270, 0, 0),
-                    2 => mirror
-                        ? Quaternion.Euler(180, 0, 0)
-                        : Quaternion.Euler(0, 0, 0),
-                    _ => Quaternion.identity
+                    EventBoxGroupType.Translation or EventBoxGroupType.Rotation => axis switch
+                    {
+                        LightAxis.X => mirror ? Quaternion.Euler(0, 270, 0) : Quaternion.Euler(0, 90, 0),
+                        LightAxis.Y => mirror ? Quaternion.Euler(90, 0, 0) : Quaternion.Euler(270, 0, 0),
+                        LightAxis.Z => mirror ? Quaternion.Euler(180, 0, 0) : Quaternion.Euler(0, 0, 0),
+                        _ => Quaternion.identity
+                    },
+                    _ => modGizmo.transform.localRotation
                 };
             }
 
-            _gameObjects.Add(go);
+            _gameObjects.Add(baseGizmo);
+            if (modGizmo != null) _gameObjects.Add(modGizmo);
         }
     }
 
@@ -162,42 +160,45 @@ internal class GizmoManager(
         var ebg = bebgdm.GetEventBoxesByEventBoxGroupId(ebgs.eventBoxGroupContext.id)
             .Cast<LightColorEventBoxEditorData>().ToList();
 
-        // foreach (var l in manager._lightTranslationGroups)
-        foreach (var l in _colorManager.lightGroups.Where(x =>
-                     x.groupId == ebgs.eventBoxGroupContext.groupId))
+        foreach (var l in _colorManager.lightGroups
+                     .Where(x => x.groupId == ebgs.eventBoxGroupContext.groupId))
         {
-            var markId = new HashSet<int>();
-            foreach (var eb in ebg)
+            var markId = new Dictionary<int, (int offset, bool distributed)>();
+            foreach (var item in ebg.Select((eb, i) =>
+                         (i, eb.beatDistributionParam > 0,
+                             IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.numberOfElements))))
             {
-                var r = IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.numberOfElements);
-                foreach (var i in r)
+                var (offset, distributed, list) = item;
+                foreach (var i in list.Where(i => !markId.ContainsKey(i)))
                 {
-                    markId.Add(i);
+                    markId.Add(i, (offset, distributed));
                 }
             }
 
-            var transforms = new List<Transform>();
-            foreach (var i in markId)
+            var data = new List<(int index, int offset, bool distributed, Transform transform)>();
+            foreach (var item in markId
+                         .Select(i => (i.Value.offset, i.Value.distributed, _colorManager
+                             ._lightColorGroupEffects
+                             .FirstOrDefault(x => x._lightId == l.startLightId + i.Key)
+                             ?._lightManager._lights.ElementAt(l.startLightId + i.Key)))
+                         .Where(item => item.Item3 != null)
+                         .Select((l, i) => (i, l.Item1, l.Item2, l.Item3)))
             {
-                var lightWithIds =
-                    _colorManager._lightColorGroupEffects.FirstOrDefault(x => x._lightId == l.startLightId + i)
-                        ?._lightManager._lights.ElementAt(l.startLightId + i);
-                if (lightWithIds == null) continue;
-                foreach (var lightWithId in lightWithIds)
+                foreach (var lightWithId in item.Item4)
                 {
                     switch (lightWithId)
                     {
                         case MaterialLightWithId matLightWithId:
-                            transforms.Add(matLightWithId.transform);
+                            data.Add((item.Item1, item.Item2, item.Item3, matLightWithId.transform));
                             break;
                         case TubeBloomPrePassLightWithId tubeBloomPrePassLightWithId:
-                            transforms.Add(tubeBloomPrePassLightWithId.transform);
+                            data.Add((item.Item1, item.Item2, item.Item3, tubeBloomPrePassLightWithId.transform));
                             break;
                     }
                 }
             }
 
-            DoTheFunny(transforms, ebgs.eventBoxGroupContext.type, 3, false);
+            DoTheFunny(data, ebgs.eventBoxGroupContext.type, LightAxis.X, false);
         }
     }
 
@@ -210,40 +211,49 @@ internal class GizmoManager(
         foreach (var l in _rotationManager._lightRotationGroups.Where(x =>
                      x.groupId == ebgs.eventBoxGroupContext.groupId))
         {
-            var xIdx = new HashSet<int>();
-            var yIdx = new HashSet<int>();
-            var zIdx = new HashSet<int>();
+            var markXIdx = new Dictionary<int, (int offset, bool distributed)>();
+            var markYIdx = new Dictionary<int, (int offset, bool distributed)>();
+            var markZIdx = new Dictionary<int, (int offset, bool distributed)>();
             foreach (var eb in ebg)
             {
-                var r = IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.lightGroup.numberOfElements);
                 var putTo = eb.axis switch
                 {
-                    LightAxis.X => xIdx,
-                    LightAxis.Y => yIdx,
-                    LightAxis.Z => zIdx,
+                    LightAxis.X => markXIdx,
+                    LightAxis.Y => markYIdx,
+                    LightAxis.Z => markZIdx,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                foreach (var i in r)
+                foreach (var item in ebg.Select((eb, i) =>
+                             (i, eb.beatDistributionParam > 0,
+                                 IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter,
+                                     l.lightGroup.numberOfElements))))
                 {
-                    putTo.Add(i);
+                    var (offset, distributed, list) = item;
+                    foreach (var i in list.Where(i => !putTo.ContainsKey(i)))
+                    {
+                        putTo.Add(i, (offset, distributed));
+                    }
                 }
             }
 
-            var transformsXYZ = new List<List<Transform>> { l.xTransforms, l.yTransforms, l.zTransforms };
-            var markIdXYZ = new List<HashSet<int>> { xIdx, yIdx, zIdx };
-            for (var idx = 0; idx < transformsXYZ.Count; idx++)
+            var transformsXYZ = new[] { l.xTransforms, l.yTransforms, l.zTransforms };
+            var markIdXYZ = new[] { markXIdx, markYIdx, markZIdx };
+            foreach (LightAxis axis in Enum.GetValues(typeof(LightAxis)))
             {
-                var transformList = transformsXYZ[idx];
-                var idxFilter = markIdXYZ[idx];
-                var filteredTransforms = transformList.Where((_, i) => idxFilter.Contains(i));
-                var mirror = idx switch
+                var transforms = transformsXYZ[(int)axis];
+                var markId = markIdXYZ[(int)axis];
+                var data = markId
+                    .Select(item => (item.Key, item.Value.offset, item.Value.distributed,
+                        transforms.ElementAtOrDefault(item.Key))).ToList();
+
+                var mirror = axis switch
                 {
-                    0 => l.mirrorX,
-                    1 => l.mirrorY,
-                    2 => l.mirrorZ,
+                    LightAxis.X => l.mirrorX,
+                    LightAxis.Y => l.mirrorY,
+                    LightAxis.Z => l.mirrorZ,
                     _ => false
                 };
-                DoTheFunny(filteredTransforms, ebgs.eventBoxGroupContext.type, idx, mirror);
+                DoTheFunny(data, ebgs.eventBoxGroupContext.type, axis, mirror);
             }
         }
     }
@@ -257,40 +267,50 @@ internal class GizmoManager(
         foreach (var l in _translationManager._lightTranslationGroups.Where(x =>
                      x.groupId == ebgs.eventBoxGroupContext.groupId))
         {
-            var xIdx = new HashSet<int>();
-            var yIdx = new HashSet<int>();
-            var zIdx = new HashSet<int>();
+            var markXIdx = new Dictionary<int, (int offset, bool distributed)>();
+            var markYIdx = new Dictionary<int, (int offset, bool distributed)>();
+            var markZIdx = new Dictionary<int, (int offset, bool distributed)>();
             foreach (var eb in ebg)
             {
                 var r = IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.lightGroup.numberOfElements);
                 var putTo = eb.axis switch
                 {
-                    LightAxis.X => xIdx,
-                    LightAxis.Y => yIdx,
-                    LightAxis.Z => zIdx,
+                    LightAxis.X => markXIdx,
+                    LightAxis.Y => markYIdx,
+                    LightAxis.Z => markZIdx,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                foreach (var i in r)
+                foreach (var item in ebg.Select((eb, i) =>
+                             (i, eb.beatDistributionParam > 0,
+                                 IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter,
+                                     l.lightGroup.numberOfElements))))
                 {
-                    putTo.Add(i);
+                    var (offset, distributed, list) = item;
+                    foreach (var i in list.Where(i => !putTo.ContainsKey(i)))
+                    {
+                        putTo.Add(i, (offset, distributed));
+                    }
                 }
             }
 
-            var transformsXYZ = new List<List<Transform>> { l.xTransforms, l.yTransforms, l.zTransforms };
-            var markIdXYZ = new List<HashSet<int>> { xIdx, yIdx, zIdx };
-            for (var idx = 0; idx < transformsXYZ.Count; idx++)
+            var transformsXYZ = new[] { l.xTransforms, l.yTransforms, l.zTransforms };
+            var markIdXYZ = new[] { markXIdx, markYIdx, markZIdx };
+            foreach (LightAxis axis in Enum.GetValues(typeof(LightAxis)))
             {
-                var transformList = transformsXYZ[idx];
-                var idxFilter = markIdXYZ[idx];
-                var filteredTransforms = transformList.Where((_, i) => idxFilter.Contains(i));
-                var mirror = idx switch
+                var transforms = transformsXYZ[(int)axis];
+                var markId = markIdXYZ[(int)axis];
+                var data = markId
+                    .Select(item => (item.Key, item.Value.offset, item.Value.distributed,
+                        transforms.ElementAtOrDefault(item.Key))).ToList();
+
+                var mirror = axis switch
                 {
-                    0 => l.mirrorX,
-                    1 => l.mirrorY,
-                    2 => l.mirrorZ,
+                    LightAxis.X => l.mirrorX,
+                    LightAxis.Y => l.mirrorY,
+                    LightAxis.Z => l.mirrorZ,
                     _ => false
                 };
-                DoTheFunny(filteredTransforms, ebgs.eventBoxGroupContext.type, idx, mirror);
+                DoTheFunny(data, ebgs.eventBoxGroupContext.type, axis, mirror);
             }
         }
     }
@@ -304,18 +324,22 @@ internal class GizmoManager(
         foreach (var l in _fxManager._floatFxGroups.Where(x =>
                      x.groupId == ebgs.eventBoxGroupContext.groupId))
         {
-            var markId = new HashSet<int>();
-            foreach (var eb in ebg)
+            var markId = new Dictionary<int, (int offset, bool distributed)>();
+            foreach (var item in ebg.Select((eb, i) =>
+                         (i, eb.beatDistributionParam > 0,
+                             IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.lightGroup.numberOfElements))))
             {
-                var r = IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.lightGroup.numberOfElements);
-                foreach (var i in r)
+                var (offset, distributed, list) = item;
+                foreach (var i in list.Where(i => !markId.ContainsKey(i)))
                 {
-                    markId.Add(i);
+                    markId.Add(i, (offset, distributed));
                 }
             }
 
-            var transforms = l.targets.Select(t => t.transform).Where((_, i) => markId.Contains(i));
-            DoTheFunny(transforms, ebgs.eventBoxGroupContext.type, 3, false);
+            var data = markId
+                .Select(item => (item.Key, item.Value.offset, item.Value.distributed,
+                    l.targets.Select(t => t.transform).ElementAtOrDefault(item.Key))).ToList();
+            DoTheFunny(data, ebgs.eventBoxGroupContext.type, LightAxis.X, false);
         }
     }
 }

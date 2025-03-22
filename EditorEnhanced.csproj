@@ -99,6 +99,9 @@
     <Reference Include="UnityEngine">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AssetBundle">
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -135,6 +138,8 @@
     <EmbeddedResource Include="Resources\cameraPrev.png" />
     <None Remove="Resources\cameraSave.png" />
     <EmbeddedResource Include="Resources\cameraSave.png" />
+    <None Remove="Resources\model" />
+    <EmbeddedResource Include="Resources\model" />
   </ItemGroup>
   
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">

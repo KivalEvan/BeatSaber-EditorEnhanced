@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EditorEnhanced.Utils;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -9,15 +10,26 @@ namespace EditorEnhanced.Gizmo;
 
 internal enum GizmoType
 {
-    Color,
+    Cube,
     Rotation,
     Translation,
-    Fx
+    Sphere
 }
 
 internal class GizmoAssets : IInitializable, IDisposable
 {
-    private List<Material> _materials;
+    public const int HUE_RANGE = 128 * 3;
+    
+    public const int WHITE_INDEX = -1;
+    public const int RED_INDEX = HUE_RANGE * 0 / 6;
+    public const int YELLOW_INDEX = HUE_RANGE * 1 / 6;
+    public const int GREEN_INDEX = HUE_RANGE * 2 / 6;
+    public const int CYAN_INDEX = HUE_RANGE * 3 / 6;
+    public const int BLUE_INDEX = HUE_RANGE * 4 / 6;
+    public const int MAGENTA_INDEX = HUE_RANGE * 5 / 6;
+
+    private readonly Material[] _sharedMaterials = new Material[HUE_RANGE];
+    private static readonly Material _defaultMaterial = FetchMaterial();
     private readonly List<GameObject> _colorObjects = [];
     private readonly List<GameObject> _rotationObjects = [];
     private readonly List<GameObject> _translationObjects = [];
@@ -25,27 +37,10 @@ internal class GizmoAssets : IInitializable, IDisposable
 
     public void Initialize()
     {
-        var colors = new List<Color>
-            { Color.red, Color.green, Color.blue, Color.white };
-        _materials = [];
-
-        foreach (var color in colors)
-        {
-            var shader = Shader.Find("Hidden/Internal-Colored");
-            var sharedMat = new Material(shader);
-            sharedMat.SetColor("_Color", color);
-            sharedMat.SetInt("_SrcBlend", 5);
-            sharedMat.SetInt("_DstBlend", 10);
-            sharedMat.SetInt("_Cull", 0);
-            sharedMat.SetInt("_ZWrite", 0);
-            sharedMat.SetInt("_ZTest", 8);
-            _materials.Add(sharedMat);
-        }
-
-        ColorGizmo.SObject = ColorGizmo.Create(_materials[0]);
-        RotationGizmo.SObject = RotationGizmo.Create(_materials[0]);
-        TranslationGizmo.SObject = TranslationGizmo.Create(_materials[0]);
-        FxGizmo.SObject = FxGizmo.Create(_materials[0]);
+        CubeGizmo.SObject = CubeGizmo.Create(_defaultMaterial);
+        RotationGizmo.SObject = RotationGizmo.Create(_defaultMaterial);
+        TranslationGizmo.SObject = TranslationGizmo.Create(_defaultMaterial);
+        SphereGizmo.SObject = SphereGizmo.Create(_defaultMaterial);
     }
 
     public void Dispose()
@@ -61,14 +56,42 @@ internal class GizmoAssets : IInitializable, IDisposable
         _fxObjects.Clear();
     }
 
+    private Material GetOrCreateMaterial(int index)
+    {
+        if (index < 0 || index >= HUE_RANGE)
+        {
+            return _defaultMaterial;
+        }
+        if (_sharedMaterials[index] != null)
+        {
+            return _sharedMaterials[index];
+        }
+        var color = Color.HSVToRGB(Convert.ToSingle(index) / Convert.ToSingle(HUE_RANGE),1f,1f);
+        _sharedMaterials[index] = CreateMaterial(color);
+        return _sharedMaterials[index];
+    }
+
+    private static Material FetchMaterial()
+    {
+        var bundle = AssetLoader.LoadFromResource(nameof(EditorEnhanced) + ".model");
+        return bundle.LoadAsset<Material>("Assets/Shaders/Unlit.mat");
+    }
+
+    private static Material CreateMaterial(Color color)
+    {
+        var mat = new Material(_defaultMaterial);
+        mat.SetColor("_Color", color);
+        return mat;
+    }
+
     public GameObject GetOrCreate(GizmoType gizmoType, int colorIdx)
     {
         var objects = gizmoType switch
         {
-            GizmoType.Color => _colorObjects,
+            GizmoType.Cube => _colorObjects,
             GizmoType.Rotation => _rotationObjects,
             GizmoType.Translation => _translationObjects,
-            GizmoType.Fx => _fxObjects,
+            GizmoType.Sphere => _fxObjects,
             _ => throw new ArgumentOutOfRangeException(nameof(gizmoType), gizmoType, null)
         };
 
@@ -77,20 +100,15 @@ internal class GizmoAssets : IInitializable, IDisposable
         {
             go = gizmoType switch
             {
-                GizmoType.Color => Object.Instantiate(ColorGizmo.SObject),
+                GizmoType.Cube => Object.Instantiate(CubeGizmo.SObject),
                 GizmoType.Rotation => Object.Instantiate(RotationGizmo.SObject),
                 GizmoType.Translation => Object.Instantiate(TranslationGizmo.SObject),
-                GizmoType.Fx => Object.Instantiate(FxGizmo.SObject),
+                GizmoType.Sphere => Object.Instantiate(SphereGizmo.SObject),
                 _ => throw new ArgumentOutOfRangeException(nameof(gizmoType), gizmoType, null)
             };
             objects.Add(go);
         }
-
-        foreach (var renderer in go.GetComponentsInChildren<Renderer>())
-        {
-            renderer.material = _materials[colorIdx];
-        }
-
+        go.GetComponent<Renderer>().material = GetOrCreateMaterial(colorIdx);
         go.SetActive(true);
         return go;
     }
