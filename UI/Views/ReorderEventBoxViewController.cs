@@ -1,5 +1,5 @@
 using System;
-using BeatmapEditor3D.Views;
+using BeatmapEditor3D;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
@@ -11,16 +11,12 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class ReorderEventBoxViewController(SignalBus signalBus) : IInitializable, IDisposable
+internal class ReorderEventBoxViewController(SignalBus signalBus, BeatmapFlowCoordinator bfc)
+    : IInitializable, IDisposable
 {
-    private EventBoxView _eventBoxView;
-
     public void Initialize()
     {
-        var target =
-            GameObject.Find(
-                "/Wrapper/ViewControllers/EditBeatmapViewController/EventBoxesView/EventBoxView");
-        _eventBoxView = target.GetComponent<EventBoxView>();
+        var target = bfc._editBeatmapViewController._eventBoxesView._eventBoxView;
 
         var stackTag = new EditorLayoutStackTag()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
@@ -29,13 +25,13 @@ internal class ReorderEventBoxViewController(SignalBus signalBus) : IInitializab
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(false)
             .SetPadding(new RectOffset(8, 8, 8, 8));
-        var btnTag = new EditorButtonTag()
+        var btnTag = new EditorButtonTag(bfc)
             .SetFontSize(16);
-        var textTag = new EditorTextTag()
+        var textTag = new EditorTextTag(bfc)
             .SetFontSize(20)
             .SetFontWeight(FontWeight.Bold)
             .SetTextAlignment(TextAlignmentOptions.Center);
-        
+
         var container = stackTag.CreateObject(target.transform);
         container.transform.SetAsFirstSibling();
         Object.Instantiate(target.transform.Find("GroupInfoView/Background4px"), container.transform,
@@ -68,21 +64,25 @@ internal class ReorderEventBoxViewController(SignalBus signalBus) : IInitializab
 
     private void MoveEventBoxTop()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(_eventBoxView._eventBox, ReorderType.Top));
+        signalBus.Fire(new ReorderEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox,
+            ReorderType.Top));
     }
 
     private void MoveEventBoxUp()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(_eventBoxView._eventBox, ReorderType.Up));
+        signalBus.Fire(new ReorderEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox,
+            ReorderType.Up));
     }
 
     private void MoveEventBoxDown()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(_eventBoxView._eventBox, ReorderType.Down));
+        signalBus.Fire(new ReorderEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox,
+            ReorderType.Down));
     }
 
     private void MoveEventBoxBottom()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(_eventBoxView._eventBox, ReorderType.Bottom));
+        signalBus.Fire(new ReorderEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox,
+            ReorderType.Bottom));
     }
 }

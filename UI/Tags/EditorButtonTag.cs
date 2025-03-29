@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using BeatmapEditor3D.Views;
+using BeatmapEditor3D;
 using EditorEnhanced.UI.Interfaces;
 using HMUI;
 using JetBrains.Annotations;
@@ -11,26 +11,15 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorButtonTag : IUIButton, IUIText
+public class EditorButtonTag(BeatmapFlowCoordinator bfc) : IUIButton, IUIText
 {
     public string[] Aliases => ["editor-button"];
-    
-    private Button _buttonPrefab;
 
-    private static Button PrefabButton
-    {
-        get
-        {
-            var view = GameObject.Find("/Wrapper/ViewControllers/EditBeatmapViewController/StatusBarView");
-            return view == null ? null : view.GetComponent<StatusBarView>()._playbackSpeedResetButton;
-        }
-    }
+    private Button PrefabButton => bfc._editBeatmapViewController._beatmapEditorExtendedSettingsView._copyDifficultyButton;
 
     public GameObject CreateObject(Transform parent)
     {
-        if (_buttonPrefab == null)
-            _buttonPrefab = PrefabButton;
-        var button = (NoTransitionsButton)Object.Instantiate(_buttonPrefab, parent, false);
+        var button = (NoTransitionsButton)Object.Instantiate(PrefabButton, parent, false);
         button.name = "EEEditorButton";
         button.interactable = true;
         OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));

@@ -1,6 +1,5 @@
 using EditorEnhanced.UI.Interfaces;
 using TMPro;
-using UnityEngine;
 
 namespace EditorEnhanced.UI.Extensions;
 

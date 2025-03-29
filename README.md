@@ -7,11 +7,13 @@ For level designer, by level designer, to improve your workflow with various QOL
 * v3 Light Gizmo
     * Highlight color, rotation, translation and FX with their orientation
 * Camera Position Preset
-  * **[Cam 1]** Default Editor Camera
-  * **[Cam 2]** Player Stand Camera
-  * **[Cam 3]** Previous Camera
-  * **[Cam 4]** Saved Camera
+  * **[1]** Default Editor Camera
+  * **[2]** Player Stand Camera
+  * **[Prev]** Previous Camera
+  * **[Load]** Saved Camera
 * Event Box Reordering
+* Event Box Copy
+* Built-in auto-light for v2 (Lolighter)
 
 ## To-do
 
@@ -24,11 +26,10 @@ For level designer, by level designer, to improve your workflow with various QOL
 * [ ] Gradient gizmo for beat distribution
 * [ ] Independent gizmo scale
 * [ ] Customisable gizmo view (lane hover highlight, view non-filtered, etc.)
-* [ ] Actually model the gizmo
 * [ ] Error checker port
 * [ ] Selector plugin port
-* [ ] Lolighter/Lightmap port because I'm that evil
 * [ ] Redesign UI (for the mod, not the base game)
+* [ ] Fix button animation not working
 * [ ] Optimisation for this mod
 
 ## Known Issue

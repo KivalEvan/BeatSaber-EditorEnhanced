@@ -126,18 +126,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\camera1.png" />
-    <EmbeddedResource Include="Resources\camera1.png" />
-    <None Remove="Resources\camera2.png" />
-    <EmbeddedResource Include="Resources\camera2.png" />
-    <None Remove="Resources\cameraBase.png" />
-    <EmbeddedResource Include="Resources\cameraBase.png" />
-    <None Remove="Resources\cameraLoad.png" />
-    <EmbeddedResource Include="Resources\cameraLoad.png" />
-    <None Remove="Resources\cameraPrev.png" />
-    <EmbeddedResource Include="Resources\cameraPrev.png" />
-    <None Remove="Resources\cameraSave.png" />
-    <EmbeddedResource Include="Resources\cameraSave.png" />
     <None Remove="Resources\model" />
     <EmbeddedResource Include="Resources\model" />
   </ItemGroup>
