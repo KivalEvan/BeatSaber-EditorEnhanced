@@ -1,19 +1,20 @@
 using System;
+using BeatmapEditor3D;
+using EditorEnhanced.Managers;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
 using TMPro;
-using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CameraPresetViewController(CameraPresetManager cameraPresetManager) : IInitializable, IDisposable
+internal class CameraPresetViewController(CameraPresetManager cameraPresetManager, BeatmapFlowCoordinator bfc)
+    : IInitializable, IDisposable
 {
     public void Initialize()
     {
-        var target = GameObject.Find(
-            "/Wrapper/ViewControllers/EditBeatmapViewController/StatusBarView/StatusBarControls/ExtraControlsWrapper/");
+        var target = bfc._editBeatmapViewController._beatmapEditorExtendedSettingsView;
 
         var horizontalTag = new EditorLayoutHorizontalTag()
             .SetSpacing(5)
@@ -24,12 +25,12 @@ internal class CameraPresetViewController(CameraPresetManager cameraPresetManage
             .SetFlexibleWidth(1)
             .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var btnTag = new EditorButtonTag()
+        var btnTag = new EditorButtonTag(bfc)
             .SetFontSize(14)
             .SetTextAlignment(TextAlignmentOptions.Center);
-        var textTag = new EditorTextTag()
+        var textTag = new EditorTextTag(bfc)
             .SetFontSize(14);
-        
+
         var mainLayout = horizontalTag.CreateObject(target.transform);
         var stackLayout = stackTag.CreateObject(mainLayout.transform);
         textTag
@@ -60,7 +61,7 @@ internal class CameraPresetViewController(CameraPresetManager cameraPresetManage
     public void Dispose()
     {
     }
-    
+
     public void SwitchToDefaultCamera()
     {
         cameraPresetManager.SetCamera(CameraPresetManager.CameraType.Default);

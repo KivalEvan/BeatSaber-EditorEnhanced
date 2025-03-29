@@ -3,7 +3,7 @@ using BeatmapEditor3D.Controller;
 using UnityEngine;
 using Zenject;
 
-namespace EditorEnhanced.UI;
+namespace EditorEnhanced.Managers;
 
 internal class CameraPresetManager : IInitializable
 {

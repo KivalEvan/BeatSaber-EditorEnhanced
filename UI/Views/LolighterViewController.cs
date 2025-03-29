@@ -1,21 +1,19 @@
 using System;
+using BeatmapEditor3D;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
-using UnityEngine;
 using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class LolighterViewController(SignalBus signalBus) : IInitializable, IDisposable
+internal class LolighterViewController(SignalBus signalBus, BeatmapFlowCoordinator bfc) : IInitializable, IDisposable
 {
     public void Initialize()
     {
-        var target =
-            GameObject.Find(
-                "/Wrapper/ViewControllers/EditBeatmapNavigationViewController/EventsToolbar");
+        var target = bfc._editBeatmapNavigationViewController._eventsToolbarView;
 
-        new EditorButtonTag()
+        new EditorButtonTag(bfc)
             .SetText("Commit Crime")
             .SetOnClick(() => signalBus.Fire(new LolighterSignal()))
             .CreateObject(target.transform);

@@ -6,12 +6,13 @@ using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
 using BeatmapEditor3D.Types;
+using EditorEnhanced.Gizmo;
 using EditorEnhanced.Helpers;
 using UnityEngine;
 using Zenject;
 using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupType;
 
-namespace EditorEnhanced.Gizmo;
+namespace EditorEnhanced.Managers;
 
 internal class GizmoManager(
     GizmoAssets gizmoAssets,
@@ -48,6 +49,7 @@ internal class GizmoManager(
             ]);
 
         signalBus.Subscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
+        signalBus.Subscribe<EventBoxesUpdatedSignal>(UpdateGizmo);
         signalBus.Subscribe<ModifyEventBoxSignal>(UpdateGizmo);
         signalBus.Subscribe<InsertEventBoxSignal>(UpdateGizmo);
         signalBus.Subscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);
@@ -59,6 +61,7 @@ internal class GizmoManager(
     public void Dispose()
     {
         signalBus.TryUnsubscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
+        signalBus.TryUnsubscribe<EventBoxesUpdatedSignal>(UpdateGizmo);
         signalBus.TryUnsubscribe<ModifyEventBoxSignal>(UpdateGizmo);
         signalBus.TryUnsubscribe<InsertEventBoxSignal>(UpdateGizmo);
         signalBus.TryUnsubscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);

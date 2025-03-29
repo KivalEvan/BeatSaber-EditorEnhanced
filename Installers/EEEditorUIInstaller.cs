@@ -1,4 +1,4 @@
-using EditorEnhanced.UI;
+using EditorEnhanced.Managers;
 using EditorEnhanced.UI.Views;
 using Zenject;
 
@@ -11,7 +11,11 @@ public class EEEditorUIInstaller : Installer
         Container.BindInterfacesTo<CameraPresetViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<CameraPresetManager>().AsSingle();
 
+        Container.BindInterfacesTo<CopyEventBoxViewController>().AsSingle();
+        Container.BindInterfacesAndSelfTo<EventBoxClipboardManager>().AsSingle();
+        
         Container.BindInterfacesTo<LolighterViewController>().AsSingle();
         Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();
+        
     }
 }

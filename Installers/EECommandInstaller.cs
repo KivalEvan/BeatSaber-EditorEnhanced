@@ -12,6 +12,9 @@ public class EECommandInstaller
         // this is the dumbest way i ever had to deal with DI
         Container.BindInterfacesAndSelfTo<EECommandInitializer>().AsSingle();
         InstallCommands<ReorderEventBoxSignal, ReorderEventBoxCommand>(Container);
+        InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>(Container);
+        InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container);
+        InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>(Container);
         InstallCommands<LolighterSignal, LolighterCommand>(Container);
     }
 
