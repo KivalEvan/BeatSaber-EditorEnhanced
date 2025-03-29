@@ -13,6 +13,7 @@ For level designer, by level designer, to improve your workflow with various QOL
   * **[Load]** Saved Camera
 * Event Box Reordering
 * Event Box Copy
+* Unclamped float value for basic event
 * Built-in auto-light for v2 (Lolighter)
 
 ## To-do

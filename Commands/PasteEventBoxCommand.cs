@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using BeatmapEditor3D;
-using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
 using EditorEnhanced.Managers;

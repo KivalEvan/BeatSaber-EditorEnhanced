@@ -1,5 +1,6 @@
 using BeatmapEditor3D;
 using EditorEnhanced.Commands;
+using EditorEnhanced.Patches;
 using Zenject;
 
 namespace EditorEnhanced.Installers;
@@ -16,6 +17,8 @@ public class EECommandInstaller
         InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container);
         InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>(Container);
         InstallCommands<LolighterSignal, LolighterCommand>(Container);
+        
+        Container.BindInterfacesAndSelfTo<ModifyHoveredLightEventDeltaIntensityCommandPatches>().AsSingle();
     }
 
     private static void InstallCommands<TSignal, TCommand>(DiContainer container) where TCommand : IBeatmapEditorCommand
