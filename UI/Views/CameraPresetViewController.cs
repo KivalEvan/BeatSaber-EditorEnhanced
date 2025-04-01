@@ -4,12 +4,13 @@ using EditorEnhanced.Managers;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
 using TMPro;
+using Tweening;
 using UnityEngine.UI;
 using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CameraPresetViewController(CameraPresetManager cameraPresetManager, BeatmapFlowCoordinator bfc)
+internal class CameraPresetViewController(CameraPresetManager cameraPresetManager, BeatmapFlowCoordinator bfc, TimeTweeningManager twm)
     : IInitializable, IDisposable
 {
     public void Initialize()
@@ -25,7 +26,7 @@ internal class CameraPresetViewController(CameraPresetManager cameraPresetManage
             .SetFlexibleWidth(1)
             .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var btnTag = new EditorButtonTag(bfc)
+        var btnTag = new EditorButtonTag(bfc, twm)
             .SetFontSize(14)
             .SetTextAlignment(TextAlignmentOptions.Center);
         var textTag = new EditorTextTag(bfc)

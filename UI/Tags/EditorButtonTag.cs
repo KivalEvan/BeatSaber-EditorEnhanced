@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using BeatmapEditor3D;
 using EditorEnhanced.UI.Interfaces;
 using HMUI;
+using IPA.Utilities;
 using JetBrains.Annotations;
 using TMPro;
+using Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorButtonTag(BeatmapFlowCoordinator bfc) : IUIButton, IUIText
+public class EditorButtonTag(BeatmapFlowCoordinator bfc, TimeTweeningManager twm) : IUIButton, IUIText
 {
     public string[] Aliases => ["editor-button"];
 
@@ -24,7 +26,8 @@ public class EditorButtonTag(BeatmapFlowCoordinator bfc) : IUIButton, IUIText
         button.interactable = true;
         OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
 
-        Object.Destroy(button.GetComponent<NoTransitionButtonSelectableStateController>());
+        var comp = button.GetComponent<NoTransitionButtonSelectableStateController>();
+        ((SelectableStateController)comp).SetField("_tweeningManager", twm);
 
         var btnObject = button.gameObject;
         btnObject.SetActive(false);

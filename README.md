@@ -30,7 +30,6 @@ For level designer, by level designer, to improve your workflow with various QOL
 * [ ] Error checker port
 * [ ] Selector plugin port
 * [ ] Redesign UI (for the mod, not the base game)
-* [ ] Fix button animation not working
 * [ ] Optimisation for this mod
 
 ## Known Issue

@@ -4,6 +4,7 @@ using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
 using TMPro;
+using Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -11,7 +12,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CopyEventBoxViewController(SignalBus signalBus, BeatmapFlowCoordinator bfc) : IInitializable, IDisposable
+internal class CopyEventBoxViewController(SignalBus signalBus, BeatmapFlowCoordinator bfc, TimeTweeningManager twm) : IInitializable, IDisposable
 {
     public void Initialize()
     {
@@ -24,7 +25,7 @@ internal class CopyEventBoxViewController(SignalBus signalBus, BeatmapFlowCoordi
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(false)
             .SetPadding(new RectOffset(8, 8, 8, 8));
-        var btnTag = new EditorButtonTag(bfc)
+        var btnTag = new EditorButtonTag(bfc, twm)
             .SetFontSize(16);
         var textTag = new EditorTextTag(bfc)
             .SetFontSize(20)
