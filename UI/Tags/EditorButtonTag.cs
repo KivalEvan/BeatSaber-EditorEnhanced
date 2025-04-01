@@ -13,6 +13,14 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
+public class EditorButtonBuilder(BeatmapFlowCoordinator bfc, TimeTweeningManager twm)
+{
+    public EditorButtonTag CreateNew()
+    {
+        return new EditorButtonTag(bfc, twm);
+    }
+}
+
 public class EditorButtonTag(BeatmapFlowCoordinator bfc, TimeTweeningManager twm) : IUIButton, IUIText
 {
     public string[] Aliases => ["editor-button"];

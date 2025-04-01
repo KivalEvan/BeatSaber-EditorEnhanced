@@ -10,26 +10,32 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CameraPresetViewController(CameraPresetManager cameraPresetManager, BeatmapFlowCoordinator bfc, TimeTweeningManager twm)
+internal class CameraPresetViewController(
+    CameraPresetManager cameraPresetManager,
+    BeatmapFlowCoordinator bfc,
+    EditorLayoutStackBuilder editorLayoutStack,
+    EditorLayoutHorizontalBuilder editorLayoutHorizontal,
+    EditorButtonBuilder editorBtn,
+    EditorTextBuilder editorText)
     : IInitializable, IDisposable
 {
     public void Initialize()
     {
         var target = bfc._editBeatmapViewController._beatmapEditorExtendedSettingsView;
 
-        var horizontalTag = new EditorLayoutHorizontalTag()
+        var horizontalTag = editorLayoutHorizontal.CreateNew()
             .SetSpacing(5)
             .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetChildControlWidth(false);
-        var stackTag = new EditorLayoutStackTag()
+        var stackTag = editorLayoutStack.CreateNew()
             .SetFlexibleWidth(1)
             .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var btnTag = new EditorButtonTag(bfc, twm)
+        var btnTag = editorBtn.CreateNew()
             .SetFontSize(14)
             .SetTextAlignment(TextAlignmentOptions.Center);
-        var textTag = new EditorTextTag(bfc)
+        var textTag = editorText.CreateNew()
             .SetFontSize(14);
 
         var mainLayout = horizontalTag.CreateObject(target.transform);

@@ -12,26 +12,32 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CopyEventBoxViewController(SignalBus signalBus, BeatmapFlowCoordinator bfc, TimeTweeningManager twm) : IInitializable, IDisposable
+internal class CopyEventBoxViewController(
+    SignalBus signalBus,
+    BeatmapFlowCoordinator bfc,
+    EditorLayoutStackBuilder editorLayoutStack,
+    EditorLayoutHorizontalBuilder editorLayoutHorizontal,
+    EditorButtonBuilder editorBtn,
+    EditorTextBuilder editorText) : IInitializable, IDisposable
 {
     public void Initialize()
     {
         var target = bfc._editBeatmapViewController._eventBoxesView._eventBoxView;
 
-        var stackTag = new EditorLayoutStackTag()
+        var stackTag = editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var horizontalTag = new EditorLayoutHorizontalTag()
+        var horizontalTag = editorLayoutHorizontal.CreateNew()
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(false)
             .SetPadding(new RectOffset(8, 8, 8, 8));
-        var btnTag = new EditorButtonTag(bfc, twm)
+        var btnTag = editorBtn.CreateNew()
             .SetFontSize(16);
-        var textTag = new EditorTextTag(bfc)
+        var textTag = editorText.CreateNew()
             .SetFontSize(20)
             .SetFontWeight(FontWeight.Bold)
             .SetTextAlignment(TextAlignmentOptions.Center);
-        
+
         var container = stackTag.CreateObject(target.transform);
         container.transform.SetAsFirstSibling();
         Object.Instantiate(target.transform.Find("GroupInfoView/Background4px"), container.transform,
@@ -76,6 +82,7 @@ internal class CopyEventBoxViewController(SignalBus signalBus, BeatmapFlowCoordi
 
     private void DuplicateEventBox()
     {
-        signalBus.Fire(new DuplicateEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox));
+        signalBus.Fire(
+            new DuplicateEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox));
     }
 }

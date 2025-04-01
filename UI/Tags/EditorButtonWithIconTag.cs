@@ -11,6 +11,14 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
+public class EditorButtonWithIconBuilder(BeatmapFlowCoordinator bfc)
+{
+    public EditorButtonWithIconTag CreateNew()
+    {
+        return new EditorButtonWithIconTag(bfc);
+    }
+}
+
 public class EditorButtonWithIconTag(BeatmapFlowCoordinator bfc) : IUIButton, IUIText
 {
     public string[] Aliases => ["editor-button-with-icon", "editor-icon-button"];

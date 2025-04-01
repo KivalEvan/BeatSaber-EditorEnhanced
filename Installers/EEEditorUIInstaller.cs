@@ -1,4 +1,5 @@
 using EditorEnhanced.Managers;
+using EditorEnhanced.UI.Tags;
 using EditorEnhanced.UI.Views;
 using Zenject;
 
@@ -8,6 +9,12 @@ public class EEEditorUIInstaller : Installer
 {
     public override void InstallBindings()
     {
+        Container.BindInterfacesAndSelfTo<EditorButtonBuilder>().AsSingle();
+        Container.BindInterfacesAndSelfTo<EditorButtonWithIconBuilder>().AsSingle();
+        Container.BindInterfacesAndSelfTo<EditorLayoutHorizontalBuilder>().AsSingle();
+        Container.BindInterfacesAndSelfTo<EditorLayoutStackBuilder>().AsSingle();
+        Container.BindInterfacesAndSelfTo<EditorTextBuilder>().AsSingle();
+        
         Container.BindInterfacesTo<CameraPresetViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<CameraPresetManager>().AsSingle();
 

@@ -5,6 +5,14 @@ using UnityEngine.UI;
 
 namespace EditorEnhanced.UI.Tags;
 
+public class EditorLayoutHorizontalBuilder
+{
+    public EditorLayoutHorizontalTag CreateNew()
+    {
+        return new EditorLayoutHorizontalTag();
+    }
+}
+
 public class EditorLayoutHorizontalTag : IUILayout
 {
     public GameObject CreateObject(Transform parent)

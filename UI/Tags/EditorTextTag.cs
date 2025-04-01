@@ -7,6 +7,14 @@ using UnityEngine;
 
 namespace EditorEnhanced.UI.Tags;
 
+public class EditorTextBuilder(BeatmapFlowCoordinator bfc)
+{
+    public EditorTextTag CreateNew()
+    {
+        return new EditorTextTag(bfc);
+    }
+}
+
 public class EditorTextTag(BeatmapFlowCoordinator bfc) : IUIText
 {
     public string[] Aliases => ["editor-text", "editor-label"];
