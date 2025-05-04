@@ -18,7 +18,7 @@ internal static class AssetLoader
         return _loaded[resourcePath];
     }
 
-    private static byte[] GetResource(Assembly assembly, string resourcePath)
+    public static byte[] GetResource(Assembly assembly, string resourcePath)
     {
         var manifestResourceStream = assembly.GetManifestResourceStream(resourcePath);
         var array = new byte[manifestResourceStream.Length];

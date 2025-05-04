@@ -16,6 +16,7 @@ internal class CameraPresetViewController(
     EditorLayoutStackBuilder editorLayoutStack,
     EditorLayoutHorizontalBuilder editorLayoutHorizontal,
     EditorButtonBuilder editorBtn,
+    EditorButtonWithIconBuilder editorBtnIcon,
     EditorTextBuilder editorText)
     : IInitializable, IDisposable
 {
@@ -35,6 +36,9 @@ internal class CameraPresetViewController(
         var btnTag = editorBtn.CreateNew()
             .SetFontSize(14)
             .SetTextAlignment(TextAlignmentOptions.Center);
+        var btnIconTag = editorBtnIcon.CreateNew()
+            .SetFontSize(14)
+            .SetTextAlignment(TextAlignmentOptions.Center);
         var textTag = editorText.CreateNew()
             .SetFontSize(14);
 
@@ -52,15 +56,18 @@ internal class CameraPresetViewController(
             .SetOnClick(SwitchToPlayerCamera)
             .CreateObject(mainLayout.transform);
         btnTag
-            .SetText("Prev")
+            .SetText("P")
+            // .SetImage(nameof(EditorEnhanced) + ".cameraPrev.png")
             .SetOnClick(SwitchToPreviousCamera)
             .CreateObject(mainLayout.transform);
         btnTag
-            .SetText("Load")
+            .SetText("L")
+            // .SetImage(nameof(EditorEnhanced) + ".cameraLoad.png")
             .SetOnClick(SwitchToSavedCamera)
             .CreateObject(mainLayout.transform);
         btnTag
-            .SetText("Save")
+            .SetText("S")
+            // .SetImage(nameof(EditorEnhanced) + ".cameraSave.png")
             .SetOnClick(SaveCamera)
             .CreateObject(mainLayout.transform);
     }

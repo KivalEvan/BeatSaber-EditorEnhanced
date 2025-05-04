@@ -14,6 +14,7 @@ public class EEEditorUIInstaller : Installer
         Container.BindInterfacesAndSelfTo<EditorLayoutHorizontalBuilder>().AsSingle();
         Container.BindInterfacesAndSelfTo<EditorLayoutStackBuilder>().AsSingle();
         Container.BindInterfacesAndSelfTo<EditorTextBuilder>().AsSingle();
+        Container.BindInterfacesAndSelfTo<EditorToggleGroupBuilder>().AsSingle();
         
         Container.BindInterfacesTo<CameraPresetViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<CameraPresetManager>().AsSingle();
@@ -23,5 +24,6 @@ public class EEEditorUIInstaller : Installer
         
         Container.BindInterfacesTo<LolighterViewController>().AsSingle();
         Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();
+        // Container.BindInterfacesTo<MassValueShiftViewController>().AsSingle();
     }
 }

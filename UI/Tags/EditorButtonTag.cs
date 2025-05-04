@@ -47,8 +47,6 @@ public class EditorButtonTag(BeatmapFlowCoordinator bfc, TimeTweeningManager twm
         contentWrapper.transform.SetParent(btnObject.transform, false);
         stackLayoutGroup = contentWrapper.AddComponent<StackLayoutGroup>();
         stackLayoutGroup.padding = new RectOffset(12, 12, 6, 6);
-        layoutElement = contentWrapper.AddComponent<LayoutElement>();
-        layoutElement.flexibleWidth = 1f;
         
         var labelObject = button.transform.Find("BeatmapEditorLabel").gameObject;
         labelObject.transform.SetParent(contentWrapper.transform, false);

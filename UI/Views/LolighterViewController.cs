@@ -16,6 +16,7 @@ internal class LolighterViewController(SignalBus signalBus, BeatmapFlowCoordinat
         var target = bfc._editBeatmapNavigationViewController._eventsToolbarView;
 
         editorBtn.CreateNew()
+            .SetFontSize(10)
             .SetText("Commit Crime")
             .SetOnClick(() => signalBus.Fire(new LolighterSignal()))
             .CreateObject(target.transform);

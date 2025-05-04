@@ -8,7 +8,7 @@
     <PluginName>EditorEnhanced</PluginName>
     <Authors>Kival Evan</Authors>
     <Version>0.1.0</Version>
-    <GameVersion>1.39.0</GameVersion>
+    <GameVersion>1.40.4</GameVersion>
     <Description>yes.</Description>
   </PropertyGroup>
 
