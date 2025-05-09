@@ -6,6 +6,7 @@ using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
 using BeatmapEditor3D.Types;
+using EditorEnhanced.Commands;
 using EditorEnhanced.Gizmo;
 using EditorEnhanced.Helpers;
 using UnityEngine;
@@ -45,6 +46,8 @@ internal class GizmoManager(
         signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
         signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
         signalBus.Subscribe<DeleteEventBoxSignal>(UpdateGizmo);
+        signalBus.Subscribe<PasteEventBoxSignal>(UpdateGizmo);
+        signalBus.Subscribe<DuplicateEventBoxSignal>(UpdateGizmo);
     }
 
     public void Dispose()
@@ -57,6 +60,16 @@ internal class GizmoManager(
         signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
         signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
         signalBus.TryUnsubscribe<DeleteEventBoxSignal>(UpdateGizmo);
+        signalBus.TryUnsubscribe<PasteEventBoxSignal>(UpdateGizmo);
+        signalBus.TryUnsubscribe<DuplicateEventBoxSignal>(UpdateGizmo);
+        
+        foreach (var gameObject in _gameObjects)
+            UnityEngine.Object.Destroy(gameObject);
+        _gameObjects.Clear();
+        _colorManager = null;
+        _rotationManager = null;
+        _translationManager = null;
+        _fxManager = null;
     }
 
     private void AddGizmo()
@@ -88,8 +101,8 @@ internal class GizmoManager(
 
     private void UpdateGizmoWithSignal(BeatmapEditingModeSwitched signal)
     {
-        if (signal.mode != BeatmapEditingMode.EventBoxes) RemoveGizmo();
         if (signal.mode == BeatmapEditingMode.EventBoxes) AddGizmo();
+        else RemoveGizmo();
     }
 
     private void UpdateGizmo()
