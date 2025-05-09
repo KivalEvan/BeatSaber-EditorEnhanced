@@ -25,5 +25,7 @@ public class EEEditorUIInstaller : Installer
         Container.BindInterfacesTo<LolighterViewController>().AsSingle();
         Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();
         // Container.BindInterfacesTo<MassValueShiftViewController>().AsSingle();
+
+        Container.BindInterfacesTo<ScrollableYourInput>().AsSingle();
     }
 }

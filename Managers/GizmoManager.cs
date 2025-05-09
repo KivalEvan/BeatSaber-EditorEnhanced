@@ -108,7 +108,6 @@ internal class GizmoManager(
         foreach (var items in data)
         {
             var (idx, ebgIdx, distributed, transform) = items;
-            Plugin.Log.Info($"idx: {idx}, ebgIdx: {ebgIdx}, distributed: {distributed}, transform: {transform}");
 
             var colorIdx = distributed
                 ? GizmoAssets.HUE_RANGE / 2 * ebgIdx + idx * 2 % GizmoAssets.HUE_RANGE
