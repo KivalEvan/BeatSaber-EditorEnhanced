@@ -15,20 +15,28 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorButtonWithIconBuilder(BeatmapFlowCoordinator bfc, TimeTweeningManager twm)
+public class EditorButtonWithIconBuilder(EditBeatmapViewController ebvc, TimeTweeningManager twm)
 {
     public EditorButtonWithIconTag CreateNew()
     {
-        return new EditorButtonWithIconTag(bfc, twm);
+        return new EditorButtonWithIconTag(ebvc, twm);
     }
 }
 
-public class EditorButtonWithIconTag(BeatmapFlowCoordinator bfc, TimeTweeningManager twm) : IUIButton, IUIText
+public class EditorButtonWithIconTag(EditBeatmapViewController ebvc, TimeTweeningManager twm) : IUIButton, IUIText
 {
+    public string ImagePath;
     public string[] Aliases => ["editor-button-with-icon", "editor-icon-button"];
 
     private Button PrefabButton =>
-        bfc._editBeatmapViewController._beatmapEditorExtendedSettingsView._copyDifficultyButton;
+        ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
+
+    public List<Action> OnClick { get; set; } = [];
+    [CanBeNull] public string Text { get; set; }
+    public TextAlignmentOptions? TextAlignment { get; set; }
+    public bool? RichText { get; set; }
+    public float? FontSize { get; set; }
+    public FontWeight? FontWeight { get; set; }
 
     public GameObject CreateObject(Transform parent)
     {
@@ -76,16 +84,7 @@ public class EditorButtonWithIconTag(BeatmapFlowCoordinator bfc, TimeTweeningMan
 
     public EditorButtonWithIconTag SetImage(string path)
     {
-        this.ImagePath = path;
+        ImagePath = path;
         return this;
     }
-
-    public string ImagePath;
-
-    public List<Action> OnClick { get; set; } = [];
-    [CanBeNull] public string Text { get; set; }
-    public TextAlignmentOptions? TextAlignment { get; set; }
-    public bool? RichText { get; set; }
-    public float? FontSize { get; set; }
-    public FontWeight? FontWeight { get; set; }
 }

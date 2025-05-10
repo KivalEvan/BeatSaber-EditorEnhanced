@@ -7,15 +7,15 @@ For level designer, by level designer, to improve your workflow with various QOL
 * v3 Light Gizmo
     * Highlight color, rotation, translation and FX with their orientation
 * Camera Position Preset
-  * **[1]** Default Editor Camera
-  * **[2]** Player Stand Camera
-  * **[P]** Previous Camera
-  * **[L]** Saved Camera
+    * **[1]** Default Editor Camera
+    * **[2]** Player Stand Camera
+    * **[P]** Previous Camera
+    * **[L]** Saved Camera
 * Event Box Reordering
 * Event Box Copy & Duplicate
 * Unclamped value
-  * Basic event float value and distribution value no longer have arbitrary clamp
-  * Certain input like negative value and index filter field require clamp to prevent issue
+    * Basic event float value and distribution value no longer have arbitrary clamp
+    * Certain input like negative value and index filter field require clamp to prevent issue
 * Scrollable input value
 * Built-in auto-light for v2 (Lolighter)
 

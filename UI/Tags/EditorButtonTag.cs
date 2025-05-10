@@ -13,19 +13,26 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorButtonBuilder(BeatmapFlowCoordinator bfc, TimeTweeningManager twm)
+public class EditorButtonBuilder(EditBeatmapViewController ebvc, TimeTweeningManager twm)
 {
     public EditorButtonTag CreateNew()
     {
-        return new EditorButtonTag(bfc, twm);
+        return new EditorButtonTag(ebvc, twm);
     }
 }
 
-public class EditorButtonTag(BeatmapFlowCoordinator bfc, TimeTweeningManager twm) : IUIButton, IUIText
+public class EditorButtonTag(EditBeatmapViewController ebvc, TimeTweeningManager twm) : IUIButton, IUIText
 {
     public string[] Aliases => ["editor-button"];
 
-    private Button PrefabButton => bfc._editBeatmapViewController._beatmapEditorExtendedSettingsView._copyDifficultyButton;
+    private Button PrefabButton => ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
+
+    [CanBeNull] public List<Action> OnClick { get; set; } = [];
+    [CanBeNull] public string Text { get; set; }
+    public TextAlignmentOptions? TextAlignment { get; set; }
+    public bool? RichText { get; set; }
+    public float? FontSize { get; set; }
+    public FontWeight? FontWeight { get; set; }
 
     public GameObject CreateObject(Transform parent)
     {
@@ -47,7 +54,7 @@ public class EditorButtonTag(BeatmapFlowCoordinator bfc, TimeTweeningManager twm
         contentWrapper.transform.SetParent(btnObject.transform, false);
         stackLayoutGroup = contentWrapper.AddComponent<StackLayoutGroup>();
         stackLayoutGroup.padding = new RectOffset(12, 12, 6, 6);
-        
+
         var labelObject = button.transform.Find("BeatmapEditorLabel").gameObject;
         labelObject.transform.SetParent(contentWrapper.transform, false);
         var tmp = labelObject.GetComponent<TextMeshProUGUI>();
@@ -56,7 +63,7 @@ public class EditorButtonTag(BeatmapFlowCoordinator bfc, TimeTweeningManager twm
         tmp.fontSize = FontSize ?? 12;
         tmp.fontWeight = FontWeight ?? tmp.fontWeight;
         tmp.richText = true;
-        
+
         var contentSizeFitter = btnObject.AddComponent<ContentSizeFitter>();
         contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -64,11 +71,4 @@ public class EditorButtonTag(BeatmapFlowCoordinator bfc, TimeTweeningManager twm
         btnObject.SetActive(true);
         return btnObject;
     }
-
-    [CanBeNull] public List<Action> OnClick { get; set; } = [];
-    [CanBeNull] public string Text { get; set; }
-    public TextAlignmentOptions? TextAlignment { get; set; }
-    public bool? RichText { get; set; }
-    public float? FontSize { get; set; }
-    public FontWeight? FontWeight { get; set; }
 }

@@ -7,24 +7,29 @@ using UnityEngine;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorTextBuilder(BeatmapFlowCoordinator bfc)
+public class EditorTextBuilder(EditBeatmapViewController ebvc)
 {
     public EditorTextTag CreateNew()
     {
-        return new EditorTextTag(bfc);
+        return new EditorTextTag(ebvc);
     }
 }
 
-public class EditorTextTag(BeatmapFlowCoordinator bfc) : IUIText
+public class EditorTextTag(EditBeatmapViewController ebvc) : IUIText
 {
     public string[] Aliases => ["editor-text", "editor-label"];
 
     private GameObject PrefabText =>
-        bfc._editBeatmapViewController._debugView._currentOverdrawText.gameObject;
-    
+        ebvc._debugView._currentOverdrawText.gameObject;
+
+    [CanBeNull] public string Text { get; set; }
+    public TextAlignmentOptions? TextAlignment { get; set; }
+    public bool? RichText { get; set; }
+    public float? FontSize { get; set; }
+    public FontWeight? FontWeight { get; set; }
+
     public GameObject CreateObject(Transform parent)
     {
-        
         var go = new GameObject("EEEditorText")
         {
             layer = 5
@@ -47,10 +52,4 @@ public class EditorTextTag(BeatmapFlowCoordinator bfc) : IUIText
         go.SetActive(true);
         return go;
     }
-
-    [CanBeNull] public string Text { get; set; }
-    public TextAlignmentOptions? TextAlignment { get; set; }
-    public bool? RichText { get; set; }
-    public float? FontSize { get; set; }
-    public FontWeight? FontWeight { get; set; }
 }

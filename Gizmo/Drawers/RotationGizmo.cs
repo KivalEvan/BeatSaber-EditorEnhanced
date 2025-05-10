@@ -14,7 +14,7 @@ internal static class RotationGizmo
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
         go.transform.localScale = new Vector3(5f, 5f, 5f);
-        
+
         return go;
     }
 }

@@ -17,7 +17,7 @@ public class EECommandInstaller
         InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container);
         InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>(Container);
         InstallCommands<LolighterSignal, LolighterCommand>(Container);
-        
+
         Container.BindInterfacesAndSelfTo<ModifyHoveredLightEventDeltaIntensityCommandPatches>().AsSingle();
     }
 

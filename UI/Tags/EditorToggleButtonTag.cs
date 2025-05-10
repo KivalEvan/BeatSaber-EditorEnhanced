@@ -3,15 +3,14 @@ using Tweening;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorToggleButtonBuilder(BeatmapFlowCoordinator bfc, TimeTweeningManager twm)
+public class EditorToggleButtonBuilder(EditBeatmapViewController ebvc, TimeTweeningManager twm)
 {
     public EditorToggleButtonTag CreateNew()
     {
-        return new EditorToggleButtonTag(bfc, twm);
+        return new EditorToggleButtonTag(ebvc, twm);
     }
 }
 
-public class EditorToggleButtonTag(BeatmapFlowCoordinator bfc, TimeTweeningManager twm)
+public class EditorToggleButtonTag(EditBeatmapViewController ebvc, TimeTweeningManager twm)
 {
-    
 }

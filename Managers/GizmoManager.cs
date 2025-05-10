@@ -6,12 +6,12 @@ using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
 using BeatmapEditor3D.Types;
-using EditorEnhanced.Commands;
 using EditorEnhanced.Gizmo;
 using EditorEnhanced.Helpers;
 using UnityEngine;
 using Zenject;
 using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupType;
+using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.Managers;
 
@@ -22,33 +22,11 @@ internal class GizmoManager(
     BeatmapEventBoxGroupsDataModel bebgdm)
     : IInitializable, IDisposable
 {
+    private readonly List<GameObject> _gameObjects = [];
     private LightColorGroupEffectManager _colorManager;
+    private FloatFxGroupEffectManager _fxManager;
     private LightRotationGroupEffectManager _rotationManager;
     private LightTranslationGroupEffectManager _translationManager;
-    private FloatFxGroupEffectManager _fxManager;
-    private readonly List<GameObject> _gameObjects = [];
-
-    public void Initialize()
-    {
-        _colorManager = UnityEngine.Object.FindObjectOfType<LightColorGroupEffectManager>();
-        _rotationManager =
-            UnityEngine.Object.FindObjectOfType<LightRotationGroupEffectManager>();
-        _translationManager =
-            UnityEngine.Object.FindObjectOfType<LightTranslationGroupEffectManager>();
-        _fxManager =
-            UnityEngine.Object.FindObjectOfType<FloatFxGroupEffectManager>();
-
-        signalBus.Subscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
-        signalBus.Subscribe<EventBoxesUpdatedSignal>(UpdateGizmo);
-        signalBus.Subscribe<ModifyEventBoxSignal>(UpdateGizmo);
-        signalBus.Subscribe<InsertEventBoxSignal>(UpdateGizmo);
-        signalBus.Subscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);
-        signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
-        signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
-        signalBus.Subscribe<DeleteEventBoxSignal>(UpdateGizmo);
-        signalBus.Subscribe<PasteEventBoxSignal>(UpdateGizmo);
-        signalBus.Subscribe<DuplicateEventBoxSignal>(UpdateGizmo);
-    }
 
     public void Dispose()
     {
@@ -60,16 +38,34 @@ internal class GizmoManager(
         signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
         signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
         signalBus.TryUnsubscribe<DeleteEventBoxSignal>(UpdateGizmo);
-        signalBus.TryUnsubscribe<PasteEventBoxSignal>(UpdateGizmo);
-        signalBus.TryUnsubscribe<DuplicateEventBoxSignal>(UpdateGizmo);
-        
+
         foreach (var gameObject in _gameObjects)
-            UnityEngine.Object.Destroy(gameObject);
+            Object.Destroy(gameObject);
         _gameObjects.Clear();
         _colorManager = null;
         _rotationManager = null;
         _translationManager = null;
         _fxManager = null;
+    }
+
+    public void Initialize()
+    {
+        _colorManager = Object.FindObjectOfType<LightColorGroupEffectManager>();
+        _rotationManager =
+            Object.FindObjectOfType<LightRotationGroupEffectManager>();
+        _translationManager =
+            Object.FindObjectOfType<LightTranslationGroupEffectManager>();
+        _fxManager =
+            Object.FindObjectOfType<FloatFxGroupEffectManager>();
+
+        signalBus.Subscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
+        signalBus.Subscribe<EventBoxesUpdatedSignal>(UpdateGizmo);
+        signalBus.Subscribe<ModifyEventBoxSignal>(UpdateGizmo);
+        signalBus.Subscribe<InsertEventBoxSignal>(UpdateGizmo);
+        signalBus.Subscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);
+        signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
+        signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
+        signalBus.Subscribe<DeleteEventBoxSignal>(UpdateGizmo);
     }
 
     private void AddGizmo()
@@ -188,10 +184,7 @@ internal class GizmoManager(
                              IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.numberOfElements))))
             {
                 var (ebgIdx, distributed, list) = item;
-                foreach (var i in list.Where(i => !markId.ContainsKey(i)))
-                {
-                    markId.Add(i, (ebgIdx, distributed));
-                }
+                foreach (var i in list.Where(i => !markId.ContainsKey(i))) markId.Add(i, (ebgIdx, distributed));
             }
 
             var data = new List<(int index, int ebgIdx, bool distributed, Transform transform)>();
@@ -202,22 +195,18 @@ internal class GizmoManager(
                              ?._lightManager._lights.ElementAt(l.startLightId + i.Key)))
                          .Where(item => item.Item3 != null)
                          .Select((l, i) => (i, l.ebgIdx, l.distributed, l.Item3)))
-            {
-                foreach (var lightWithId in item.Item4)
+            foreach (var lightWithId in item.Item4)
+                switch (lightWithId)
                 {
-                    switch (lightWithId)
-                    {
-                        case MaterialLightWithId matLightWithId:
-                            data.Add((item.i, item.ebgIdx, item.distributed,
-                                matLightWithId.transform));
-                            break;
-                        case TubeBloomPrePassLightWithId tubeBloomPrePassLightWithId:
-                            data.Add((item.i, item.ebgIdx, item.distributed,
-                                tubeBloomPrePassLightWithId.transform));
-                            break;
-                    }
+                    case MaterialLightWithId matLightWithId:
+                        data.Add((item.i, item.ebgIdx, item.distributed,
+                            matLightWithId.transform));
+                        break;
+                    case TubeBloomPrePassLightWithId tubeBloomPrePassLightWithId:
+                        data.Add((item.i, item.ebgIdx, item.distributed,
+                            tubeBloomPrePassLightWithId.transform));
+                        break;
                 }
-            }
 
             DoTheFunny(data, ebgs.eventBoxGroupContext.type, LightAxis.X, false,
                 ebg.Count());
@@ -249,10 +238,7 @@ internal class GizmoManager(
                     LightAxis.Z => markZIdx,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                foreach (var i in list.Where(i => !putTo.ContainsKey(i)))
-                {
-                    putTo.Add(i, (ebgIdx, distributed));
-                }
+                foreach (var i in list.Where(i => !putTo.ContainsKey(i))) putTo.Add(i, (ebgIdx, distributed));
             }
 
             var transformsXYZ = new[] { l.xTransforms, l.yTransforms, l.zTransforms };
@@ -303,10 +289,7 @@ internal class GizmoManager(
                     LightAxis.Z => markZIdx,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                foreach (var i in list.Where(i => !putTo.ContainsKey(i)))
-                {
-                    putTo.Add(i, (ebgIdx, distributed));
-                }
+                foreach (var i in list.Where(i => !putTo.ContainsKey(i))) putTo.Add(i, (ebgIdx, distributed));
             }
 
             var transformsXYZ = new[] { l.xTransforms, l.yTransforms, l.zTransforms };
@@ -347,10 +330,7 @@ internal class GizmoManager(
                              IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.lightGroup.numberOfElements))))
             {
                 var (ebgIdx, distributed, list) = item;
-                foreach (var i in list.Where(i => !markId.ContainsKey(i)))
-                {
-                    markId.Add(i, (ebgIdx, distributed));
-                }
+                foreach (var i in list.Where(i => !markId.ContainsKey(i))) markId.Add(i, (ebgIdx, distributed));
             }
 
             var data = markId

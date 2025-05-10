@@ -11,7 +11,7 @@ public class EEEditorMainInstaller : Installer
     {
         Container.BindInterfacesAndSelfTo<GizmoAssets>().AsSingle();
         Container.BindInterfacesTo<GizmoManager>().AsSingle();
-        
+
         Container.BindInterfacesAndSelfTo<LightEventsPayloadPatches>().AsSingle();
     }
 }

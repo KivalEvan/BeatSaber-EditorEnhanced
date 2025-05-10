@@ -19,7 +19,7 @@ internal enum GizmoType
 internal class GizmoAssets : IInitializable, IDisposable
 {
     public const int HUE_RANGE = 128 * 3;
-    
+
     public const int WHITE_INDEX = -1;
     public const int RED_INDEX = HUE_RANGE * 0 / 6;
     public const int YELLOW_INDEX = HUE_RANGE * 1 / 6;
@@ -27,21 +27,13 @@ internal class GizmoAssets : IInitializable, IDisposable
     public const int CYAN_INDEX = HUE_RANGE * 3 / 6;
     public const int BLUE_INDEX = HUE_RANGE * 4 / 6;
     public const int MAGENTA_INDEX = HUE_RANGE * 5 / 6;
-
-    private readonly Material[] _sharedMaterials = new Material[HUE_RANGE];
     private static readonly Material _defaultMaterial = FetchMaterial();
     private readonly List<GameObject> _colorObjects = [];
-    private readonly List<GameObject> _rotationObjects = [];
-    private readonly List<GameObject> _translationObjects = [];
     private readonly List<GameObject> _fxObjects = [];
+    private readonly List<GameObject> _rotationObjects = [];
 
-    public void Initialize()
-    {
-        CubeGizmo.SObject = CubeGizmo.Create(_defaultMaterial);
-        RotationGizmo.SObject = RotationGizmo.Create(_defaultMaterial);
-        TranslationGizmo.SObject = TranslationGizmo.Create(_defaultMaterial);
-        SphereGizmo.SObject = SphereGizmo.Create(_defaultMaterial);
-    }
+    private readonly Material[] _sharedMaterials = new Material[HUE_RANGE];
+    private readonly List<GameObject> _translationObjects = [];
 
     public void Dispose()
     {
@@ -56,17 +48,19 @@ internal class GizmoAssets : IInitializable, IDisposable
         _fxObjects.Clear();
     }
 
+    public void Initialize()
+    {
+        CubeGizmo.SObject = CubeGizmo.Create(_defaultMaterial);
+        RotationGizmo.SObject = RotationGizmo.Create(_defaultMaterial);
+        TranslationGizmo.SObject = TranslationGizmo.Create(_defaultMaterial);
+        SphereGizmo.SObject = SphereGizmo.Create(_defaultMaterial);
+    }
+
     private Material GetOrCreateMaterial(int index)
     {
-        if (index < 0 || index >= HUE_RANGE)
-        {
-            return _defaultMaterial;
-        }
-        if (_sharedMaterials[index] != null)
-        {
-            return _sharedMaterials[index];
-        }
-        var color = Color.HSVToRGB(Convert.ToSingle(index) / Convert.ToSingle(HUE_RANGE),1f,1f);
+        if (index < 0 || index >= HUE_RANGE) return _defaultMaterial;
+        if (_sharedMaterials[index] != null) return _sharedMaterials[index];
+        var color = Color.HSVToRGB(Convert.ToSingle(index) / Convert.ToSingle(HUE_RANGE), 1f, 1f);
         _sharedMaterials[index] = CreateMaterial(color);
         return _sharedMaterials[index];
     }
@@ -108,6 +102,7 @@ internal class GizmoAssets : IInitializable, IDisposable
             };
             objects.Add(go);
         }
+
         go.GetComponent<Renderer>().material = GetOrCreateMaterial(colorIdx);
         go.SetActive(true);
         return go;

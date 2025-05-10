@@ -7,22 +7,14 @@ namespace EditorEnhanced.Managers;
 
 internal class CameraPresetManager : IInitializable
 {
-    internal enum CameraType
-    {
-        Default,
-        Player,
-        Previous,
-        Saved
-    }
-    
-    private Vector3 _previousPosition;
-    private Quaternion _previousRotation;
-
     private static Vector3 _defaultPosition = Vector3.zero;
     private static Quaternion _defaultRotation = Quaternion.identity;
 
     private static Vector3 _savedPosition = Vector3.zero;
     private static Quaternion _savedRotation = Quaternion.identity;
+
+    private Vector3 _previousPosition;
+    private Quaternion _previousRotation;
 
     public void Initialize()
     {
@@ -52,7 +44,7 @@ internal class CameraPresetManager : IInitializable
                 throw new ArgumentOutOfRangeException(nameof(cameraType), cameraType, null);
         }
     }
-    
+
     public void SetCamera(Vector3 position, Quaternion rotation)
     {
         var cameraWrapper = GameObject.Find("/Wrapper/BeatmapEditorUICameraWrapper");
@@ -75,5 +67,13 @@ internal class CameraPresetManager : IInitializable
 
         _savedPosition = Vector3.zero + comp._uiCameraMovementTransform.position;
         _savedRotation = Quaternion.identity * comp._uiCameraTransform.rotation;
+    }
+
+    internal enum CameraType
+    {
+        Default,
+        Player,
+        Previous,
+        Saved
     }
 }

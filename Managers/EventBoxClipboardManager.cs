@@ -9,13 +9,12 @@ namespace EditorEnhanced.Managers;
 
 public class EventBoxClipboardManager(BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel) : IInitializable
 {
+    private (EventBoxEditorData, List<BaseEditorData>)? fxEventBoxClipboard;
     private (EventBoxEditorData, List<BaseEditorData>)? lightColorEventBoxClipboard;
     private (EventBoxEditorData, List<BaseEditorData>)? lightRotationEventBoxClipboard;
 
     private (EventBoxEditorData, List<BaseEditorData>)?
         lightTranslationEventBoxClipboard;
-
-    private (EventBoxEditorData, List<BaseEditorData>)? fxEventBoxClipboard;
 
     public void Initialize()
     {

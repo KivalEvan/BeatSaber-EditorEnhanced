@@ -5,14 +5,12 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
-using BeatmapEditor3D.Views;
-using UnityEngine;
 using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
 public class ScrollableYourInput(
-    BeatmapFlowCoordinator bfc,
+    EditBeatmapViewController ebvc,
     BeatmapState bs) : IInitializable
 {
     private static readonly Dictionary<PrecisionType, float> PrecisionFloat = new()
@@ -28,7 +26,7 @@ public class ScrollableYourInput(
         },
         {
             PrecisionType.Low, 1f
-        },
+        }
     };
 
     private static readonly Dictionary<PrecisionType, int> PrecisionInt = new()
@@ -44,12 +42,12 @@ public class ScrollableYourInput(
         },
         {
             PrecisionType.Low, 10
-        },
+        }
     };
 
     public void Initialize()
     {
-        var ebv = bfc._editBeatmapViewController._eventBoxesView._eventBoxView;
+        var ebv = ebvc._eventBoxesView._eventBoxView;
 
         ApplyScrollableFloatInput(ebv._beatDistributionInput,
             val => ebv._beatDistributionInput.ValidateInput(

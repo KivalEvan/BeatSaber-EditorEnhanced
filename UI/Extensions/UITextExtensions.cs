@@ -22,13 +22,13 @@ public static class UITextExtensions
         self.RichText = richText;
         return self;
     }
-    
+
     public static T SetFontSize<T>(this T self, float size) where T : IUIText
     {
         self.FontSize = size;
         return self;
     }
-    
+
     public static T SetFontWeight<T>(this T self, FontWeight weight) where T : IUIText
     {
         self.FontWeight = weight;

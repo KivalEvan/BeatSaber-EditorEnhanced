@@ -4,7 +4,6 @@ using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
 using TMPro;
-using Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -14,16 +13,20 @@ namespace EditorEnhanced.UI.Views;
 
 internal class ReorderEventBoxViewController(
     SignalBus signalBus,
-    BeatmapFlowCoordinator bfc,
+    EditBeatmapViewController ebvc,
     EditorLayoutStackBuilder editorLayoutStack,
     EditorLayoutHorizontalBuilder editorLayoutHorizontal,
     EditorButtonBuilder editorBtn,
     EditorTextBuilder editorText)
     : IInitializable, IDisposable
 {
+    public void Dispose()
+    {
+    }
+
     public void Initialize()
     {
-        var target = bfc._editBeatmapViewController._eventBoxesView._eventBoxView;
+        var target = ebvc._eventBoxesView._eventBoxView;
 
         var stackTag = editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
@@ -65,31 +68,27 @@ internal class ReorderEventBoxViewController(
             .CreateObject(layout.transform);
     }
 
-    public void Dispose()
-    {
-    }
-
     private void MoveEventBoxTop()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox,
+        signalBus.Fire(new ReorderEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox,
             ReorderType.Top));
     }
 
     private void MoveEventBoxUp()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox,
+        signalBus.Fire(new ReorderEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox,
             ReorderType.Up));
     }
 
     private void MoveEventBoxDown()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox,
+        signalBus.Fire(new ReorderEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox,
             ReorderType.Down));
     }
 
     private void MoveEventBoxBottom()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox,
+        signalBus.Fire(new ReorderEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox,
             ReorderType.Bottom));
     }
 }

@@ -16,9 +16,9 @@ public class ReorderEventBoxCommand(
     BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel) : IBeatmapEditorCommandWithHistory
 {
     private BeatmapEditorObjectId _eventBoxGroupId;
-    private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _previousEventBoxes;
     private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _newEventBoxes;
     private int _newIdx;
+    private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _previousEventBoxes;
 
     public bool shouldAddToHistory { get; private set; }
 
@@ -26,7 +26,7 @@ public class ReorderEventBoxCommand(
     {
         var type = signal.ReorderType;
         var selectedEventBox = signal.EventBoxEditorData;
-    
+
         var eventBoxGroupId = eventBoxGroupsState.eventBoxGroupContext.id;
         var byEventBoxGroupId = beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);
         if (byEventBoxGroupId.Count == 0)
@@ -60,6 +60,7 @@ public class ReorderEventBoxCommand(
 
             newEventBoxes.Add((eventBoxEditorData, list));
         }
+
         newEventBoxes.Insert(newIdx, toMove);
 
         if (newIdx == originalIndex) return;

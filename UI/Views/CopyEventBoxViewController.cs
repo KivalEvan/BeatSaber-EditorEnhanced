@@ -4,7 +4,6 @@ using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
 using TMPro;
-using Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -14,15 +13,19 @@ namespace EditorEnhanced.UI.Views;
 
 internal class CopyEventBoxViewController(
     SignalBus signalBus,
-    BeatmapFlowCoordinator bfc,
+    EditBeatmapViewController ebvc,
     EditorLayoutStackBuilder editorLayoutStack,
     EditorLayoutHorizontalBuilder editorLayoutHorizontal,
     EditorButtonBuilder editorBtn,
     EditorTextBuilder editorText) : IInitializable, IDisposable
 {
+    public void Dispose()
+    {
+    }
+
     public void Initialize()
     {
-        var target = bfc._editBeatmapViewController._eventBoxesView._eventBoxView;
+        var target = ebvc._eventBoxesView._eventBoxView;
 
         var stackTag = editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
@@ -66,23 +69,19 @@ internal class CopyEventBoxViewController(
             .CreateObject(layout.transform);
     }
 
-    public void Dispose()
-    {
-    }
-
     private void CopyEventBox()
     {
-        signalBus.Fire(new CopyEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox));
+        signalBus.Fire(new CopyEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox));
     }
 
     private void PasteEventBox()
     {
-        signalBus.Fire(new PasteEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox));
+        signalBus.Fire(new PasteEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox));
     }
 
     private void DuplicateEventBox()
     {
         signalBus.Fire(
-            new DuplicateEventBoxSignal(bfc._editBeatmapViewController._eventBoxesView._eventBoxView._eventBox));
+            new DuplicateEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox));
     }
 }

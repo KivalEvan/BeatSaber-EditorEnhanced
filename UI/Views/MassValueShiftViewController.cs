@@ -1,6 +1,4 @@
-using System;
 using BeatmapEditor3D;
-using BeatmapEditor3D.DataModels;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
 using UnityEngine;
@@ -9,7 +7,7 @@ using Zenject;
 namespace EditorEnhanced.UI.Views;
 
 public class MassValueShiftViewController(
-    BeatmapFlowCoordinator bfc,
+    EditBeatmapViewController ebvc,
     EditorLayoutStackBuilder editorLayoutStack,
     EditorLayoutHorizontalBuilder editorLayoutHorizontal,
     EditorButtonBuilder editorBtn,
@@ -19,8 +17,7 @@ public class MassValueShiftViewController(
 
     public void Initialize()
     {
-        var targetView = bfc._editBeatmapViewController;
-        var targetBtn = bfc._editBeatmapViewController._beatmapEditorExtendedSettingsView;
+        var targetBtn = ebvc._beatmapEditorExtendedSettingsView;
 
         var stackTag = editorLayoutStack.CreateNew();
         var horizontalTag = editorLayoutHorizontal.CreateNew();
@@ -31,7 +28,7 @@ public class MassValueShiftViewController(
             .SetAnchorMin(new Vector2(0, 1))
             .SetAnchorMax(new Vector2(0, 1))
             .SetOffsetMin(new Vector2(0, -80))
-            .CreateObject(targetView.transform);
+            .CreateObject(ebvc.transform);
         _view.SetActive(false);
         textTag
             .SetFontSize(20)

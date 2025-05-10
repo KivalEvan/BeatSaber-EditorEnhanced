@@ -16,18 +16,15 @@ public class PasteEventBoxCommand(
     BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel) : IBeatmapEditorCommandWithHistory
 {
     private BeatmapEditorObjectId _groupId;
-    private (EventBoxEditorData box, List<BaseEditorData> events) _oldItem;
     private (EventBoxEditorData box, List<BaseEditorData> events) _newItem;
+    private (EventBoxEditorData box, List<BaseEditorData> events) _oldItem;
 
     public bool shouldAddToHistory { get; private set; }
 
     public void Execute()
     {
         var newItem = clipboardManager.Paste(eventBoxGroupsState.eventBoxGroupContext.type);
-        if (newItem == null)
-        {
-            return;
-        }
+        if (newItem == null) return;
         var prevBox = signal.EventBoxEditorData;
         var prevList = beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(prevBox.id).ToList();
 

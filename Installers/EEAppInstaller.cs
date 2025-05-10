@@ -10,7 +10,7 @@ internal class EEAppInstaller : Installer
     {
         _eeConfig = eeConfig;
     }
-        
+
     public override void InstallBindings()
     {
         Container.BindInstance(_eeConfig).AsSingle();

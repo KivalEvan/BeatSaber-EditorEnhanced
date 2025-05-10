@@ -10,7 +10,7 @@ namespace EditorEnhanced.Commands;
 
 internal static class Options
 {
-    private static float _colorOffset = 0.0f;
+    private static float _colorOffset;
     private static float _colorSwap = 4.0f;
     private static float _colorBoostSwap = 8.0f;
 
@@ -66,8 +66,11 @@ internal static class Utils
         while (n > 1)
         {
             var box = new byte[1];
-            do rng.GetBytes(box);
-            while (!(box[0] < n * (byte.MaxValue / n)));
+            do
+            {
+                rng.GetBytes(box);
+            } while (!(box[0] < n * (byte.MaxValue / n)));
+
             var k = box[0] % n;
             n--;
             (list[n], list[k]) = (list[k], list[n]);
@@ -80,8 +83,8 @@ public class LolighterCommand(
     BeatmapObjectsDataModel beatmapObjectsDataModel,
     BeatmapBasicEventsDataModel beatmapBasicEventsDataModel) : IBeatmapEditorCommandWithHistory
 {
-    private List<BasicEventEditorData> _previousEventEditorData;
     private List<BasicEventEditorData> _newEventEditorData;
+    private List<BasicEventEditorData> _previousEventEditorData;
     public bool shouldAddToHistory { get; private set; }
 
     public void Execute()
@@ -222,16 +225,13 @@ public class LolighterCommand(
             }
 
             for (var i = 3; i > 0; i--) //Keep the timing of up to three notes before.
-            {
                 time[i] = time[i - 1];
-            }
         }
 
         ResetTimer();
 
         // Find all sliders
         for (var i = 1; i < selections.Count; i++)
-        {
             // Between 1/8 and 0, same cut direction or dots
             if (notes[i].beat - notes[i - 1].beat <= 0.125 && notes[i].beat - notes[i - 1].beat > 0 &&
                 (notes[i].cutDirection == notes[i - 1].cutDirection || notes[i].cutDirection == NoteCutDirection.Any ||
@@ -245,7 +245,6 @@ public class LolighterCommand(
                 sliderTiming.Add(notes[i - 1]);
                 found = false;
             }
-        }
 
         foreach (var note in selections) //Process specific light using time.
         {
@@ -299,21 +298,13 @@ public class LolighterCommand(
 
                 // Laser speed based on rhythm
                 if (time[0] - time[1] < 0.25)
-                {
                     currentSpeed = 7;
-                }
                 else if (time[0] - time[1] >= 0.25 && time[0] - time[1] < 0.5)
-                {
                     currentSpeed = 5;
-                }
                 else if (time[0] - time[1] >= 0.5 && time[0] - time[1] < 1)
-                {
                     currentSpeed = 3;
-                }
                 else
-                {
                     currentSpeed = 1;
-                }
 
                 eventTempo.Add(BasicEventEditorData.CreateNew(BasicBeatmapEventType.Event12, now, currentSpeed,
                     1)); //Left Rotation
@@ -325,9 +316,7 @@ public class LolighterCommand(
             }
 
             for (var i = 3; i > 0; i--) //Keep the timing of up to three notes before.
-            {
                 time[i] = time[i - 1];
-            }
         }
 
         nextSlider = new float();
@@ -342,7 +331,6 @@ public class LolighterCommand(
             float lastTimeRight = 100;
 
             foreach (var x in eventTempo)
-            {
                 if (x.type == BasicBeatmapEventType.Event0)
                 {
                     if (x.beat - lastTimeTop <= 0.5)
@@ -388,7 +376,6 @@ public class LolighterCommand(
 
                     lastTimeRight = x.beat;
                 }
-            }
         }
 
         ResetTimer();
@@ -404,16 +391,12 @@ public class LolighterCommand(
                     sliderNoteCount--;
 
                     for (var i = 3; i > 0; i--) //Keep the timing of up to three notes before.
-                    {
                         time[i] = time[i - 1];
-                    }
 
                     continue;
                 }
-                else
-                {
-                    wasSlider = false;
-                }
+
+                wasSlider = false;
             }
 
             if (firstSlider)
@@ -424,19 +407,13 @@ public class LolighterCommand(
 
             // Find the next double
             if (time[0] >= nextDouble)
-            {
                 for (var i = selections.FindIndex(n => n == note); i < selections.Count - 1; i++)
-                {
                     if (i != 0)
-                    {
                         if (selections[i].beat == selections[i - 1].beat)
                         {
                             nextDouble = selections[i].beat;
                             break;
                         }
-                    }
-                }
-            }
 
             // Find the next slider (1/8 minimum) or chain
             if (time[0] >= nextSlider)
@@ -444,7 +421,6 @@ public class LolighterCommand(
                 sliderNoteCount = 0;
 
                 for (var i = selections.FindIndex(n => n == note); i < selections.Count - 1; i++)
-                {
                     if (i != 0 && i < selections.Count)
                     {
                         // Between 1/8 and 0, same cut direction or dots
@@ -455,10 +431,8 @@ public class LolighterCommand(
                         {
                             // Search for the last note of the slider
                             if (sliderNoteCount == 0)
-                            {
                                 // This is the first note of the slider
                                 nextSlider = selections[i - 1].beat;
-                            }
 
                             sliderNoteCount++;
                         }
@@ -467,17 +441,13 @@ public class LolighterCommand(
                             break;
                         }
                     }
-                }
             }
 
             // It's the next slider or chain
             if (nextSlider == note.beat)
             {
                 // Take a light between neon, side or backlight and strobes it via On/Flash
-                if (sliderIndex == -1)
-                {
-                    sliderIndex = 2;
-                }
+                if (sliderIndex == -1) sliderIndex = 2;
 
                 // Place light
                 var color = FindColor(notes.First().beat, time[0]);
@@ -494,10 +464,8 @@ public class LolighterCommand(
                 // Spin goes brrr
                 eventTempo.Add(BasicEventEditorData.CreateNew(BasicBeatmapEventType.Event8, time[0], 0, 1));
                 for (var i = 0; i < 8; i++)
-                {
                     eventTempo.Add(BasicEventEditorData.CreateNew(BasicBeatmapEventType.Event8,
                         time[0] + 0.5f - 0.5f / 8f * i, 0, 1));
-                }
 
                 wasSlider = true;
             }
@@ -510,13 +478,9 @@ public class LolighterCommand(
                     var old = BasicBeatmapEventType.Event0;
                     // New pattern
                     if (patternIndex != 0)
-                    {
                         old = pattern[patternIndex - 1];
-                    }
                     else
-                    {
                         old = pattern[4];
-                    }
 
                     do
                     {
@@ -533,33 +497,21 @@ public class LolighterCommand(
 
                 // Speed based on rhythm
                 if (time[0] - time[1] < 0.25)
-                {
                     currentSpeed = 7;
-                }
                 else if (time[0] - time[1] >= 0.25 && time[0] - time[1] < 0.5)
-                {
                     currentSpeed = 5;
-                }
                 else if (time[0] - time[1] >= 0.5 && time[0] - time[1] < 1)
-                {
                     currentSpeed = 3;
-                }
                 else
-                {
                     currentSpeed = 1;
-                }
 
                 // Add laser rotation if necessary
                 if (pattern[patternIndex] == BasicBeatmapEventType.Event2)
-                {
                     eventTempo.Add(BasicEventEditorData.CreateNew(BasicBeatmapEventType.Event12, time[0],
                         currentSpeed, 1));
-                }
                 else if (pattern[patternIndex] == BasicBeatmapEventType.Event3)
-                {
                     eventTempo.Add(BasicEventEditorData.CreateNew(BasicBeatmapEventType.Event13, time[0],
                         currentSpeed, 1));
-                }
 
                 // Place off event
                 if (selections[selections.Count - 1].beat != note.beat)
@@ -585,22 +537,16 @@ public class LolighterCommand(
 
                 // Pattern have 5 notes in total (5 lights available)
                 if (patternIndex < 4)
-                {
                     patternIndex++;
-                }
                 else
-                {
                     patternIndex = 0;
-                }
 
                 patternCount++;
                 lastSpeed = time[0] - time[1];
             }
 
             for (var i = 3; i > 0; i--) //Keep the timing of up to three notes before.
-            {
                 time[i] = time[i - 1];
-            }
         }
 
         eventTempo = eventTempo.OrderBy(o => o.beat).ToList();
@@ -610,9 +556,9 @@ public class LolighterCommand(
 
         // Sort lights
         eventTempo = eventTempo.OrderBy(o => o.beat).ToList();
-        
+
         _newEventEditorData = eventTempo;
-        
+
         shouldAddToHistory = true;
         Redo();
         return;
@@ -623,17 +569,28 @@ public class LolighterCommand(
             offset = firstNote;
             boostIncrement = firstNote;
             count = 1;
-            for (var i = 0; i < 2; i++)
-            {
-                time[i] = 0.0f;
-            }
+            for (var i = 0; i < 2; i++) time[i] = 0.0f;
 
             time[2] = 0.0f;
             time[3] = 0.0f;
         }
     }
 
-    static public List<BasicEventEditorData> RemoveFused(List<BasicEventEditorData> events)
+    public void Undo()
+    {
+        beatmapBasicEventsDataModel.Clear();
+        foreach (var ev in _previousEventEditorData) beatmapBasicEventsDataModel.Insert(ev);
+        signalBus.Fire<BeatmapLevelUpdatedSignal>();
+    }
+
+    public void Redo()
+    {
+        beatmapBasicEventsDataModel.Clear();
+        foreach (var ev in _newEventEditorData) beatmapBasicEventsDataModel.Insert(ev);
+        signalBus.Fire<BeatmapLevelUpdatedSignal>();
+    }
+
+    public static List<BasicEventEditorData> RemoveFused(List<BasicEventEditorData> events)
     {
         var closest = 0f;
 
@@ -696,42 +653,17 @@ public class LolighterCommand(
         return events;
     }
 
-    static public int FindColor(float first, float current)
+    public static int FindColor(float first, float current)
     {
         var color = 7;
 
         for (var i = 0;
              i < (current - first + Options.ColorOffset) / Options.ColorSwap;
              i++) //For each time that it need to swap.
-        {
             color = Utils.Inverse(color); //Swap color
-        }
 
-        if (first == current)
-        {
-            color = 3;
-        }
+        if (first == current) color = 3;
 
         return color;
-    }
-
-    public void Undo()
-    {
-        beatmapBasicEventsDataModel.Clear();
-        foreach (var ev in _previousEventEditorData)
-        {
-            beatmapBasicEventsDataModel.Insert(ev);
-        }
-        signalBus.Fire<BeatmapLevelUpdatedSignal>();
-    }
-
-    public void Redo()
-    {
-        beatmapBasicEventsDataModel.Clear();
-        foreach (var ev in _newEventEditorData)
-        {
-            beatmapBasicEventsDataModel.Insert(ev);
-        }
-        signalBus.Fire<BeatmapLevelUpdatedSignal>();
     }
 }

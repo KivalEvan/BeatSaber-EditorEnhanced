@@ -4,7 +4,6 @@ using EditorEnhanced.Managers;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
 using TMPro;
-using Tweening;
 using UnityEngine.UI;
 using Zenject;
 
@@ -12,7 +11,7 @@ namespace EditorEnhanced.UI.Views;
 
 internal class CameraPresetViewController(
     CameraPresetManager cameraPresetManager,
-    BeatmapFlowCoordinator bfc,
+    EditBeatmapViewController ebvc,
     EditorLayoutStackBuilder editorLayoutStack,
     EditorLayoutHorizontalBuilder editorLayoutHorizontal,
     EditorButtonBuilder editorBtn,
@@ -20,9 +19,13 @@ internal class CameraPresetViewController(
     EditorTextBuilder editorText)
     : IInitializable, IDisposable
 {
+    public void Dispose()
+    {
+    }
+
     public void Initialize()
     {
-        var target = bfc._editBeatmapViewController._beatmapEditorExtendedSettingsView;
+        var target = ebvc._beatmapEditorExtendedSettingsView;
 
         var horizontalTag = editorLayoutHorizontal.CreateNew()
             .SetSpacing(5)
@@ -70,10 +73,6 @@ internal class CameraPresetViewController(
             // .SetImage(nameof(EditorEnhanced) + ".cameraSave.png")
             .SetOnClick(SaveCamera)
             .CreateObject(mainLayout.transform);
-    }
-
-    public void Dispose()
-    {
     }
 
     public void SwitchToDefaultCamera()

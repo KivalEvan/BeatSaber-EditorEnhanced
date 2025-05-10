@@ -15,9 +15,9 @@ public class DuplicateEventBoxCommand(
     BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel) : IBeatmapEditorCommandWithHistory
 {
     private BeatmapEditorObjectId _eventBoxGroupId;
-    private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _previousEventBoxes;
     private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _newEventBoxes;
     private int _newIdx;
+    private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _previousEventBoxes;
 
     public bool shouldAddToHistory { get; private set; }
 
