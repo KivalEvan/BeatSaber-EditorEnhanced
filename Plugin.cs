@@ -27,12 +27,9 @@ internal class Plugin
 
         zenjector.Install<EEEditorMainInstaller, BeatmapLevelEditorInstaller>();
         zenjector.Install<EEEditorUIInstaller, BeatmapEditorViewControllersInstaller>();
-        zenjector.Install<EECommandInstaller, CommandInstaller>();
+        zenjector.Install<EEEditorCommandInstaller, CommandInstaller>();
 
         Log.Info($"{pluginMetadata.Name} {pluginMetadata.HVersion} initialized.");
-
-        var asm = Assembly.GetExecutingAssembly();
-        foreach (var manifestResourceName in asm.GetManifestResourceNames()) Log.Info($"{manifestResourceName}");
     }
 
     internal static IPALogger Log { get; private set; }

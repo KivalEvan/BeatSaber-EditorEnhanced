@@ -4,7 +4,7 @@ using Zenject;
 
 namespace EditorEnhanced.Installers;
 
-public class EECommandInitializer(BeatmapEditorCommandRunnerSignalBinder signalBinder)
+public class EEEditorCommandInitializer(BeatmapEditorCommandRunnerSignalBinder signalBinder)
     : IInitializable
 {
     public void Initialize()

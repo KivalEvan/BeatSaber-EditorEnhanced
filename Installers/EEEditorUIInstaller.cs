@@ -1,4 +1,5 @@
 using EditorEnhanced.Managers;
+using EditorEnhanced.UI;
 using EditorEnhanced.UI.Tags;
 using EditorEnhanced.UI.Views;
 using Zenject;
@@ -17,15 +18,17 @@ public class EEEditorUIInstaller : Installer
         Container.BindInterfacesAndSelfTo<EditorToggleGroupBuilder>().AsSingle();
 
         Container.BindInterfacesTo<CameraPresetViewController>().AsSingle();
-        Container.BindInterfacesAndSelfTo<CameraPresetManager>().AsSingle();
-
         Container.BindInterfacesTo<CopyEventBoxViewController>().AsSingle();
+        
+        Container.BindInterfacesAndSelfTo<CameraPresetManager>().AsSingle();
         Container.BindInterfacesAndSelfTo<EventBoxClipboardManager>().AsSingle();
 
         Container.BindInterfacesTo<LolighterViewController>().AsSingle();
         Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();
         // Container.BindInterfacesTo<MassValueShiftViewController>().AsSingle();
+        // Container.BindInterfacesTo<IntegratedScriptViewController>().AsSingle();
 
         Container.BindInterfacesTo<ScrollableYourInput>().AsSingle();
+        Container.BindInterfacesTo<DraggableEventBoxCell>().AsSingle();
     }
 }

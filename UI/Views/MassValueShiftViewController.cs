@@ -8,10 +8,10 @@ namespace EditorEnhanced.UI.Views;
 
 public class MassValueShiftViewController(
     EditBeatmapViewController ebvc,
-    EditorLayoutStackBuilder editorLayoutStack,
-    EditorLayoutHorizontalBuilder editorLayoutHorizontal,
-    EditorButtonBuilder editorBtn,
-    EditorTextBuilder editorText) : IInitializable
+    EditorLayoutStackBuilder editorLayoutStackBuilder,
+    EditorLayoutHorizontalBuilder editorLayoutHorizontalBuilder,
+    EditorButtonBuilder editorBtnBuilder,
+    EditorTextBuilder editorTextBuilder) : IInitializable
 {
     private GameObject _view;
 
@@ -19,10 +19,10 @@ public class MassValueShiftViewController(
     {
         var targetBtn = ebvc._beatmapEditorExtendedSettingsView;
 
-        var stackTag = editorLayoutStack.CreateNew();
-        var horizontalTag = editorLayoutHorizontal.CreateNew();
-        var btnTag = editorBtn.CreateNew();
-        var textTag = editorText.CreateNew();
+        var stackTag = editorLayoutStackBuilder.CreateNew();
+        var horizontalTag = editorLayoutHorizontalBuilder.CreateNew();
+        var btnTag = editorBtnBuilder.CreateNew();
+        var textTag = editorTextBuilder.CreateNew();
 
         _view = stackTag
             .SetAnchorMin(new Vector2(0, 1))

@@ -50,6 +50,7 @@ public class ReorderEventBoxCommand(
                     ReorderType.Down => idx + 1,
                     ReorderType.Up => idx - 1,
                     ReorderType.Bottom => byEventBoxGroupId.Count - 1,
+                    ReorderType.Any => signal.Index,
                     _ => 0
                 };
                 newIdx = Math.Clamp(newIdx, 0, byEventBoxGroupId.Count - 1);

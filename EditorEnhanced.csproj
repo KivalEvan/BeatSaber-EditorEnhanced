@@ -18,11 +18,6 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Costura.Fody" Version="6.0.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Jint" Version="4.2.2"/>
     </ItemGroup>
 
     <ItemDefinitionGroup>
@@ -89,6 +84,12 @@
         <Reference Include="SiraUtil">
             <HintPath>$(BeatSaberDir)\Plugins\SiraUtil.dll</HintPath>
         </Reference>
+        <Reference Include="Interactable" Publicize="True">
+            <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Interactable.dll</HintPath>
+        </Reference>
+        <Reference Include="SegmentedControl" Publicize="True">
+            <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\SegmentedControl.dll</HintPath>
+        </Reference>
         <Reference Include="System">
             <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\System.dll</HintPath>
         </Reference>
@@ -100,6 +101,9 @@
         </Reference>
         <Reference Include="Unity.TextMeshPro">
             <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.InputSystem">
+            <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Unity.InputSystem.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine">
             <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>

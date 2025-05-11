@@ -5,13 +5,13 @@ using Zenject;
 
 namespace EditorEnhanced.Installers;
 
-public class EECommandInstaller
+public class EEEditorCommandInstaller
     : Installer
 {
     public override void InstallBindings()
     {
         // this is the dumbest way i ever had to deal with DI
-        Container.BindInterfacesAndSelfTo<EECommandInitializer>().AsSingle();
+        Container.BindInterfacesAndSelfTo<EEEditorCommandInitializer>().AsSingle();
         InstallCommands<ReorderEventBoxSignal, ReorderEventBoxCommand>(Container);
         InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>(Container);
         InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container);
