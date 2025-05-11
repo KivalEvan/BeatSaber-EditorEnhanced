@@ -16,6 +16,8 @@ public class EEEditorCommandInitializer(BeatmapEditorCommandRunnerSignalBinder s
         signalBinder._commandContainer
             .BindFactory<PasteEventBoxCommand, PlaceholderFactory<PasteEventBoxCommand>>();
         signalBinder._commandContainer
+            .BindFactory<PasteEventBoxSeedCommand, PlaceholderFactory<PasteEventBoxSeedCommand>>();
+        signalBinder._commandContainer
             .BindFactory<DuplicateEventBoxCommand, PlaceholderFactory<DuplicateEventBoxCommand>>();
         signalBinder._commandContainer
             .BindFactory<LolighterCommand, PlaceholderFactory<LolighterCommand>>();

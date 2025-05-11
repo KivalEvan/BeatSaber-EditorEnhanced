@@ -18,13 +18,13 @@ public class EEEditorUIInstaller : Installer
         Container.BindInterfacesAndSelfTo<EditorToggleGroupBuilder>().AsSingle();
 
         Container.BindInterfacesTo<CameraPresetViewController>().AsSingle();
-        Container.BindInterfacesTo<CopyEventBoxViewController>().AsSingle();
-        
         Container.BindInterfacesAndSelfTo<CameraPresetManager>().AsSingle();
+        Container.BindInterfacesTo<CopyEventBoxViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<EventBoxClipboardManager>().AsSingle();
 
         Container.BindInterfacesTo<LolighterViewController>().AsSingle();
         Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();
+        Container.BindInterfacesTo<RandomSeedClipboardViewController>().AsSingle();
         // Container.BindInterfacesTo<MassValueShiftViewController>().AsSingle();
         // Container.BindInterfacesTo<IntegratedScriptViewController>().AsSingle();
 

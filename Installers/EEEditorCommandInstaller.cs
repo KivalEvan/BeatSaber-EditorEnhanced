@@ -15,6 +15,7 @@ public class EEEditorCommandInstaller
         InstallCommands<ReorderEventBoxSignal, ReorderEventBoxCommand>(Container);
         InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>(Container);
         InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container);
+        InstallCommands<PasteEventBoxSeedSignal, PasteEventBoxSeedCommand>(Container);
         InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>(Container);
         InstallCommands<LolighterSignal, LolighterCommand>(Container);
 

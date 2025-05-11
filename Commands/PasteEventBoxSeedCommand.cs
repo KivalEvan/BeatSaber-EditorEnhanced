@@ -5,14 +5,14 @@ using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
 using EditorEnhanced.Managers;
+using IPA.Utilities;
 using Zenject;
 
 namespace EditorEnhanced.Commands;
 
-public class PasteEventBoxCommand(
+public class PasteEventBoxSeedCommand(
     SignalBus signalBus,
-    PasteEventBoxSignal signal,
-    EventBoxClipboardManager clipboardManager,
+    PasteEventBoxSeedSignal signal,
     EventBoxGroupsState eventBoxGroupsState,
     BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel) : IBeatmapEditorCommandWithHistory
 {
@@ -25,13 +25,15 @@ public class PasteEventBoxCommand(
 
     public void Execute()
     {
-        var newItem = clipboardManager.Paste(eventBoxGroupsState.eventBoxGroupContext.type);
-        if (newItem == null) return;
+        var newBox = signal.EventBoxEditorData;
+        if (newBox == null) return;
+        var newList = beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(newBox.id).ToList();
         var prevBox = signal.EventBoxEditorData;
         var prevList = beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(prevBox.id).ToList();
 
-        _newItem = (EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(newItem.Value.box),
-            newItem.Value.events.Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d)).ToList());
+        _newItem = (EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(newBox),
+            newList.Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d)).ToList());
+        _newItem.box.indexFilter.SetField("seed", signal.Seed);
         _oldItem = (prevBox, prevList);
         _groupId = eventBoxGroupsState.eventBoxGroupContext.id;
         _eventBoxId = beatmapEventBoxGroupsDataModel.GetEventBoxIdxByEventBoxId(_newItem.box.id);
