@@ -18,21 +18,12 @@ internal enum GizmoType
 
 internal class GizmoAssets : IInitializable, IDisposable
 {
-    public const int HUE_RANGE = 128 * 3;
-
-    public const int WHITE_INDEX = -1;
-    public const int RED_INDEX = HUE_RANGE * 0 / 6;
-    public const int YELLOW_INDEX = HUE_RANGE * 1 / 6;
-    public const int GREEN_INDEX = HUE_RANGE * 2 / 6;
-    public const int CYAN_INDEX = HUE_RANGE * 3 / 6;
-    public const int BLUE_INDEX = HUE_RANGE * 4 / 6;
-    public const int MAGENTA_INDEX = HUE_RANGE * 5 / 6;
     private static readonly Material _defaultMaterial = FetchMaterial();
     private readonly List<GameObject> _colorObjects = [];
     private readonly List<GameObject> _fxObjects = [];
     private readonly List<GameObject> _rotationObjects = [];
 
-    private readonly Material[] _sharedMaterials = new Material[HUE_RANGE];
+    private readonly Material[] _sharedMaterials = new Material[ColorAssignment.HueRange];
     private readonly List<GameObject> _translationObjects = [];
 
     public void Dispose()
@@ -58,9 +49,9 @@ internal class GizmoAssets : IInitializable, IDisposable
 
     private Material GetOrCreateMaterial(int index)
     {
-        if (index < 0 || index >= HUE_RANGE) return _defaultMaterial;
+        if (index < 0 || index >= ColorAssignment.HueRange) return _defaultMaterial;
         if (_sharedMaterials[index] != null) return _sharedMaterials[index];
-        var color = Color.HSVToRGB(Convert.ToSingle(index) / Convert.ToSingle(HUE_RANGE), 1f, 1f);
+        var color = ColorAssignment.GetColorFromIndex(index);
         _sharedMaterials[index] = CreateMaterial(color);
         return _sharedMaterials[index];
     }

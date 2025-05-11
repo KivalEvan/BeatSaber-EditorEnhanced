@@ -8,6 +8,7 @@ using BeatmapEditor3D.LevelEditor;
 using BeatmapEditor3D.Types;
 using EditorEnhanced.Gizmo;
 using EditorEnhanced.Helpers;
+using EditorEnhanced.Utils;
 using UnityEngine;
 using Zenject;
 using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupType;
@@ -116,28 +117,26 @@ internal class GizmoManager(
         if (!data.Any()) return;
         foreach (var items in data)
         {
-            var (idx, ebgIdx, distributed, transform) = items;
+            var (idx, eventBoxIdx, distributed, transform) = items;
 
-            var colorIdx = distributed
-                ? GizmoAssets.HUE_RANGE / 2 * ebgIdx + idx * 2 % GizmoAssets.HUE_RANGE
-                : (GizmoAssets.WHITE_INDEX + ebgIdx * GizmoAssets.HUE_RANGE / 12) % GizmoAssets.HUE_RANGE;
+            var colorIdx = ColorAssignment.GetColorIndexEventBox(eventBoxIdx, idx, distributed);
 
-            if (!ids.Contains(ebgIdx))
+            if (!ids.Contains(eventBoxIdx))
             {
                 var laneGizmo = gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
                 laneGizmo.transform.SetParent(_colorManager.transform.root, false);
-                laneGizmo.transform.localPosition = new Vector3((ebgIdx - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
+                laneGizmo.transform.localPosition = new Vector3((eventBoxIdx - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
                 _gameObjects.Add(laneGizmo);
-                ids.Add(ebgIdx);
+                ids.Add(eventBoxIdx);
             }
 
             if (transform == null) continue;
             var axisIdx = axis switch
             {
-                LightAxis.X => GizmoAssets.RED_INDEX,
-                LightAxis.Y => GizmoAssets.GREEN_INDEX,
-                LightAxis.Z => GizmoAssets.BLUE_INDEX,
-                _ => GizmoAssets.WHITE_INDEX
+                LightAxis.X => ColorAssignment.RedIndex,
+                LightAxis.Y => ColorAssignment.GreenIndex,
+                LightAxis.Z => ColorAssignment.BlueIndex,
+                _ => ColorAssignment.WhiteIndex
             };
 
             var baseGizmo = gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
