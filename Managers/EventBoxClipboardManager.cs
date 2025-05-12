@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BeatmapEditor3D;
+using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatSaber.TrackDefinitions.DataModels;
 using Zenject;
@@ -12,7 +13,6 @@ public class EventBoxClipboardManager(BeatmapEventBoxGroupsDataModel beatmapEven
     private (EventBoxEditorData, List<BaseEditorData>)? fxEventBoxClipboard;
     private (EventBoxEditorData, List<BaseEditorData>)? lightColorEventBoxClipboard;
     private (EventBoxEditorData, List<BaseEditorData>)? lightRotationEventBoxClipboard;
-
     private (EventBoxEditorData, List<BaseEditorData>)?
         lightTranslationEventBoxClipboard;
 

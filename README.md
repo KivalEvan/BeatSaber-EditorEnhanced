@@ -16,7 +16,7 @@ For level designer, by level designer, to improve your workflow with various QOL
 * Event Box Copy & Duplicate
 * Random Seed Clipboard
 * Randomise Seed On Paste
-* Unclamped value
+* Unclamped Value
     * Basic event float value and distribution value no longer have arbitrary clamp
     * Certain input like negative value and index filter field require clamp to prevent issue
 * Scrollable Input Value

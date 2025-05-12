@@ -5,15 +5,15 @@ using UnityEngine.UI;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorLayoutHorizontalBuilder
+public class EditorLayoutVerticalBuilder
 {
-    public EditorLayoutHorizontalTag CreateNew()
+    public EditorLayoutVerticalTag CreateNew()
     {
-        return new EditorLayoutHorizontalTag();
+        return new EditorLayoutVerticalTag();
     }
 }
 
-public class EditorLayoutHorizontalTag : IUIRect, IUILayout
+public class EditorLayoutVerticalTag : IUIRect, IUILayout
 {
     public float? Spacing { get; set; }
     [CanBeNull] public RectOffset Padding { get; set; }
@@ -37,25 +37,25 @@ public class EditorLayoutHorizontalTag : IUIRect, IUILayout
 
     public GameObject CreateObject(Transform parent)
     {
-        var go = new GameObject("EEHorizontalLayoutGroup")
+        var go = new GameObject("EEVerticalLayoutGroup")
         {
             layer = 5
         };
         go.transform.SetParent(parent, false);
 
-        var hlg = go.AddComponent<HorizontalLayoutGroup>();
-        hlg.spacing = Spacing ?? hlg.spacing;
-        hlg.padding = Padding ?? hlg.padding;
-        hlg.childAlignment = ChildAlignment ?? hlg.childAlignment;
-        hlg.childControlWidth = ChildControlWidth ?? hlg.childControlWidth;
-        hlg.childControlHeight = ChildControlHeight ?? hlg.childControlHeight;
-        hlg.childScaleWidth = ChildScaleWidth ?? hlg.childScaleWidth;
-        hlg.childScaleHeight = ChildScaleHeight ?? hlg.childScaleHeight;
-        hlg.childForceExpandWidth = ChildForceExpandWidth ?? hlg.childForceExpandWidth;
-        hlg.childForceExpandHeight = ChildForceExpandHeight ?? hlg.childForceExpandHeight;
+        var vlg = go.AddComponent<VerticalLayoutGroup>();
+        vlg.spacing = Spacing ?? vlg.spacing;
+        vlg.padding = Padding ?? vlg.padding;
+        vlg.childAlignment = ChildAlignment ?? vlg.childAlignment;
+        vlg.childControlWidth = ChildControlWidth ?? vlg.childControlWidth;
+        vlg.childControlHeight = ChildControlHeight ?? vlg.childControlHeight;
+        vlg.childScaleWidth = ChildScaleWidth ?? vlg.childScaleWidth;
+        vlg.childScaleHeight = ChildScaleHeight ?? vlg.childScaleHeight;
+        vlg.childForceExpandWidth = ChildForceExpandWidth ?? vlg.childForceExpandWidth;
+        vlg.childForceExpandHeight = ChildForceExpandHeight ?? vlg.childForceExpandHeight;
 
         var csf = go.AddComponent<ContentSizeFitter>();
-        csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        csf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
         var transform = go.transform as RectTransform;
         transform.anchorMin = AnchorMin ?? Vector2.zero;
@@ -64,9 +64,9 @@ public class EditorLayoutHorizontalTag : IUIRect, IUILayout
         transform.offsetMax = OffsetMax ?? transform.offsetMax;
         transform.sizeDelta = SizeDelta ?? Vector2.zero;
 
-        var layout = go.AddComponent<LayoutElement>();
-        layout.flexibleWidth = FlexibleWidth ?? layout.flexibleWidth;
-        layout.flexibleHeight = FlexibleHeight ?? layout.flexibleHeight;
+        // var layout = go.AddComponent<LayoutElement>();
+        // layout.flexibleWidth = FlexibleWidth ?? layout.flexibleWidth;
+        // layout.flexibleHeight = FlexibleHeight ?? layout.flexibleHeight;
 
         return go;
     }

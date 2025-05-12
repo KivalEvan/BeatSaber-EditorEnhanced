@@ -13,5 +13,7 @@ public class EEEditorMainInstaller : Installer
         Container.BindInterfacesTo<GizmoManager>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<LightEventsPayloadPatches>().AsSingle();
+        Container.BindInterfacesAndSelfTo<ModifyHoveredLightEventDeltaIntensityCommandPatches>().AsSingle();
+        Container.BindInterfacesAndSelfTo<PasteEventBoxGroupsCommandPatch>().AsSingle();
     }
 }

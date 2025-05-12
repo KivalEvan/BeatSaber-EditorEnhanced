@@ -48,6 +48,9 @@ public class EditorTextTag(EditBeatmapViewController ebvc) : IUIText
         ctmp.text = Text ?? "Default Text";
         ctmp.fontWeight = FontWeight ?? ctmp.fontWeight;
         ctmp.alignment = TextAlignment ?? ctmp.alignment;
+        
+        ctmp.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        ctmp.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
 
         go.SetActive(true);
         return go;
