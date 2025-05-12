@@ -78,23 +78,22 @@ internal static class Utils
     }
 }
 
-public class LolighterCommand : IBeatmapEditorCommandWithHistory
+public class LolighterCommand(
+    SignalBus signalBus,
+    BeatmapObjectsDataModel beatmapObjectsDataModel,
+    BeatmapBasicEventsDataModel beatmapBasicEventsDataModel) : IBeatmapEditorCommandWithHistory
 {
-    [Inject] private readonly BeatmapBasicEventsDataModel _beatmapBasicEventsDataModel;
-    [Inject] private readonly BeatmapObjectsDataModel _beatmapObjectsDataModel;
-    [Inject] private readonly SignalBus _signalBus;
     private List<BasicEventEditorData> _newEventEditorData;
     private List<BasicEventEditorData> _previousEventEditorData;
-
     public bool shouldAddToHistory { get; private set; }
 
     public void Execute()
     {
-        _previousEventEditorData = _beatmapBasicEventsDataModel.GetAllEventsAsList();
+        _previousEventEditorData = beatmapBasicEventsDataModel.GetAllEventsAsList();
         // Bunch of var to keep timing in check
         var last = new float();
         var time = new float[4];
-        var notes = _beatmapObjectsDataModel.GetNotesInterval(0, float.MaxValue).ToList();
+        var notes = beatmapObjectsDataModel.GetNotesInterval(0, float.MaxValue).ToList();
         var selections = notes;
         float offset;
         float firstNote;
@@ -579,16 +578,16 @@ public class LolighterCommand : IBeatmapEditorCommandWithHistory
 
     public void Undo()
     {
-        _beatmapBasicEventsDataModel.Clear();
-        foreach (var ev in _previousEventEditorData) _beatmapBasicEventsDataModel.Insert(ev);
-        _signalBus.Fire<BeatmapLevelUpdatedSignal>();
+        beatmapBasicEventsDataModel.Clear();
+        foreach (var ev in _previousEventEditorData) beatmapBasicEventsDataModel.Insert(ev);
+        signalBus.Fire<BeatmapLevelUpdatedSignal>();
     }
 
     public void Redo()
     {
-        _beatmapBasicEventsDataModel.Clear();
-        foreach (var ev in _newEventEditorData) _beatmapBasicEventsDataModel.Insert(ev);
-        _signalBus.Fire<BeatmapLevelUpdatedSignal>();
+        beatmapBasicEventsDataModel.Clear();
+        foreach (var ev in _newEventEditorData) beatmapBasicEventsDataModel.Insert(ev);
+        signalBus.Fire<BeatmapLevelUpdatedSignal>();
     }
 
     public static List<BasicEventEditorData> RemoveFused(List<BasicEventEditorData> events)

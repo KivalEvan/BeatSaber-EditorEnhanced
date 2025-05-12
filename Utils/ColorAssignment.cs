@@ -6,7 +6,7 @@ namespace EditorEnhanced.Utils;
 public static class ColorAssignment
 {
     public const int HueRange = 128 * 3;
-
+    
     public const int WhiteIndex = -1;
     public const int RedIndex = HueRange * 0 / 6;
     public const int YellowIndex = HueRange * 1 / 6;
@@ -21,7 +21,7 @@ public static class ColorAssignment
             ? HueRange / 2 * eventBoxIdx + idx * 2 % HueRange
             : (WhiteIndex + eventBoxIdx * HueRange / 12) % HueRange;
     }
-
+    
     public static Color GetColorFromIndex(int index)
     {
         return Color.HSVToRGB(Convert.ToSingle(index) / Convert.ToSingle(HueRange), 1f, 1f);

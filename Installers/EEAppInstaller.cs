@@ -1,4 +1,3 @@
-using EditorEnhanced.Configurations;
 using Zenject;
 
 namespace EditorEnhanced.Installers;

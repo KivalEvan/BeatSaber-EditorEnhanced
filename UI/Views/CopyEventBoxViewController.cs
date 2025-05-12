@@ -11,33 +11,32 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CopyEventBoxViewController : IInitializable, IDisposable
+internal class CopyEventBoxViewController(
+    SignalBus signalBus,
+    EditBeatmapViewController ebvc,
+    EditorLayoutStackBuilder editorLayoutStack,
+    EditorLayoutHorizontalBuilder editorLayoutHorizontal,
+    EditorButtonBuilder editorBtn,
+    EditorTextBuilder editorText) : IInitializable, IDisposable
 {
-    [Inject] private readonly EditBeatmapViewController _ebvc;
-    [Inject] private readonly EditorButtonBuilder _editorBtn;
-    [Inject] private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
-    [Inject] private readonly EditorLayoutStackBuilder _editorLayoutStack;
-    [Inject] private readonly EditorTextBuilder _editorText;
-    [Inject] private readonly SignalBus _signalBus;
-
     public void Dispose()
     {
     }
 
     public void Initialize()
     {
-        var target = _ebvc._eventBoxesView._eventBoxView;
+        var target = ebvc._eventBoxesView._eventBoxView;
 
-        var stackTag = _editorLayoutStack.CreateNew()
+        var stackTag = editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var horizontalTag = _editorLayoutHorizontal.CreateNew()
+        var horizontalTag = editorLayoutHorizontal.CreateNew()
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(false)
             .SetPadding(new RectOffset(8, 8, 8, 8));
-        var btnTag = _editorBtn.CreateNew()
+        var btnTag = editorBtn.CreateNew()
             .SetFontSize(16);
-        var textTag = _editorText.CreateNew()
+        var textTag = editorText.CreateNew()
             .SetFontSize(20)
             .SetFontWeight(FontWeight.Bold)
             .SetTextAlignment(TextAlignmentOptions.Center);
@@ -72,17 +71,17 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
 
     private void CopyEventBox()
     {
-        _signalBus.Fire(new CopyEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox));
+        signalBus.Fire(new CopyEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox));
     }
 
     private void PasteEventBox()
     {
-        _signalBus.Fire(new PasteEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox));
+        signalBus.Fire(new PasteEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox));
     }
 
     private void DuplicateEventBox()
     {
-        _signalBus.Fire(
-            new DuplicateEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox));
+        signalBus.Fire(
+            new DuplicateEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox));
     }
 }

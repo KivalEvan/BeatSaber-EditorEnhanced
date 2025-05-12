@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EditorEnhanced.Gizmo.Drawers;
 using EditorEnhanced.Utils;
 using UnityEngine;
 using Zenject;
@@ -19,7 +18,7 @@ internal enum GizmoType
 
 internal class GizmoAssets : IInitializable, IDisposable
 {
-    private static readonly Material DefaultMaterial = FetchMaterial();
+    private static readonly Material _defaultMaterial = FetchMaterial();
     private readonly List<GameObject> _colorObjects = [];
     private readonly List<GameObject> _fxObjects = [];
     private readonly List<GameObject> _rotationObjects = [];
@@ -42,15 +41,15 @@ internal class GizmoAssets : IInitializable, IDisposable
 
     public void Initialize()
     {
-        CubeGizmo.SObject = CubeGizmo.Create(DefaultMaterial);
-        RotationGizmo.SObject = RotationGizmo.Create(DefaultMaterial);
-        TranslationGizmo.SObject = TranslationGizmo.Create(DefaultMaterial);
-        SphereGizmo.SObject = SphereGizmo.Create(DefaultMaterial);
+        CubeGizmo.SObject = CubeGizmo.Create(_defaultMaterial);
+        RotationGizmo.SObject = RotationGizmo.Create(_defaultMaterial);
+        TranslationGizmo.SObject = TranslationGizmo.Create(_defaultMaterial);
+        SphereGizmo.SObject = SphereGizmo.Create(_defaultMaterial);
     }
 
     private Material GetOrCreateMaterial(int index)
     {
-        if (index < 0 || index >= ColorAssignment.HueRange) return DefaultMaterial;
+        if (index < 0 || index >= ColorAssignment.HueRange) return _defaultMaterial;
         if (_sharedMaterials[index] != null) return _sharedMaterials[index];
         var color = ColorAssignment.GetColorFromIndex(index);
         _sharedMaterials[index] = CreateMaterial(color);
@@ -65,7 +64,7 @@ internal class GizmoAssets : IInitializable, IDisposable
 
     private static Material CreateMaterial(Color color)
     {
-        var mat = new Material(DefaultMaterial);
+        var mat = new Material(_defaultMaterial);
         mat.SetColor("_Color", color);
         return mat;
     }

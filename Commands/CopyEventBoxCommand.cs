@@ -4,13 +4,13 @@ using Zenject;
 
 namespace EditorEnhanced.Commands;
 
-public class CopyEventBoxCommand : IBeatmapEditorCommand
+public class CopyEventBoxCommand(
+    SignalBus signalBus,
+    CopyEventBoxSignal signal,
+    EventBoxClipboardManager clipboardManager) : IBeatmapEditorCommand
 {
-    [Inject] private readonly EventBoxClipboardManager _clipboardManager;
-    [Inject] private readonly CopyEventBoxSignal _signal;
-
     public void Execute()
     {
-        _clipboardManager.Add(_signal.EventBoxEditorData);
+        clipboardManager.Add(signal.EventBoxEditorData);
     }
 }

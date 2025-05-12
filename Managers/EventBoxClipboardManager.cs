@@ -1,19 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using BeatmapEditor3D;
+using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatSaber.TrackDefinitions.DataModels;
 using Zenject;
 
 namespace EditorEnhanced.Managers;
 
-public class EventBoxClipboardManager : IInitializable
+public class EventBoxClipboardManager(BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel) : IInitializable
 {
-    [Inject] private readonly BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;
     private (EventBoxEditorData, List<BaseEditorData>)? fxEventBoxClipboard;
     private (EventBoxEditorData, List<BaseEditorData>)? lightColorEventBoxClipboard;
     private (EventBoxEditorData, List<BaseEditorData>)? lightRotationEventBoxClipboard;
-    private (EventBoxEditorData, List<BaseEditorData>)? lightTranslationEventBoxClipboard;
+    private (EventBoxEditorData, List<BaseEditorData>)?
+        lightTranslationEventBoxClipboard;
 
     public void Initialize()
     {
@@ -21,7 +22,7 @@ public class EventBoxClipboardManager : IInitializable
 
     public void Add(EventBoxEditorData eventBoxEditorData)
     {
-        var l = _beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(eventBoxEditorData.id).ToList();
+        var l = beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(eventBoxEditorData.id).ToList();
         switch (eventBoxEditorData)
         {
             case LightColorEventBoxEditorData data:

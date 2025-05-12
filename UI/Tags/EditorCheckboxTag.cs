@@ -9,42 +9,23 @@ using TMPro;
 using Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorCheckboxBuilder
+public class EditorCheckboxBuilder(EditBeatmapNavigationViewController ebnvc, TimeTweeningManager twm)
 {
-    [Inject] private readonly EditBeatmapNavigationViewController _ebnvc;
-    [Inject] private readonly TimeTweeningManager _twm;
-
     public EditorCheckboxTag CreateNew()
     {
-        return new EditorCheckboxTag(_ebnvc, _twm);
+        return new EditorCheckboxTag(ebnvc, twm);
     }
 }
 
-public class EditorCheckboxTag : IUIToggle, IUIText
+public class EditorCheckboxTag(EditBeatmapNavigationViewController ebnvc, TimeTweeningManager twm) : IUIToggle, IUIText
 {
-    private readonly EditBeatmapNavigationViewController _ebnvc;
-    private readonly TimeTweeningManager _twm;
-
-    public EditorCheckboxTag(EditBeatmapNavigationViewController ebnvc, TimeTweeningManager twm)
-    {
-        _ebnvc = ebnvc;
-        _twm = twm;
-    }
-
     public string[] Aliases => ["editor-checkbox"];
 
-    private Toggle PrefabToggle => _ebnvc._eventBoxGroupsToolbarView._extensionToggle;
-
-    public string Text { get; set; }
-    public TextAlignmentOptions? TextAlignment { get; set; }
-    public bool? RichText { get; set; }
-    public float? FontSize { get; set; }
-    public FontWeight? FontWeight { get; set; }
+    private Toggle PrefabToggle => ebnvc._eventBoxGroupsToolbarView._extensionToggle;
 
     [CanBeNull] public List<Action<bool>> OnValueChange { get; set; } = [];
     public bool? Bool { get; set; }
@@ -57,9 +38,9 @@ public class EditorCheckboxTag : IUIToggle, IUIText
         toggle.interactable = true;
         toggle.isOn = Bool ?? toggle.isOn;
         OnValueChange?.ForEach(x => toggle.onValueChanged.AddListener(x.Invoke));
-
+        
         var comp = toggle.GetComponent<NoTransitionToggleSelectableStateController>();
-        ((SelectableStateController)comp).SetField("_tweeningManager", _twm);
+        ((SelectableStateController)comp).SetField("_tweeningManager", twm);
 
         var toggleObject = toggle.gameObject;
         toggleObject.SetActive(false);
@@ -94,4 +75,10 @@ public class EditorCheckboxTag : IUIToggle, IUIText
         toggleObject.SetActive(true);
         return toggleObject;
     }
+
+    public string Text { get; set; }
+    public TextAlignmentOptions? TextAlignment { get; set; }
+    public bool? RichText { get; set; }
+    public float? FontSize { get; set; }
+    public FontWeight? FontWeight { get; set; }
 }

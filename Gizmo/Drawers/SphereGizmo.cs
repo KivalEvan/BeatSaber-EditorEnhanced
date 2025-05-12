@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EditorEnhanced.Gizmo.Drawers;
+namespace EditorEnhanced.Gizmo;
 
 internal static class SphereGizmo
 {

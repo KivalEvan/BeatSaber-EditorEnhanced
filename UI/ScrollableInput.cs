@@ -1,4 +1,5 @@
 using System;
+using BeatmapEditor3D.InputSystem;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;

@@ -8,19 +8,12 @@ public enum ReorderType
     Up,
     Down,
     Bottom,
-    Any
+    Any,
 }
 
-public class ReorderEventBoxSignal
+public class ReorderEventBoxSignal(EventBoxEditorData eventBoxEditorData, ReorderType reorderType, int index = 0)
 {
-    public readonly EventBoxEditorData EventBoxEditorData;
-    public readonly int Index;
-    public readonly ReorderType ReorderType;
-
-    public ReorderEventBoxSignal(EventBoxEditorData eventBoxEditorData, ReorderType reorderType, int index = 0)
-    {
-        EventBoxEditorData = eventBoxEditorData;
-        ReorderType = reorderType;
-        Index = index;
-    }
+    public readonly EventBoxEditorData EventBoxEditorData = eventBoxEditorData;
+    public readonly ReorderType ReorderType = reorderType;
+    public readonly int Index = index;
 }

@@ -9,40 +9,40 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CameraPresetViewController : IInitializable, IDisposable
+internal class CameraPresetViewController(
+    CameraPresetManager cameraPresetManager,
+    EditBeatmapViewController ebvc,
+    EditorLayoutStackBuilder editorLayoutStack,
+    EditorLayoutHorizontalBuilder editorLayoutHorizontal,
+    EditorButtonBuilder editorBtn,
+    EditorButtonWithIconBuilder editorBtnIcon,
+    EditorTextBuilder editorText)
+    : IInitializable, IDisposable
 {
-    [Inject] private readonly CameraPresetManager _cameraPresetManager;
-    [Inject] private readonly EditBeatmapViewController _ebvc;
-    [Inject] private readonly EditorButtonBuilder _editorBtn;
-    [Inject] private readonly EditorButtonWithIconBuilder _editorBtnIcon;
-    [Inject] private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
-    [Inject] private readonly EditorLayoutStackBuilder _editorLayoutStack;
-    [Inject] private readonly EditorTextBuilder _editorText;
-
     public void Dispose()
     {
     }
 
     public void Initialize()
     {
-        var target = _ebvc._beatmapEditorExtendedSettingsView;
+        var target = ebvc._beatmapEditorExtendedSettingsView;
 
-        var horizontalTag = _editorLayoutHorizontal.CreateNew()
+        var horizontalTag = editorLayoutHorizontal.CreateNew()
             .SetSpacing(5)
             .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetChildControlWidth(false);
-        var stackTag = _editorLayoutStack.CreateNew()
+        var stackTag = editorLayoutStack.CreateNew()
             .SetFlexibleWidth(1)
             .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var btnTag = _editorBtn.CreateNew()
+        var btnTag = editorBtn.CreateNew()
             .SetFontSize(14)
             .SetTextAlignment(TextAlignmentOptions.Center);
-        var btnIconTag = _editorBtnIcon.CreateNew()
+        var btnIconTag = editorBtnIcon.CreateNew()
             .SetFontSize(14)
             .SetTextAlignment(TextAlignmentOptions.Center);
-        var textTag = _editorText.CreateNew()
+        var textTag = editorText.CreateNew()
             .SetFontSize(14);
 
         var mainLayout = horizontalTag.CreateObject(target.transform);
@@ -77,26 +77,26 @@ internal class CameraPresetViewController : IInitializable, IDisposable
 
     public void SwitchToDefaultCamera()
     {
-        _cameraPresetManager.SetCamera(CameraPresetManager.CameraType.Default);
+        cameraPresetManager.SetCamera(CameraPresetManager.CameraType.Default);
     }
 
     public void SwitchToPlayerCamera()
     {
-        _cameraPresetManager.SetCamera(CameraPresetManager.CameraType.Player);
+        cameraPresetManager.SetCamera(CameraPresetManager.CameraType.Player);
     }
 
     public void SwitchToPreviousCamera()
     {
-        _cameraPresetManager.SetCamera(CameraPresetManager.CameraType.Previous);
+        cameraPresetManager.SetCamera(CameraPresetManager.CameraType.Previous);
     }
 
     public void SwitchToSavedCamera()
     {
-        _cameraPresetManager.SetCamera(CameraPresetManager.CameraType.Saved);
+        cameraPresetManager.SetCamera(CameraPresetManager.CameraType.Saved);
     }
 
     public void SaveCamera()
     {
-        _cameraPresetManager.SaveCamera();
+        cameraPresetManager.SaveCamera();
     }
 }

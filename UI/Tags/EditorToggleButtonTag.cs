@@ -1,23 +1,16 @@
 using BeatmapEditor3D;
 using Tweening;
-using Zenject;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorToggleButtonBuilder
+public class EditorToggleButtonBuilder(EditBeatmapViewController ebvc, TimeTweeningManager twm)
 {
-    [Inject] private readonly EditBeatmapViewController _ebvc;
-    [Inject] private readonly TimeTweeningManager _twm;
-
     public EditorToggleButtonTag CreateNew()
     {
-        return new EditorToggleButtonTag(_ebvc, _twm);
+        return new EditorToggleButtonTag(ebvc, twm);
     }
 }
 
-public class EditorToggleButtonTag
+public class EditorToggleButtonTag(EditBeatmapViewController ebvc, TimeTweeningManager twm)
 {
-    public EditorToggleButtonTag(EditBeatmapViewController ebvc, TimeTweeningManager twm)
-    {
-    }
 }

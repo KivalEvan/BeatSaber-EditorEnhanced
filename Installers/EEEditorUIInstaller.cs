@@ -1,4 +1,5 @@
 using EditorEnhanced.Managers;
+using EditorEnhanced.Patches;
 using EditorEnhanced.UI;
 using EditorEnhanced.UI.Tags;
 using EditorEnhanced.UI.Views;
@@ -21,10 +22,10 @@ public class EEEditorUIInstaller : Installer
 
         Container.BindInterfacesTo<CameraPresetViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<CameraPresetManager>().AsSingle();
-
+        
         Container.BindInterfacesTo<CopyEventBoxViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<EventBoxClipboardManager>().AsSingle();
-
+        
         Container.BindInterfacesTo<RandomSeedClipboardViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<RandomSeedClipboardManager>().AsSingle();
 

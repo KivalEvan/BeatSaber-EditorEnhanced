@@ -10,6 +10,7 @@ public class LightEventsPayloadPatches : IAffinity
     [AffinityPatch(typeof(LightEventsPayload), nameof(LightEventsPayload.ToAltValue))]
     private bool UnclampedAltValue(LightEventsPayload __instance, ref float __result)
     {
+        // 
         __result = Mathf.Max(0f, __instance.intensity);
         return false;
     }

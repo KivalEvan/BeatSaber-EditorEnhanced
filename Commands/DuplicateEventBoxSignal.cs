@@ -2,12 +2,7 @@ using BeatmapEditor3D;
 
 namespace EditorEnhanced.Commands;
 
-public class DuplicateEventBoxSignal
+public class DuplicateEventBoxSignal(EventBoxEditorData eventBoxEditorData)
 {
-    public readonly EventBoxEditorData EventBoxEditorData;
-
-    public DuplicateEventBoxSignal(EventBoxEditorData eventBoxEditorData)
-    {
-        EventBoxEditorData = eventBoxEditorData;
-    }
+    public readonly EventBoxEditorData EventBoxEditorData = eventBoxEditorData;
 }

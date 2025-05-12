@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BeatmapEditor3D;
 using EditorEnhanced.Commands;
 using EditorEnhanced.Managers;
@@ -8,49 +9,42 @@ using EditorEnhanced.UI.Tags;
 using HMUI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
-using Object = UnityEngine.Object;
+using Object = System.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-public class RandomSeedClipboardViewController : IInitializable, IDisposable
+public class RandomSeedClipboardViewController(
+    SignalBus signalBus,
+    EditBeatmapViewController ebvc,
+    EditBeatmapNavigationViewController ebnvc,
+    RandomSeedClipboardManager rscm,
+    EditorLayoutVerticalBuilder elvb,
+    EditorLayoutHorizontalBuilder elhb,
+    EditorButtonBuilder ebb,
+    EditorCheckboxBuilder ecb,
+    EditorTextBuilder etb) : IInitializable, IDisposable
 {
-    [Inject] private readonly EditorButtonBuilder _ebb;
-    [Inject] private readonly EditBeatmapNavigationViewController _ebnvc;
-    [Inject] private readonly EditBeatmapViewController _ebvc;
-    [Inject] private readonly EditorCheckboxBuilder _ecb;
-    [Inject] private readonly EditorLayoutHorizontalBuilder _elhb;
-    [Inject] private readonly EditorLayoutVerticalBuilder _elvb;
-    [Inject] private readonly EditorTextBuilder _etb;
-    [Inject] private readonly RandomSeedClipboardManager _rscm;
-    [Inject] private readonly SignalBus _signalBus;
     private readonly List<GameObject> _texts = [];
-
-    public void Dispose()
-    {
-        foreach (var gameObject in _texts) Object.Destroy(gameObject);
-
-        _texts.Clear();
-    }
 
     public void Initialize()
     {
-        var target = _ebvc._eventBoxesView._eventBoxView._indexFilterView;
-        var targetNav = _ebnvc._eventBoxGroupsToolbarView;
+        var target = ebvc._eventBoxesView._eventBoxView._indexFilterView;
+        var targetNav = ebnvc._eventBoxGroupsToolbarView;
 
-        var verticalTag = _elvb.CreateNew();
-        var horizontalTag = _elhb.CreateNew();
-        var textTag = _etb.CreateNew();
-        var checkboxTag = _ecb.CreateNew().SetFontSize(10f);
-        var buttonTag = _ebb.CreateNew().SetFontSize(10f);
+        var verticalTag = elvb.CreateNew();
+        var horizontalTag = elhb.CreateNew();
+        var textTag = etb.CreateNew();
+        var checkboxTag = ecb.CreateNew().SetFontSize(10f);
+        var buttonTag = ebb.CreateNew().SetFontSize(10f);
 
         var vt = verticalTag
             .SetChildControlWidth(true)
             .SetSpacing(2f)
             .CreateObject(targetNav.transform);
-        vt.transform.SetSiblingIndex(
-            _ebnvc._eventBoxGroupsToolbarView._extensionToggle.transform.parent.GetSiblingIndex());
-
+        vt.transform.SetSiblingIndex(ebnvc._eventBoxGroupsToolbarView._extensionToggle.transform.parent.GetSiblingIndex());
+        
         var ht = horizontalTag.CreateObject(vt.transform);
         textTag
             .SetText("Seeds")
@@ -59,33 +53,33 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
             .CreateObject(ht.transform);
         ht = horizontalTag.CreateObject(vt.transform);
         var text = textTag
-            .SetText(_rscm.Seed.ToString())
+            .SetText(rscm.Seed.ToString())
             .SetFontSize(10f)
             .SetFontWeight(FontWeight.Regular)
             .SetTextAlignment(TextAlignmentOptions.Center)
             .CreateObject(ht.transform);
         _texts.Add(text);
-
+        
         ht = horizontalTag.CreateObject(vt.transform);
         checkboxTag
-            .SetBool(_rscm.RandomOnPaste)
+            .SetBool(rscm.RandomOnPaste)
             .SetText("Paste New")
             .SetOnValueChange(ToggleNewSeed)
             .CreateObject(ht.transform);
-
+        
         ht = horizontalTag.CreateObject(vt.transform);
         checkboxTag
-            .SetBool(_rscm.UseClipboard)
+            .SetBool(rscm.UseClipboard)
             .SetText("Use Copy")
             .SetOnValueChange(ToggleClipboard)
             .CreateObject(ht.transform);
 
         text = textTag
-            .SetText(_rscm.Seed.ToString())
+            .SetText(rscm.Seed.ToString())
             .SetFontSize(14f)
             .SetTextAlignment(TextAlignmentOptions.Left)
             .CreateObject(target._randomSeedValidator.transform.parent);
-        _texts.Add(text);
+        _texts.Add(text);z
         text.GetComponent<RectTransform>()
             .anchoredPosition = new Vector2(-55f, -30f);
         buttonTag.SetText("C").SetOnClick(CopySeed).CreateObject(target._newSeedButton.transform.parent)
@@ -98,22 +92,31 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
 
     private void ToggleNewSeed(bool value)
     {
-        _rscm.RandomOnPaste = value;
+        rscm.RandomOnPaste = value;
     }
 
     private void ToggleClipboard(bool value)
     {
-        _rscm.UseClipboard = value;
+        rscm.UseClipboard = value;
     }
 
     private void CopySeed()
     {
-        _rscm.Seed = _ebvc._eventBoxesView._eventBoxView._eventBox.indexFilter.seed;
-        _texts.ForEach(t => t.GetComponent<CurvedTextMeshPro>().text = _rscm.Seed.ToString());
+        rscm.Seed = ebvc._eventBoxesView._eventBoxView._eventBox.indexFilter.seed;
+        _texts.ForEach(t => t.GetComponent<CurvedTextMeshPro>().text = rscm.Seed.ToString());
     }
 
     private void PasteSeed()
     {
-        _signalBus.Fire(new PasteEventBoxSeedSignal(_ebvc._eventBoxesView._eventBoxView._eventBox, _rscm.Seed));
+        signalBus.Fire(new PasteEventBoxSeedSignal(ebvc._eventBoxesView._eventBoxView._eventBox, rscm.Seed));
+    }
+
+    public void Dispose()
+    {
+        foreach (var gameObject in _texts)
+        {
+            UnityEngine.Object.Destroy(gameObject);
+        }
+        _texts.Clear();
     }
 }

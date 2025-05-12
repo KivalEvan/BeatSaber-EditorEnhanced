@@ -16,13 +16,14 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.Managers;
 
-internal class GizmoManager : IInitializable, IDisposable
+internal class GizmoManager(
+    GizmoAssets gizmoAssets,
+    SignalBus signalBus,
+    EventBoxGroupsState ebgs,
+    BeatmapEventBoxGroupsDataModel bebgdm)
+    : IInitializable, IDisposable
 {
-    [Inject] private readonly BeatmapEventBoxGroupsDataModel _bebgdm;
-    [Inject] private readonly EventBoxGroupsState _ebgs;
     private readonly List<GameObject> _gameObjects = [];
-    [Inject] private readonly GizmoAssets _gizmoAssets;
-    [Inject] private readonly SignalBus _signalBus;
     private LightColorGroupEffectManager _colorManager;
     private FloatFxGroupEffectManager _fxManager;
     private LightRotationGroupEffectManager _rotationManager;
@@ -30,14 +31,14 @@ internal class GizmoManager : IInitializable, IDisposable
 
     public void Dispose()
     {
-        _signalBus.TryUnsubscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
-        _signalBus.TryUnsubscribe<EventBoxesUpdatedSignal>(UpdateGizmo);
-        _signalBus.TryUnsubscribe<ModifyEventBoxSignal>(UpdateGizmo);
-        _signalBus.TryUnsubscribe<InsertEventBoxSignal>(UpdateGizmo);
-        _signalBus.TryUnsubscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);
-        _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
-        _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
-        _signalBus.TryUnsubscribe<DeleteEventBoxSignal>(UpdateGizmo);
+        signalBus.TryUnsubscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
+        signalBus.TryUnsubscribe<EventBoxesUpdatedSignal>(UpdateGizmo);
+        signalBus.TryUnsubscribe<ModifyEventBoxSignal>(UpdateGizmo);
+        signalBus.TryUnsubscribe<InsertEventBoxSignal>(UpdateGizmo);
+        signalBus.TryUnsubscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);
+        signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
+        signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
+        signalBus.TryUnsubscribe<DeleteEventBoxSignal>(UpdateGizmo);
 
         foreach (var gameObject in _gameObjects)
             Object.Destroy(gameObject);
@@ -58,19 +59,19 @@ internal class GizmoManager : IInitializable, IDisposable
         _fxManager =
             Object.FindObjectOfType<FloatFxGroupEffectManager>();
 
-        _signalBus.Subscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
-        _signalBus.Subscribe<EventBoxesUpdatedSignal>(UpdateGizmo);
-        _signalBus.Subscribe<ModifyEventBoxSignal>(UpdateGizmo);
-        _signalBus.Subscribe<InsertEventBoxSignal>(UpdateGizmo);
-        _signalBus.Subscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);
-        _signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
-        _signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
-        _signalBus.Subscribe<DeleteEventBoxSignal>(UpdateGizmo);
+        signalBus.Subscribe<BeatmapEditingModeSwitched>(UpdateGizmoWithSignal);
+        signalBus.Subscribe<EventBoxesUpdatedSignal>(UpdateGizmo);
+        signalBus.Subscribe<ModifyEventBoxSignal>(UpdateGizmo);
+        signalBus.Subscribe<InsertEventBoxSignal>(UpdateGizmo);
+        signalBus.Subscribe<InsertEventBoxesForAllAxesSignal>(UpdateGizmo);
+        signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
+        signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
+        signalBus.Subscribe<DeleteEventBoxSignal>(UpdateGizmo);
     }
 
     private void AddGizmo()
     {
-        switch (_ebgs.eventBoxGroupContext.type)
+        switch (ebgs.eventBoxGroupContext.type)
         {
             case EventBoxGroupType.Color:
                 AddColorGizmo();
@@ -122,7 +123,7 @@ internal class GizmoManager : IInitializable, IDisposable
 
             if (!ids.Contains(eventBoxIdx))
             {
-                var laneGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
+                var laneGizmo = gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
                 laneGizmo.transform.SetParent(_colorManager.transform.root, false);
                 laneGizmo.transform.localPosition = new Vector3((eventBoxIdx - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
                 _gameObjects.Add(laneGizmo);
@@ -138,13 +139,13 @@ internal class GizmoManager : IInitializable, IDisposable
                 _ => ColorAssignment.WhiteIndex
             };
 
-            var baseGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
+            var baseGizmo = gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
             baseGizmo.transform.localPosition = Vector3.zero;
             baseGizmo.transform.SetParent(transform.transform, false);
             var modGizmo = groupType switch
             {
-                EventBoxGroupType.Rotation => _gizmoAssets.GetOrCreate(GizmoType.Rotation, axisIdx),
-                EventBoxGroupType.Translation => _gizmoAssets.GetOrCreate(GizmoType.Translation, axisIdx),
+                EventBoxGroupType.Rotation => gizmoAssets.GetOrCreate(GizmoType.Rotation, axisIdx),
+                EventBoxGroupType.Translation => gizmoAssets.GetOrCreate(GizmoType.Translation, axisIdx),
                 _ => null
             };
             if (modGizmo != null)
@@ -170,11 +171,11 @@ internal class GizmoManager : IInitializable, IDisposable
 
     private void AddColorGizmo()
     {
-        var ebg = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
+        var ebg = bebgdm.GetEventBoxesByEventBoxGroupId(ebgs.eventBoxGroupContext.id)
             .Cast<LightColorEventBoxEditorData>();
 
         foreach (var l in _colorManager.lightGroups
-                     .Where(x => x.groupId == _ebgs.eventBoxGroupContext.groupId))
+                     .Where(x => x.groupId == ebgs.eventBoxGroupContext.groupId))
         {
             var markId = new Dictionary<int, (int ebgIdx, bool distributed)>();
             foreach (var item in ebg.Select((eb, i) =>
@@ -206,19 +207,19 @@ internal class GizmoManager : IInitializable, IDisposable
                         break;
                 }
 
-            DoTheFunny(data, _ebgs.eventBoxGroupContext.type, LightAxis.X, false,
+            DoTheFunny(data, ebgs.eventBoxGroupContext.type, LightAxis.X, false,
                 ebg.Count());
         }
     }
 
     private void AddRotationGizmo()
     {
-        var ebg = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
+        var ebg = bebgdm.GetEventBoxesByEventBoxGroupId(ebgs.eventBoxGroupContext.id)
             .Cast<LightRotationEventBoxEditorData>();
 
         // foreach (var l in manager._lightTranslationGroups)
         foreach (var l in _rotationManager._lightRotationGroups.Where(x =>
-                     x.groupId == _ebgs.eventBoxGroupContext.groupId))
+                     x.groupId == ebgs.eventBoxGroupContext.groupId))
         {
             var markXIdx = new Dictionary<int, (int ebgIdx, bool distributed)>();
             var markYIdx = new Dictionary<int, (int ebgIdx, bool distributed)>();
@@ -256,7 +257,7 @@ internal class GizmoManager : IInitializable, IDisposable
                     LightAxis.Z => l.mirrorZ,
                     _ => false
                 };
-                DoTheFunny(data, _ebgs.eventBoxGroupContext.type, axis, mirror,
+                DoTheFunny(data, ebgs.eventBoxGroupContext.type, axis, mirror,
                     ebg.Count());
             }
         }
@@ -264,12 +265,12 @@ internal class GizmoManager : IInitializable, IDisposable
 
     private void AddTranslationGizmo()
     {
-        var ebg = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
+        var ebg = bebgdm.GetEventBoxesByEventBoxGroupId(ebgs.eventBoxGroupContext.id)
             .Cast<LightTranslationEventBoxEditorData>();
 
         // foreach (var l in manager._lightTranslationGroups)
         foreach (var l in _translationManager._lightTranslationGroups.Where(x =>
-                     x.groupId == _ebgs.eventBoxGroupContext.groupId))
+                     x.groupId == ebgs.eventBoxGroupContext.groupId))
         {
             var markXIdx = new Dictionary<int, (int ebgIdx, bool distributed)>();
             var markYIdx = new Dictionary<int, (int ebgIdx, bool distributed)>();
@@ -307,7 +308,7 @@ internal class GizmoManager : IInitializable, IDisposable
                     LightAxis.Z => l.mirrorZ,
                     _ => false
                 };
-                DoTheFunny(data, _ebgs.eventBoxGroupContext.type, axis, mirror,
+                DoTheFunny(data, ebgs.eventBoxGroupContext.type, axis, mirror,
                     ebg.Count());
             }
         }
@@ -315,12 +316,12 @@ internal class GizmoManager : IInitializable, IDisposable
 
     private void AddFxGizmo()
     {
-        var ebg = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
+        var ebg = bebgdm.GetEventBoxesByEventBoxGroupId(ebgs.eventBoxGroupContext.id)
             .Cast<FxEventBoxEditorData>();
 
         // foreach (var l in manager._lightTranslationGroups)
         foreach (var l in _fxManager._floatFxGroups.Where(x =>
-                     x.groupId == _ebgs.eventBoxGroupContext.groupId))
+                     x.groupId == ebgs.eventBoxGroupContext.groupId))
         {
             var markId = new Dictionary<int, (int ebgIdx, bool distributed)>();
             foreach (var item in ebg.Select((eb, i) =>
@@ -334,7 +335,7 @@ internal class GizmoManager : IInitializable, IDisposable
             var data = markId
                 .Select(item => (item.Key, offset: item.Value.ebgIdx, item.Value.distributed,
                     l.targets.Select(t => t.transform).ElementAtOrDefault(item.Key)));
-            DoTheFunny(data, _ebgs.eventBoxGroupContext.type, LightAxis.X, false,
+            DoTheFunny(data, ebgs.eventBoxGroupContext.type, LightAxis.X, false,
                 ebg.Count());
         }
     }

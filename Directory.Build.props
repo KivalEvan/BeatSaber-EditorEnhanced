@@ -14,8 +14,8 @@
 
     <!-- Plugin Dependencies -->
     <ItemGroup>
-        <DependsOn Include="BSIPA" Version="^4.3.5"/>
-        <DependsOn Include="SiraUtil" Version="^3.1.14"/>
+        <DependsOn Include="BSIPA" Version="^4.3.0"/>
+        <DependsOn Include="SiraUtil" Version="^3.1.0"/>
     </ItemGroup>
 
     <PropertyGroup>

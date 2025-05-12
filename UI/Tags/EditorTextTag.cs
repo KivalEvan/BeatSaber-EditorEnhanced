@@ -4,33 +4,23 @@ using HMUI;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
-using Zenject;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorTextBuilder
+public class EditorTextBuilder(EditBeatmapViewController ebvc)
 {
-    [Inject] private readonly EditBeatmapViewController _ebvc;
-
     public EditorTextTag CreateNew()
     {
-        return new EditorTextTag(_ebvc);
+        return new EditorTextTag(ebvc);
     }
 }
 
-public class EditorTextTag : IUIText
+public class EditorTextTag(EditBeatmapViewController ebvc) : IUIText
 {
-    private readonly EditBeatmapViewController _ebvc;
-
-    public EditorTextTag(EditBeatmapViewController ebvc)
-    {
-        _ebvc = ebvc;
-    }
-
     public string[] Aliases => ["editor-text", "editor-label"];
 
     private GameObject PrefabText =>
-        _ebvc._debugView._currentOverdrawText.gameObject;
+        ebvc._debugView._currentOverdrawText.gameObject;
 
     [CanBeNull] public string Text { get; set; }
     public TextAlignmentOptions? TextAlignment { get; set; }
@@ -58,7 +48,7 @@ public class EditorTextTag : IUIText
         ctmp.text = Text ?? "Default Text";
         ctmp.fontWeight = FontWeight ?? ctmp.fontWeight;
         ctmp.alignment = TextAlignment ?? ctmp.alignment;
-
+        
         ctmp.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         ctmp.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
 

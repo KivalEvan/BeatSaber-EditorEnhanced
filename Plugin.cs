@@ -1,5 +1,5 @@
-﻿using BeatmapEditor3D;
-using EditorEnhanced.Configurations;
+﻿using System.Reflection;
+using BeatmapEditor3D;
 using EditorEnhanced.Installers;
 using IPA;
 using IPA.Config.Stores;
