@@ -1,7 +1,7 @@
 using EditorEnhanced.Utils;
 using UnityEngine;
 
-namespace EditorEnhanced.Gizmo;
+namespace EditorEnhanced.Gizmo.Drawers;
 
 internal static class RotationGizmo
 {

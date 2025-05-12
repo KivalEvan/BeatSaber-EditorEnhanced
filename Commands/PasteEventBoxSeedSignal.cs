@@ -2,8 +2,14 @@ using BeatmapEditor3D;
 
 namespace EditorEnhanced.Commands;
 
-public class PasteEventBoxSeedSignal(EventBoxEditorData eventBoxEditorData, int seed)
+public class PasteEventBoxSeedSignal
 {
-    public readonly int Seed = seed;
-    public readonly EventBoxEditorData EventBoxEditorData = eventBoxEditorData;
+    public readonly EventBoxEditorData EventBoxEditorData;
+    public readonly int Seed;
+
+    public PasteEventBoxSeedSignal(EventBoxEditorData eventBoxEditorData, int seed)
+    {
+        Seed = seed;
+        EventBoxEditorData = eventBoxEditorData;
+    }
 }

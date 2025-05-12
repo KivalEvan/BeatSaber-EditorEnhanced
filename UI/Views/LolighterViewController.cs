@@ -7,24 +7,33 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class LolighterViewController(
-    SignalBus signalBus,
-    EditBeatmapNavigationViewController ebnvc,
-    EditorButtonBuilder editorBtn)
-    : IInitializable, IDisposable
+internal class LolighterViewController : IInitializable, IDisposable
 {
+    private readonly EditBeatmapNavigationViewController _ebnvc;
+    private readonly EditorButtonBuilder _editorBtn;
+    private readonly SignalBus _signalBus;
+
+    public LolighterViewController(SignalBus signalBus,
+        EditBeatmapNavigationViewController ebnvc,
+        EditorButtonBuilder editorBtn)
+    {
+        _signalBus = signalBus;
+        _ebnvc = ebnvc;
+        _editorBtn = editorBtn;
+    }
+
     public void Dispose()
     {
     }
 
     public void Initialize()
     {
-        var target = ebnvc._eventsToolbarView;
+        var target = _ebnvc._eventsToolbarView;
 
-        editorBtn.CreateNew()
+        _editorBtn.CreateNew()
             .SetFontSize(10)
             .SetText("Commit Crime")
-            .SetOnClick(() => signalBus.Fire(new LolighterSignal()))
+            .SetOnClick(() => _signalBus.Fire(new LolighterSignal()))
             .CreateObject(target.transform);
     }
 }

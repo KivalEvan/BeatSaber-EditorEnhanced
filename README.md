@@ -12,7 +12,7 @@ For level designer, by level designer, to improve your workflow with various QOL
     * **[P]** Previous Camera
     * **[L]** Saved Camera
 * Event Box Reordering
-  * Can drag index on the UI to reorder
+    * Can drag index on the UI to reorder
 * Event Box Copy & Duplicate
 * Random Seed Clipboard
 * Randomise Seed On Paste

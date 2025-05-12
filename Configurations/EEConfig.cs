@@ -3,7 +3,7 @@ using IPA.Config.Stores;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 
-namespace EditorEnhanced;
+namespace EditorEnhanced.Configurations;
 
 internal class EEConfig
 {

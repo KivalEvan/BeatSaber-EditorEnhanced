@@ -4,22 +4,28 @@ using Zenject;
 
 namespace EditorEnhanced.Installers;
 
-public class EEEditorCommandInitializer(BeatmapEditorCommandRunnerSignalBinder signalBinder)
-    : IInitializable
+public class EEEditorCommandInitializer : IInitializable
 {
+    private readonly BeatmapEditorCommandRunnerSignalBinder _signalBinder;
+
+    public EEEditorCommandInitializer(BeatmapEditorCommandRunnerSignalBinder signalBinder)
+    {
+        _signalBinder = signalBinder;
+    }
+
     public void Initialize()
     {
-        signalBinder._commandContainer
+        _signalBinder._commandContainer
             .BindFactory<ReorderEventBoxCommand, PlaceholderFactory<ReorderEventBoxCommand>>();
-        signalBinder._commandContainer
+        _signalBinder._commandContainer
             .BindFactory<CopyEventBoxCommand, PlaceholderFactory<CopyEventBoxCommand>>();
-        signalBinder._commandContainer
+        _signalBinder._commandContainer
             .BindFactory<PasteEventBoxCommand, PlaceholderFactory<PasteEventBoxCommand>>();
-        signalBinder._commandContainer
+        _signalBinder._commandContainer
             .BindFactory<PasteEventBoxSeedCommand, PlaceholderFactory<PasteEventBoxSeedCommand>>();
-        signalBinder._commandContainer
+        _signalBinder._commandContainer
             .BindFactory<DuplicateEventBoxCommand, PlaceholderFactory<DuplicateEventBoxCommand>>();
-        signalBinder._commandContainer
+        _signalBinder._commandContainer
             .BindFactory<LolighterCommand, PlaceholderFactory<LolighterCommand>>();
     }
 }

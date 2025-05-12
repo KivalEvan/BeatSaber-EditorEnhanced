@@ -11,32 +11,48 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CopyEventBoxViewController(
-    SignalBus signalBus,
-    EditBeatmapViewController ebvc,
-    EditorLayoutStackBuilder editorLayoutStack,
-    EditorLayoutHorizontalBuilder editorLayoutHorizontal,
-    EditorButtonBuilder editorBtn,
-    EditorTextBuilder editorText) : IInitializable, IDisposable
+internal class CopyEventBoxViewController : IInitializable, IDisposable
 {
+    private readonly EditBeatmapViewController _ebvc;
+    private readonly EditorButtonBuilder _editorBtn;
+    private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
+    private readonly EditorLayoutStackBuilder _editorLayoutStack;
+    private readonly EditorTextBuilder _editorText;
+    private readonly SignalBus _signalBus;
+
+    public CopyEventBoxViewController(SignalBus signalBus,
+        EditBeatmapViewController ebvc,
+        EditorLayoutStackBuilder editorLayoutStack,
+        EditorLayoutHorizontalBuilder editorLayoutHorizontal,
+        EditorButtonBuilder editorBtn,
+        EditorTextBuilder editorText)
+    {
+        _signalBus = signalBus;
+        _ebvc = ebvc;
+        _editorLayoutStack = editorLayoutStack;
+        _editorLayoutHorizontal = editorLayoutHorizontal;
+        _editorBtn = editorBtn;
+        _editorText = editorText;
+    }
+
     public void Dispose()
     {
     }
 
     public void Initialize()
     {
-        var target = ebvc._eventBoxesView._eventBoxView;
+        var target = _ebvc._eventBoxesView._eventBoxView;
 
-        var stackTag = editorLayoutStack.CreateNew()
+        var stackTag = _editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var horizontalTag = editorLayoutHorizontal.CreateNew()
+        var horizontalTag = _editorLayoutHorizontal.CreateNew()
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(false)
             .SetPadding(new RectOffset(8, 8, 8, 8));
-        var btnTag = editorBtn.CreateNew()
+        var btnTag = _editorBtn.CreateNew()
             .SetFontSize(16);
-        var textTag = editorText.CreateNew()
+        var textTag = _editorText.CreateNew()
             .SetFontSize(20)
             .SetFontWeight(FontWeight.Bold)
             .SetTextAlignment(TextAlignmentOptions.Center);
@@ -71,17 +87,17 @@ internal class CopyEventBoxViewController(
 
     private void CopyEventBox()
     {
-        signalBus.Fire(new CopyEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox));
+        _signalBus.Fire(new CopyEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox));
     }
 
     private void PasteEventBox()
     {
-        signalBus.Fire(new PasteEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox));
+        _signalBus.Fire(new PasteEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox));
     }
 
     private void DuplicateEventBox()
     {
-        signalBus.Fire(
-            new DuplicateEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox));
+        _signalBus.Fire(
+            new DuplicateEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox));
     }
 }

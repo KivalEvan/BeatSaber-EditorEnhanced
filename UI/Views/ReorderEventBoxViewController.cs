@@ -11,33 +11,48 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class ReorderEventBoxViewController(
-    SignalBus signalBus,
-    EditBeatmapViewController ebvc,
-    EditorLayoutStackBuilder editorLayoutStack,
-    EditorLayoutHorizontalBuilder editorLayoutHorizontal,
-    EditorButtonBuilder editorBtn,
-    EditorTextBuilder editorText)
-    : IInitializable, IDisposable
+internal class ReorderEventBoxViewController : IInitializable, IDisposable
 {
+    private readonly EditBeatmapViewController _ebvc;
+    private readonly EditorButtonBuilder _editorBtn;
+    private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
+    private readonly EditorLayoutStackBuilder _editorLayoutStack;
+    private readonly EditorTextBuilder _editorText;
+    private readonly SignalBus _signalBus;
+
+    public ReorderEventBoxViewController(SignalBus signalBus,
+        EditBeatmapViewController ebvc,
+        EditorLayoutStackBuilder editorLayoutStack,
+        EditorLayoutHorizontalBuilder editorLayoutHorizontal,
+        EditorButtonBuilder editorBtn,
+        EditorTextBuilder editorText)
+    {
+        _signalBus = signalBus;
+        _ebvc = ebvc;
+        _editorLayoutStack = editorLayoutStack;
+        _editorLayoutHorizontal = editorLayoutHorizontal;
+        _editorBtn = editorBtn;
+        _editorText = editorText;
+    }
+
     public void Dispose()
     {
     }
 
     public void Initialize()
     {
-        var target = ebvc._eventBoxesView._eventBoxView;
+        var target = _ebvc._eventBoxesView._eventBoxView;
 
-        var stackTag = editorLayoutStack.CreateNew()
+        var stackTag = _editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var horizontalTag = editorLayoutHorizontal.CreateNew()
+        var horizontalTag = _editorLayoutHorizontal.CreateNew()
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(false)
             .SetPadding(new RectOffset(8, 8, 8, 8));
-        var btnTag = editorBtn.CreateNew()
+        var btnTag = _editorBtn.CreateNew()
             .SetFontSize(16);
-        var textTag = editorText.CreateNew()
+        var textTag = _editorText.CreateNew()
             .SetFontSize(20)
             .SetFontWeight(FontWeight.Bold)
             .SetTextAlignment(TextAlignmentOptions.Center);
@@ -70,25 +85,25 @@ internal class ReorderEventBoxViewController(
 
     private void MoveEventBoxTop()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox,
+        _signalBus.Fire(new ReorderEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox,
             ReorderType.Top));
     }
 
     private void MoveEventBoxUp()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox,
+        _signalBus.Fire(new ReorderEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox,
             ReorderType.Up));
     }
 
     private void MoveEventBoxDown()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox,
+        _signalBus.Fire(new ReorderEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox,
             ReorderType.Down));
     }
 
     private void MoveEventBoxBottom()
     {
-        signalBus.Fire(new ReorderEventBoxSignal(ebvc._eventBoxesView._eventBoxView._eventBox,
+        _signalBus.Fire(new ReorderEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox,
             ReorderType.Bottom));
     }
 }
