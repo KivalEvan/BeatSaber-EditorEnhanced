@@ -27,12 +27,6 @@
         <Reference Include="0Harmony">
             <HintPath>$(BeatSaberDir)\Libs\0Harmony.dll</HintPath>
         </Reference>
-        <Reference Include="BeatmapCore">
-            <HintPath>..\..\..\.steam\steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
-        </Reference>
-        <Reference Include="BeatSaber.TrackDefinitions">
-            <HintPath>..\..\..\.steam\steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\BeatSaber.TrackDefinitions.dll</HintPath>
-        </Reference>
         <Reference Include="BeatSaber.ViewSystem">
             <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\BeatSaber.ViewSystem.dll</HintPath>
         </Reference>
