@@ -9,23 +9,36 @@ using TMPro;
 using Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorButtonBuilder(EditBeatmapViewController ebvc, TimeTweeningManager twm)
+public class EditorButtonBuilder
 {
+    [Inject] private readonly EditBeatmapViewController _ebvc;
+    [Inject] private readonly TimeTweeningManager _twm;
+
     public EditorButtonTag CreateNew()
     {
-        return new EditorButtonTag(ebvc, twm);
+        return new EditorButtonTag(_ebvc, _twm);
     }
 }
 
-public class EditorButtonTag(EditBeatmapViewController ebvc, TimeTweeningManager twm) : IUIButton, IUIText
+public class EditorButtonTag : IUIButton, IUIText
 {
+    private readonly EditBeatmapViewController _ebvc;
+    private readonly TimeTweeningManager _twm;
+
+    public EditorButtonTag(EditBeatmapViewController ebvc, TimeTweeningManager twm)
+    {
+        _ebvc = ebvc;
+        _twm = twm;
+    }
+
     public string[] Aliases => ["editor-button"];
 
-    private Button PrefabButton => ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
+    private Button PrefabButton => _ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
 
     [CanBeNull] public List<Action> OnClick { get; set; } = [];
     [CanBeNull] public string Text { get; set; }
@@ -42,7 +55,7 @@ public class EditorButtonTag(EditBeatmapViewController ebvc, TimeTweeningManager
         OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
 
         var comp = button.GetComponent<NoTransitionButtonSelectableStateController>();
-        ((SelectableStateController)comp).SetField("_tweeningManager", twm);
+        ((SelectableStateController)comp).SetField("_tweeningManager", _twm);
 
         var btnObject = button.gameObject;
         btnObject.SetActive(false);

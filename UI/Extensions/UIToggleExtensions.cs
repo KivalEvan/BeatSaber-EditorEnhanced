@@ -23,13 +23,13 @@ public static class UIToggleExtensions
             .ResetOnValueChange(fn)
             .AddOnValueChange(fn);
     }
-    
+
     public static T SetBool<T>(this T self, bool value) where T : IUIToggle
     {
         self.Bool = value;
         return self;
     }
-    
+
     public static T SetSize<T>(this T self, float value) where T : IUIToggle
     {
         self.Size = value;

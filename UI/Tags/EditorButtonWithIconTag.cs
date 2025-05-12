@@ -11,25 +11,38 @@ using TMPro;
 using Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorButtonWithIconBuilder(EditBeatmapViewController ebvc, TimeTweeningManager twm)
+public class EditorButtonWithIconBuilder
 {
+    [Inject] private readonly EditBeatmapViewController _ebvc;
+    [Inject] private readonly TimeTweeningManager _twm;
+
     public EditorButtonWithIconTag CreateNew()
     {
-        return new EditorButtonWithIconTag(ebvc, twm);
+        return new EditorButtonWithIconTag(_ebvc, _twm);
     }
 }
 
-public class EditorButtonWithIconTag(EditBeatmapViewController ebvc, TimeTweeningManager twm) : IUIButton, IUIText
+public class EditorButtonWithIconTag : IUIButton, IUIText
 {
+    private readonly EditBeatmapViewController _ebvc;
+    private readonly TimeTweeningManager _twm;
     public string ImagePath;
+
+    public EditorButtonWithIconTag(EditBeatmapViewController ebvc, TimeTweeningManager twm)
+    {
+        _ebvc = ebvc;
+        _twm = twm;
+    }
+
     public string[] Aliases => ["editor-button-with-icon", "editor-icon-button"];
 
     private Button PrefabButton =>
-        ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
+        _ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
 
     public List<Action> OnClick { get; set; } = [];
     [CanBeNull] public string Text { get; set; }
@@ -46,7 +59,7 @@ public class EditorButtonWithIconTag(EditBeatmapViewController ebvc, TimeTweenin
         OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
 
         var comp = button.GetComponent<NoTransitionButtonSelectableStateController>();
-        ((SelectableStateController)comp).SetField("_tweeningManager", twm);
+        ((SelectableStateController)comp).SetField("_tweeningManager", _twm);
 
         Object.Destroy(button.transform.Find("BeatmapEditorLabel").gameObject);
 

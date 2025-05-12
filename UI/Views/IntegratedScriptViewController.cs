@@ -6,26 +6,25 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-public class IntegratedScriptViewController(
-    EditBeatmapViewController ebvc,
-    EditorButtonBuilder editorButtonBuilder,
-    EditorTextBuilder editorTextBuilder,
-    EditorLayoutStackBuilder editorEditorLayoutStackBuilder,
-    EditorLayoutHorizontalBuilder editorEditorLayoutHorizontalBuilder) : IInitializable
+public class IntegratedScriptViewController : IInitializable
 {
+    [Inject] private readonly EditBeatmapViewController _ebvc;
+    [Inject] private readonly EditorButtonBuilder _editorButtonBuilder;
+    [Inject] private readonly EditorLayoutHorizontalBuilder _editorEditorLayoutHorizontalBuilder;
+    [Inject] private readonly EditorTextBuilder _editorTextBuilder;
     private GameObject _view;
-    
+
     public void Initialize()
     {
-        var buttonTag = editorButtonBuilder.CreateNew();
-        var stackTag = editorEditorLayoutHorizontalBuilder.CreateNew();
-        var textTag = editorTextBuilder.CreateNew();
-        
-        _view = stackTag.CreateObject(ebvc.transform);
+        var buttonTag = _editorButtonBuilder.CreateNew();
+        var stackTag = _editorEditorLayoutHorizontalBuilder.CreateNew();
+        var textTag = _editorTextBuilder.CreateNew();
+
+        _view = stackTag.CreateObject(_ebvc.transform);
         textTag.SetText("Integrated Script").CreateObject(_view.transform);
-        
+
         buttonTag.SetText("Integrated Script").SetOnClick(ToggleView)
-            .CreateObject(ebvc._beatmapEditorExtendedSettingsView.transform);
+            .CreateObject(_ebvc._beatmapEditorExtendedSettingsView.transform);
     }
 
     private void ToggleView()

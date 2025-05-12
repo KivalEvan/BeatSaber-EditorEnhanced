@@ -7,11 +7,9 @@ using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
 using Zenject;
 
-namespace EditorEnhanced.UI.Views;
+namespace EditorEnhanced.UI;
 
-public class ScrollableYourInput(
-    EditBeatmapViewController ebvc,
-    BeatmapState bs) : IInitializable
+public class ScrollableYourInput : IInitializable
 {
     private static readonly Dictionary<PrecisionType, float> PrecisionFloat = new()
     {
@@ -45,13 +43,16 @@ public class ScrollableYourInput(
         }
     };
 
+    [Inject] private readonly BeatmapState _bs;
+    [Inject] private readonly EditBeatmapViewController _ebvc;
+
     public void Initialize()
     {
-        var ebv = ebvc._eventBoxesView._eventBoxView;
+        var ebv = _ebvc._eventBoxesView._eventBoxView;
 
         ApplyScrollableFloatInput(ebv._beatDistributionInput,
             val => ebv._beatDistributionInput.ValidateInput(
-                (ebv._beatDistributionInput.value + val * PrecisionFloat[bs.scrollPrecision])
+                (ebv._beatDistributionInput.value + val * PrecisionFloat[_bs.scrollPrecision])
                 .ToString(CultureInfo.InvariantCulture)));
         ebv._beatDistributionInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
 
@@ -65,7 +66,7 @@ public class ScrollableYourInput(
 
         ApplyScrollableIntInput(ebv._indexFilterView._limitValidator,
             val => ebv._indexFilterView._limitValidator.ValidateInput(
-                (ebv._indexFilterView._limitValidator.value + val * PrecisionInt[bs.scrollPrecision])
+                (ebv._indexFilterView._limitValidator.value + val * PrecisionInt[_bs.scrollPrecision])
                 .ToString(CultureInfo.InvariantCulture)));
         ebv._indexFilterView._limitValidator._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
         ebv._indexFilterView._limitValidator._min = 0;
@@ -76,14 +77,14 @@ public class ScrollableYourInput(
         ApplyScrollableFloatInput(ebv._brightnessDistributionView._brightnessDistributionParamInput,
             val => ebv._brightnessDistributionView._brightnessDistributionParamInput.ValidateInput(
                 (ebv._brightnessDistributionView._brightnessDistributionParamInput.value +
-                 val * LightColorEventHelper._precisions[bs.scrollPrecision]).ToString(CultureInfo.InvariantCulture)));
+                 val * LightColorEventHelper._precisions[_bs.scrollPrecision]).ToString(CultureInfo.InvariantCulture)));
 
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
             FloatInputFieldValidator.ValidatorType.None;
         ApplyScrollableFloatInput(ebv._rotationDistributionView._rotationDistributionParamInput,
             val => ebv._rotationDistributionView._rotationDistributionParamInput.ValidateInput(
                 (ebv._rotationDistributionView._rotationDistributionParamInput.value +
-                 val * ModifyHoveredLightRotationDeltaRotationCommand._precisions[bs.scrollPrecision])
+                 val * ModifyHoveredLightRotationDeltaRotationCommand._precisions[_bs.scrollPrecision])
                 .ToString(CultureInfo.InvariantCulture)));
 
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
@@ -91,7 +92,7 @@ public class ScrollableYourInput(
         ApplyScrollableFloatInput(ebv._gapDistributionView._translationDistributionParamInput,
             val => ebv._gapDistributionView._translationDistributionParamInput.ValidateInput(
                 (ebv._gapDistributionView._translationDistributionParamInput.value +
-                 val * ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[bs.scrollPrecision])
+                 val * ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[_bs.scrollPrecision])
                 .ToString(CultureInfo.InvariantCulture)));
 
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
@@ -99,7 +100,7 @@ public class ScrollableYourInput(
         ApplyScrollableFloatInput(ebv._fxDistributionView._fxDistributionParamInput,
             val => ebv._fxDistributionView._fxDistributionParamInput.ValidateInput(
                 (ebv._fxDistributionView._fxDistributionParamInput.value +
-                 val * ModifyHoveredFloatFxDeltaValueCommand._precisions[bs.scrollPrecision])
+                 val * ModifyHoveredFloatFxDeltaValueCommand._precisions[_bs.scrollPrecision])
                 .ToString(CultureInfo.InvariantCulture)));
     }
 

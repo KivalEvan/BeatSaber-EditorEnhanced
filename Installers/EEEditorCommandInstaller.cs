@@ -1,6 +1,5 @@
 using BeatmapEditor3D;
 using EditorEnhanced.Commands;
-using EditorEnhanced.Patches;
 using Zenject;
 
 namespace EditorEnhanced.Installers;
