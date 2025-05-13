@@ -51,9 +51,9 @@ internal class ReorderEventBoxViewController : IInitializable, IDisposable
             .SetChildControlWidth(false)
             .SetPadding(new RectOffset(8, 8, 8, 8));
         var btnTag = _editorBtn.CreateNew()
-            .SetFontSize(16);
+            .SetFontSize(16f);
         var textTag = _editorText.CreateNew()
-            .SetFontSize(20)
+            .SetFontSize(18f)
             .SetFontWeight(FontWeight.Bold)
             .SetTextAlignment(TextAlignmentOptions.Center);
 

@@ -72,13 +72,13 @@ public class EditorCheckboxTag : IUIToggle, IUIText
         horizontalLayoutGroup.childControlWidth = false;
         horizontalLayoutGroup.childControlHeight = false;
         horizontalLayoutGroup.spacing = 2f;
+        horizontalLayoutGroup.childAlignment = TextAnchor.MiddleLeft;
         // var layoutElement = toggleObject.AddComponent<LayoutElement>();
         // layoutElement.flexibleWidth = 1f;
 
         var contentWrapper = new GameObject("ContentWrapper");
         contentWrapper.transform.SetParent(toggleObject.transform, false);
         var stackLayoutGroup = contentWrapper.AddComponent<StackLayoutGroup>();
-        stackLayoutGroup.childAlignment = TextAnchor.MiddleLeft;
         // stackLayoutGroup.padding = new RectOffset(12, 12, 6, 6);
 
         var labelObject = toggle.transform.Find("BeatmapEditorLabel").gameObject;

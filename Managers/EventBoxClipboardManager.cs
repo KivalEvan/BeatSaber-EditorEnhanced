@@ -53,7 +53,8 @@ public class EventBoxClipboardManager : IInitializable
             EventBoxGroupType.Color => lightColorEventBoxClipboard,
             EventBoxGroupType.Rotation => lightRotationEventBoxClipboard,
             EventBoxGroupType.Translation => lightTranslationEventBoxClipboard,
-            EventBoxGroupType.FloatFx => fxEventBoxClipboard
+            EventBoxGroupType.FloatFx => fxEventBoxClipboard,
+            _ => null,
         };
     }
 }
