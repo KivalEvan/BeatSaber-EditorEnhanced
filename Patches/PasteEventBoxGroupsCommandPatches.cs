@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace EditorEnhanced.Patches;
 
-public class PasteEventBoxGroupsCommandPatch : IAffinity
+public class PasteEventBoxGroupsCommandPatches : IAffinity
 {
     private readonly RandomSeedClipboardManager _rscm;
 
-    public PasteEventBoxGroupsCommandPatch(RandomSeedClipboardManager rscm)
+    public PasteEventBoxGroupsCommandPatches(RandomSeedClipboardManager rscm)
     {
         _rscm = rscm;
     }

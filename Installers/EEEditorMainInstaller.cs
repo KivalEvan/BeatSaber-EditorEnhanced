@@ -14,6 +14,8 @@ public class EEEditorMainInstaller : Installer
 
         Container.BindInterfacesAndSelfTo<LightEventsPayloadPatches>().AsSingle();
         Container.BindInterfacesAndSelfTo<ModifyHoveredLightEventDeltaIntensityCommandPatches>().AsSingle();
-        Container.BindInterfacesAndSelfTo<PasteEventBoxGroupsCommandPatch>().AsSingle();
+        Container.BindInterfacesAndSelfTo<ModifyHoveredLightTranslationDeltaTranslationCommandPatches>().AsSingle();
+        // Container.BindInterfacesAndSelfTo<ModifyHoveredLightRotationDeltaRotationCommandPatches>().AsSingle();
+        Container.BindInterfacesAndSelfTo<PasteEventBoxGroupsCommandPatches>().AsSingle();
     }
 }
