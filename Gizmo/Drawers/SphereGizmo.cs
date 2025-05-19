@@ -8,9 +8,16 @@ internal static class SphereGizmo
 
     public static GameObject Create(Material material)
     {
+        if (SObject != null) return SObject;
         var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
+        var lineRenderer = go.AddComponent<LineRenderer>();
+        lineRenderer.startWidth = 0.1f;
+        lineRenderer.endWidth = 0.1f;
+        
+        var lineRenderController = go.AddComponent<LineRenderController>();
+        lineRenderController.enabled = false;
         go.gameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         return go;
     }

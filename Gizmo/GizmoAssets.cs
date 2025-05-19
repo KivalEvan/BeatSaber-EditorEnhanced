@@ -19,13 +19,15 @@ internal enum GizmoType
 
 internal class GizmoAssets : IInitializable, IDisposable
 {
-    private static readonly Material _defaultMaterial = FetchMaterial();
+    private readonly SignalBus _signalBus;
+
+    public static readonly Material DefaultMaterial = FetchMaterial();
     private readonly List<GameObject> _colorObjects = [];
     private readonly List<GameObject> _fxObjects = [];
     private readonly List<GameObject> _rotationObjects = [];
+    private readonly List<GameObject> _translationObjects = [];
 
     private readonly Material[] _sharedMaterials = new Material[ColorAssignment.HueRange];
-    private readonly List<GameObject> _translationObjects = [];
 
     public void Dispose()
     {
@@ -40,17 +42,22 @@ internal class GizmoAssets : IInitializable, IDisposable
         _fxObjects.Clear();
     }
 
-    public void Initialize()
+    public GizmoAssets(SignalBus signalBus)
     {
-        CubeGizmo.SObject = CubeGizmo.Create(_defaultMaterial);
-        RotationGizmo.SObject = RotationGizmo.Create(_defaultMaterial);
-        TranslationGizmo.SObject = TranslationGizmo.Create(_defaultMaterial);
-        SphereGizmo.SObject = SphereGizmo.Create(_defaultMaterial);
+        _signalBus = signalBus;
     }
 
-    private Material GetOrCreateMaterial(int index)
+    public void Initialize()
     {
-        if (index < 0 || index >= ColorAssignment.HueRange) return _defaultMaterial;
+        CubeGizmo.SObject = CubeGizmo.Create(DefaultMaterial);
+        RotationGizmo.SObject = RotationGizmo.Create(DefaultMaterial);
+        TranslationGizmo.SObject = TranslationGizmo.Create(DefaultMaterial);
+        SphereGizmo.SObject = SphereGizmo.Create(DefaultMaterial);
+    }
+
+    public Material GetOrCreateMaterial(int index)
+    {
+        if (index < 0 || index >= ColorAssignment.HueRange) return DefaultMaterial;
         if (_sharedMaterials[index] != null) return _sharedMaterials[index];
         var color = ColorAssignment.GetColorFromIndex(index);
         _sharedMaterials[index] = CreateMaterial(color);
@@ -65,7 +72,7 @@ internal class GizmoAssets : IInitializable, IDisposable
 
     private static Material CreateMaterial(Color color)
     {
-        var mat = new Material(_defaultMaterial);
+        var mat = new Material(DefaultMaterial);
         mat.SetColor("_Color", color);
         return mat;
     }
@@ -95,7 +102,23 @@ internal class GizmoAssets : IInitializable, IDisposable
             objects.Add(go);
         }
 
-        go.GetComponent<Renderer>().material = GetOrCreateMaterial(colorIdx);
+        var mat = GetOrCreateMaterial(colorIdx);
+        go.GetComponent<Renderer>().material = mat;
+        
+        var gizmoDraggable = go.GetComponent<GizmoDraggable>();
+        if (gizmoDraggable != null)
+        {
+            gizmoDraggable.SignalBus = _signalBus;
+        }
+
+        var lineRenderController = go.GetComponent<LineRenderController>();
+        if (lineRenderController != null)
+        {
+            lineRenderController.SetMaterial(mat);
+            lineRenderController.SetTransforms([]);
+            lineRenderController.enabled = false;
+        }
+
         go.SetActive(true);
         return go;
     }

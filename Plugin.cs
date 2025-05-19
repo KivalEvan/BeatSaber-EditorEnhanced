@@ -25,7 +25,7 @@ internal class Plugin
         zenjector.Install<EEAppInstaller>(Location.App, pluginConfig);
         // zenjector.Install<EEMenuInstaller>(Location.Menu);
 
-        zenjector.Install<EEEditorMainInstaller, BeatmapLevelEditorInstaller>();
+        zenjector.Install<EEEditorInstaller, BeatmapLevelEditorInstaller>();
         zenjector.Install<EEEditorUIInstaller, BeatmapEditorViewControllersInstaller>();
         zenjector.Install<EEEditorCommandInstaller, CommandInstaller>();
 

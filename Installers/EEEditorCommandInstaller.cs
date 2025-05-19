@@ -11,6 +11,7 @@ public class EEEditorCommandInstaller
     {
         // this is the dumbest way i ever had to deal with DI
         Container.BindInterfacesAndSelfTo<EEEditorCommandInitializer>().AsSingle();
+        InstallCommands<DragGizmoLightTranslationEventBoxSignal, DragGizmoLightTranslationEventBoxCommand>(Container);
         InstallCommands<ReorderEventBoxSignal, ReorderEventBoxCommand>(Container);
         InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>(Container);
         InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container);

@@ -5,7 +5,7 @@ using Zenject;
 
 namespace EditorEnhanced.Installers;
 
-public class EEEditorMainInstaller : Installer
+public class EEEditorInstaller : Installer
 {
     public override void InstallBindings()
     {

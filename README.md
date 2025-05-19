@@ -6,6 +6,8 @@ For level designer, by level designer, to improve your workflow with various QOL
 
 * v3 Light Gizmo
     * Highlight color, rotation, translation and FX with their orientation
+    * Draggable translation gizmo
+      * Creates event based on event box context, cursor time and event box state
 * Camera Position Preset
     * **[1]** Default Editor Camera
     * **[2]** Player Stand Camera
