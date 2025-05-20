@@ -104,7 +104,7 @@ internal class GizmoAssets : IInitializable, IDisposable
         }
 
         var mat = GetOrCreateMaterial(colorIdx);
-        go.GetComponent<Renderer>().material = mat;
+        go.GetComponent<Renderer>().sharedMaterial = mat;
         
         var gizmoDraggable = go.GetComponent<GizmoDraggable>();
         if (gizmoDraggable != null)

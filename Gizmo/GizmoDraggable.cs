@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Controller;
 using BeatmapEditor3D.DataModels;
@@ -21,6 +22,7 @@ public class GizmoDraggable : MonoBehaviour
     private Vector3 _initialEuler;
     private Vector3 _initialScreenPosition;
     private float _angleOffset;
+    private bool _isDragging;
 
     public void OnMouseDrag()
     {
@@ -62,6 +64,8 @@ public class GizmoDraggable : MonoBehaviour
         _angleOffset = (Mathf.Atan2(transform.right.y, transform.right.x) -
                         Mathf.Atan2(screenPosition.y, screenPosition.x)) *
                        Mathf.Rad2Deg;
+        _isDragging = true;
+        AddOutline();
     }
 
     public void OnMouseUp()
@@ -86,23 +90,41 @@ public class GizmoDraggable : MonoBehaviour
         }
 
         transform.parent.localPosition = Vector3.zero;
+        RemoveOutline();
+        _isDragging = false;
     }
 
     public void OnMouseEnter()
     {
-        var renderer = gameObject.GetComponent<Renderer>();
-        renderer.materials = [GizmoAssets.OutlineMaterial, renderer.material];
+        if (!_isDragging) AddOutline();
     }
 
     public void OnMouseExit()
     {
-        var renderer = gameObject.GetComponent<Renderer>();
-        renderer.material = renderer.materials[1];
+        if (!_isDragging) RemoveOutline();
     }
 
     private Vector3 GetScreenPosition()
     {
         return new Vector3(Mouse.current.position.x.value, Mouse.current.position.y.value,
             Camera.main.WorldToScreenPoint(transform.parent.position).z);
+    }
+
+    private void AddOutline()
+    {
+        var renderer = gameObject.GetComponent<Renderer>();
+        var mats = new List<Material>();
+        renderer.GetSharedMaterials(mats);
+        if (!mats.Contains(GizmoAssets.OutlineMaterial)) mats.Insert(0, GizmoAssets.OutlineMaterial);
+        renderer.SetSharedMaterials(mats);
+    }
+
+    private void RemoveOutline()
+    {
+        var renderer = gameObject.GetComponent<Renderer>();
+        var mats = new List<Material>();
+        renderer.GetSharedMaterials(mats);
+        mats.Remove(GizmoAssets.OutlineMaterial);
+        renderer.SetSharedMaterials(mats);
     }
 }
