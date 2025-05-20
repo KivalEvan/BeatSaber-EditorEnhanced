@@ -131,12 +131,19 @@ internal class GizmoManager : IInitializable, IDisposable
             var (idx, groupIndex, eventBoxContext, distributed, transform) = item;
 
             var colorIdx = ColorAssignment.GetColorIndexEventBox(groupIndex, idx, distributed);
-
+            Vector3 localScale;
+            Vector3 lossyScale;
+            
             if (!ids.Contains(groupIndex))
             {
                 var laneGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
                 laneGizmo.transform.SetParent(_colorManager.transform.root, false);
                 laneGizmo.transform.localPosition = new Vector3((groupIndex - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
+                
+                localScale = laneGizmo.transform.localScale;
+                lossyScale = laneGizmo.transform.lossyScale;
+                laneGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 0.333f, localScale.y / lossyScale.y * 0.1f, localScale.z / lossyScale.z * 0.1f);
+
                 _gizmos.Add(laneGizmo);
                 ids.Add(groupIndex);
             }
@@ -151,8 +158,13 @@ internal class GizmoManager : IInitializable, IDisposable
             };
 
             var baseGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
+            
             baseGizmo.transform.localPosition = Vector3.zero;
             baseGizmo.transform.SetParent(transform.transform, false);
+
+            localScale = baseGizmo.transform.localScale;
+            lossyScale = baseGizmo.transform.lossyScale;
+            baseGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 0.5f, localScale.y / lossyScale.y * 0.5f, localScale.z / lossyScale.z * 0.5f);
 
             var modGizmo = groupType switch
             {
@@ -163,6 +175,11 @@ internal class GizmoManager : IInitializable, IDisposable
             if (modGizmo != null)
             {
                 modGizmo.transform.SetParent(baseGizmo.transform, false);
+                
+                localScale = modGizmo.transform.localScale;
+                lossyScale = modGizmo.transform.lossyScale;
+                modGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 2f, localScale.y / lossyScale.y * 2f, localScale.z / lossyScale.z * 2f);
+                
                 modGizmo.transform.localRotation = groupType switch
                 {
                     EventBoxGroupType.Translation or EventBoxGroupType.Rotation => axis switch

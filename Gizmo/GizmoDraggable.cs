@@ -82,8 +82,8 @@ public class GizmoDraggable : MonoBehaviour
             var value = Axis switch
             {
                 LightAxis.X => result.x / ltg.xTranslationLimits.y,
-                LightAxis.Y => result.y / ltg.xTranslationLimits.y,
-                LightAxis.Z => result.z / ltg.xTranslationLimits.y,
+                LightAxis.Y => result.y / ltg.yTranslationLimits.y,
+                LightAxis.Z => result.z / ltg.zTranslationLimits.y,
                 _ => throw new ArgumentOutOfRangeException()
             };
             SignalBus.Fire(new DragGizmoLightTranslationEventBoxSignal(EventBoxEditorDataContext, value));

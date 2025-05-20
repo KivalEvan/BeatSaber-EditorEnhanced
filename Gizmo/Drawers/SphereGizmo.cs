@@ -15,10 +15,11 @@ internal static class SphereGizmo
         var lineRenderer = go.AddComponent<LineRenderer>();
         lineRenderer.startWidth = 0.1f;
         lineRenderer.endWidth = 0.1f;
+        lineRenderer.positionCount = 0;
         
         var lineRenderController = go.AddComponent<LineRenderController>();
         lineRenderController.enabled = false;
-        go.gameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        
         return go;
     }
 }
