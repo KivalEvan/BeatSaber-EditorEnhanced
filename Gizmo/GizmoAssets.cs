@@ -21,7 +21,8 @@ internal class GizmoAssets : IInitializable, IDisposable
 {
     private readonly SignalBus _signalBus;
 
-    public static readonly Material DefaultMaterial = FetchMaterial();
+    public static readonly Material DefaultMaterial = FetchMaterial("Assets/Shaders/Gizmo.mat");
+    public static readonly Material OutlineMaterial = FetchMaterial("Assets/Shaders/Outline.mat");
     private readonly List<GameObject> _colorObjects = [];
     private readonly List<GameObject> _fxObjects = [];
     private readonly List<GameObject> _rotationObjects = [];
@@ -64,10 +65,10 @@ internal class GizmoAssets : IInitializable, IDisposable
         return _sharedMaterials[index];
     }
 
-    private static Material FetchMaterial()
+    private static Material FetchMaterial(string path)
     {
         var bundle = AssetLoader.LoadFromResource(nameof(EditorEnhanced) + ".model");
-        return bundle.LoadAsset<Material>("Assets/Shaders/Unlit.mat");
+        return bundle.LoadAsset<Material>(path);
     }
 
     private static Material CreateMaterial(Color color)

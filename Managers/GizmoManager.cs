@@ -176,7 +176,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 };
             }
 
-            if (groupType == EventBoxGroupType.Translation)
+            if (groupType is EventBoxGroupType.Translation || groupType is EventBoxGroupType.Rotation)
             {
                 var gizmoDraggable = modGizmo.GetComponent<GizmoDraggable>();
                 gizmoDraggable.EventBoxEditorDataContext = eventBoxContext;
