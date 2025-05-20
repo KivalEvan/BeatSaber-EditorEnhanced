@@ -16,8 +16,6 @@ internal static class CubeGizmo
         lineRenderer.startWidth = 0.1f;
         lineRenderer.endWidth = 0.1f;
         
-        var gizmoDraggable = go.AddComponent<GizmoDraggable>();
-        
         var lineRenderController = go.AddComponent<LineRenderController>();
         lineRenderController.enabled = false;
         go.gameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
