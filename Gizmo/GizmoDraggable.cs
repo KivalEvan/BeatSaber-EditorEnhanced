@@ -30,6 +30,7 @@ public class GizmoDraggable : MonoBehaviour
 
         if (LightGroupSubsystemContext is not LightTranslationGroup ltg)
         {
+            transform.position = TargetTransform.position;
             var vec3 = screenPosition - _initialScreenPosition;
             var angle = Mathf.Atan2(vec3.y, vec3.x) * Mathf.Rad2Deg;
             var deltaRotation =

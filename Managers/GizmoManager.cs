@@ -138,6 +138,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 var laneGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
                 laneGizmo.transform.SetParent(_colorManager.transform.root, false);
                 laneGizmo.transform.localPosition = new Vector3((boxIndex - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
+                laneGizmo.transform.rotation = Quaternion.identity;
                 
                 localScale = laneGizmo.transform.localScale;
                 lossyScale = laneGizmo.transform.lossyScale;
@@ -159,11 +160,11 @@ internal class GizmoManager : IInitializable, IDisposable
             var baseGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
             baseGizmo.transform.SetParent(transform.parent.transform, false);
             baseGizmo.transform.position = transform.position;
-            // baseGizmo.transform.localRotation = transform.localRotation;
-            baseGizmo.transform.SetParent(transform.transform, true);
+            baseGizmo.transform.rotation = transform.parent.rotation;
             localScale = baseGizmo.transform.localScale;
             lossyScale = baseGizmo.transform.lossyScale;
             baseGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 0.5f, localScale.y / lossyScale.y * 0.5f, localScale.z / lossyScale.z * 0.5f);
+            baseGizmo.transform.SetParent(transform.transform, true);
 
             var modGizmo = groupType switch
             {
