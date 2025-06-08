@@ -50,13 +50,13 @@ public class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
             var list = _beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(eventBoxEditorData.id).ToList();
             previousEventBoxes.Add((eventBoxEditorData, list));
             newEventBoxes.Add((eventBoxEditorData, list));
+            
             if (eventBoxEditorData.id != selectedEventBox.id) continue;
             newIdx = idx + 1;
             newEventBoxes.Add((EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(eventBoxEditorData),
                 list
                     .Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d))
                     .ToList()));
-            break;
         }
 
         _eventBoxGroupId = eventBoxGroupId;

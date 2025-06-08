@@ -63,6 +63,7 @@ internal class CameraPresetViewController : IInitializable, IDisposable
             .SetFontSize(14);
 
         var mainLayout = horizontalTag.CreateObject(target.transform);
+        mainLayout.transform.SetSiblingIndex(target._copyDifficultyButton.transform.GetSiblingIndex());
         var stackLayout = stackTag.CreateObject(mainLayout.transform);
         textTag
             .SetText("Cam")

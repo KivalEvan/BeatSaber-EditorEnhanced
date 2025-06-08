@@ -10,6 +10,7 @@ internal static class SphereGizmo
     {
         if (SObject != null) return SObject;
         var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
         var lineRenderer = go.AddComponent<LineRenderer>();

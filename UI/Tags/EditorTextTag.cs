@@ -34,7 +34,7 @@ public class EditorTextTag : IUIText
     public string[] Aliases => ["editor-text", "editor-label"];
 
     private GameObject PrefabText =>
-        _ebvc._debugView._currentOverdrawText.gameObject;
+        _ebvc._activeSelectionView._arcsCountText.gameObject;
 
     [CanBeNull] public string Text { get; set; }
     public TextAlignmentOptions? TextAlignment { get; set; }

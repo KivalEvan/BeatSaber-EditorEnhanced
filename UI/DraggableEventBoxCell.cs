@@ -3,6 +3,7 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.LevelEditor;
 using BeatmapEditor3D.Types;
+using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using HMUI;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
 {
     private readonly EditBeatmapViewController _ebvc;
     private readonly SignalBus _signalBus;
+    private EventBoxesView _ebv;
 
     public DraggableEventBoxCell(SignalBus signalBus, EditBeatmapViewController ebvc)
     {
@@ -36,19 +38,21 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
 
     public void Initialize()
     {
+        _ebv = _ebvc._eventBoxesView;
+        
         SegmentedControlCell[] l =
         [
-            _ebvc._eventBoxesView._eventBoxButtonsTextSegmentedControl._firstCellPrefab,
-            _ebvc._eventBoxesView._eventBoxButtonsTextSegmentedControl._middleCellPrefab,
-            _ebvc._eventBoxesView._eventBoxButtonsTextSegmentedControl._lastCellPrefab,
-            _ebvc._eventBoxesView._eventBoxButtonsTextSegmentedControl._singleCellPrefab
+            _ebv._eventBoxButtonsTextSegmentedControl._firstCellPrefab,
+            _ebv._eventBoxButtonsTextSegmentedControl._middleCellPrefab,
+            _ebv._eventBoxButtonsTextSegmentedControl._lastCellPrefab,
+            _ebv._eventBoxButtonsTextSegmentedControl._singleCellPrefab
         ];
 
         foreach (var cell in l)
         {
             var comp = cell.gameObject.AddComponent<DragSwapSegmentCell>();
             comp.currentCell = cell;
-            comp.segmentedControl = _ebvc._eventBoxesView._eventBoxButtonsTextSegmentedControl;
+            comp.segmentedControl = _ebv._eventBoxButtonsTextSegmentedControl;
         }
 
         ApplyAction();
@@ -65,7 +69,7 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
 
     private void ApplyAction()
     {
-        foreach (var cell in _ebvc._eventBoxesView._eventBoxButtonsTextSegmentedControl.cells)
+        foreach (var cell in _ebv._eventBoxButtonsTextSegmentedControl.cells)
         {
             var component = cell.gameObject.GetComponent<DragSwapSegmentCell>();
             if (component != null) component.OnSwapAction ??= Reorder;
@@ -80,7 +84,7 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
 
     private void Reorder(int index, int moved)
     {
-        _signalBus.Fire(new ReorderEventBoxSignal(_ebvc._eventBoxesView._eventBoxes[index],
+        _signalBus.Fire(new ReorderEventBoxSignal(_ebv._eventBoxes[index],
             ReorderType.Any, index + moved));
     }
 }

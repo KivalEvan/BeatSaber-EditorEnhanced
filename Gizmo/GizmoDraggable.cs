@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
-using BeatmapEditor3D.Controller;
-using BeatmapEditor3D.DataModels;
 using EditorEnhanced.Commands;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 using Zenject;
 
 namespace EditorEnhanced.Gizmo;
@@ -18,6 +14,8 @@ public class GizmoDraggable : MonoBehaviour
     public EventBoxEditorData EventBoxEditorDataContext;
     public LightAxis Axis;
     public SignalBus SignalBus;
+    public Transform TargetTransform;
+    public bool Mirror;
 
     private Vector3 _initialEuler;
     private Vector3 _initialScreenPosition;
@@ -32,7 +30,6 @@ public class GizmoDraggable : MonoBehaviour
 
         if (LightGroupSubsystemContext is not LightTranslationGroup ltg)
         {
-            transform.parent.localPosition = Vector3.zero;
             var vec3 = screenPosition - _initialScreenPosition;
             var angle = Mathf.Atan2(vec3.y, vec3.x) * Mathf.Rad2Deg;
             var deltaRotation =
@@ -49,22 +46,24 @@ public class GizmoDraggable : MonoBehaviour
 
         transform.parent.localPosition = Axis switch
         {
-            LightAxis.X => transform.parent.localPosition with { y = 0, z = 0 },
-            LightAxis.Y => transform.parent.localPosition with { x = 0, z = 0 },
-            LightAxis.Z => transform.parent.localPosition with { x = 0, y = 0 },
+            LightAxis.X => transform.parent.localPosition with { y = TargetTransform.localPosition.y, z = TargetTransform.localPosition.z },
+            LightAxis.Y => transform.parent.localPosition with { x = TargetTransform.localPosition.x, z = TargetTransform.localPosition.z },
+            LightAxis.Z => transform.parent.localPosition with { x = TargetTransform.localPosition.x, y = TargetTransform.localPosition.y },
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
     public void OnMouseDown()
     {
+        // Plugin.Log.Info($"We drag mouse {gameObject.name}");
+        _isDragging = true;
+        transform.parent.SetParent(TargetTransform.parent, true);
         _initialScreenPosition = Camera.main.WorldToScreenPoint(transform.position);
         _initialEuler = transform.eulerAngles;
         var screenPosition = GetScreenPosition();
         _angleOffset = (Mathf.Atan2(transform.right.y, transform.right.x) -
                         Mathf.Atan2(screenPosition.y, screenPosition.x)) *
                        Mathf.Rad2Deg;
-        _isDragging = true;
         AddOutline();
     }
 
@@ -77,8 +76,7 @@ public class GizmoDraggable : MonoBehaviour
 
         if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightTranslationGroup ltg)
         {
-            var result = transform.parent.parent.localPosition +
-                         transform.parent.localPosition;
+            var result = transform.parent.localPosition;
             var value = Axis switch
             {
                 LightAxis.X => result.x / ltg.xTranslationLimits.y,
@@ -86,16 +84,20 @@ public class GizmoDraggable : MonoBehaviour
                 LightAxis.Z => result.z / ltg.zTranslationLimits.y,
                 _ => throw new ArgumentOutOfRangeException()
             };
+            if (Mirror) value = -value;
             SignalBus.Fire(new DragGizmoLightTranslationEventBoxSignal(EventBoxEditorDataContext, value));
         }
 
-        transform.parent.localPosition = Vector3.zero;
+        // transform.parent.localPosition = Vector3.zero;
+        transform.parent.SetParent(TargetTransform, true);
+        transform.parent.position = TargetTransform.position;
         RemoveOutline();
         _isDragging = false;
     }
 
     public void OnMouseEnter()
     {
+        // Plugin.Log.Info($"We enter mouse {gameObject.name}");
         if (!_isDragging) AddOutline();
     }
 
@@ -118,7 +120,7 @@ public class GizmoDraggable : MonoBehaviour
         if (!mats.Contains(GizmoAssets.OutlineMaterial)) mats.Insert(0, GizmoAssets.OutlineMaterial);
         renderer.SetSharedMaterials(mats);
     }
-
+    
     private void RemoveOutline()
     {
         var renderer = gameObject.GetComponent<Renderer>();

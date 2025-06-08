@@ -1,5 +1,6 @@
 using System;
 using BeatmapEditor3D;
+using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
@@ -19,6 +20,7 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
     private readonly EditorLayoutStackBuilder _editorLayoutStack;
     private readonly EditorTextBuilder _editorText;
     private readonly SignalBus _signalBus;
+    private EventBoxesView _ebv;
 
     public CopyEventBoxViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
@@ -41,6 +43,7 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
 
     public void Initialize()
     {
+        _ebv = _ebvc._eventBoxesView;
         var target = _ebvc._eventBoxesView._eventBoxView;
 
         var stackTag = _editorLayoutStack.CreateNew()
@@ -87,17 +90,17 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
 
     private void CopyEventBox()
     {
-        _signalBus.Fire(new CopyEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox));
+        _signalBus.Fire(new CopyEventBoxSignal(_ebv._eventBoxView._eventBox));
     }
 
     private void PasteEventBox()
     {
-        _signalBus.Fire(new PasteEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox));
+        _signalBus.Fire(new PasteEventBoxSignal(_ebv._eventBoxView._eventBox));
     }
 
     private void DuplicateEventBox()
     {
         _signalBus.Fire(
-            new DuplicateEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox));
+            new DuplicateEventBoxSignal(_ebv._eventBoxView._eventBox));
     }
 }

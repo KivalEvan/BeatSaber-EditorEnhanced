@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
+using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.Managers;
 using EditorEnhanced.UI.Extensions;
@@ -25,6 +26,7 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
     private readonly RandomSeedClipboardManager _rscm;
     private readonly SignalBus _signalBus;
     private readonly List<GameObject> _texts = [];
+    private EventBoxesView _ebv;
 
     public RandomSeedClipboardViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
@@ -55,7 +57,7 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
 
     public void Initialize()
     {
-        var target = _ebvc._eventBoxesView._eventBoxView._indexFilterView;
+        _ebv = _ebvc._eventBoxesView;
         var targetNav = _ebnvc._eventBoxGroupsToolbarView;
 
         var verticalTag = _elvb.CreateNew();
@@ -104,14 +106,14 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
             .SetText(_rscm.Seed.ToString())
             .SetFontSize(14f)
             .SetTextAlignment(TextAlignmentOptions.Left)
-            .CreateObject(target._randomSeedValidator.transform.parent);
+            .CreateObject(_ebv._eventBoxView._indexFilterView._randomSeedValidator.transform.parent);
         _texts.Add(text);
         text.GetComponent<RectTransform>()
             .anchoredPosition = new Vector2(-55f, -30f);
-        buttonTag.SetText("C").SetOnClick(CopySeed).CreateObject(target._newSeedButton.transform.parent)
+        buttonTag.SetText("C").SetOnClick(CopySeed).CreateObject(_ebv._eventBoxView._indexFilterView._newSeedButton.transform.parent)
             .GetComponent<RectTransform>()
             .anchoredPosition = new Vector2(-32f, -30f);
-        buttonTag.SetText("P").SetOnClick(PasteSeed).CreateObject(target._newSeedButton.transform.parent)
+        buttonTag.SetText("P").SetOnClick(PasteSeed).CreateObject(_ebv._eventBoxView._indexFilterView._newSeedButton.transform.parent)
             .GetComponent<RectTransform>()
             .anchoredPosition = new Vector2(0f, -30f);
     }
@@ -128,12 +130,12 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
 
     private void CopySeed()
     {
-        _rscm.Seed = _ebvc._eventBoxesView._eventBoxView._eventBox.indexFilter.seed;
+        _rscm.Seed = _ebv._eventBoxView._eventBox.indexFilter.seed;
         _texts.ForEach(t => t.GetComponent<CurvedTextMeshPro>().text = _rscm.Seed.ToString());
     }
 
     private void PasteSeed()
     {
-        _signalBus.Fire(new PasteEventBoxSeedSignal(_ebvc._eventBoxesView._eventBoxView._eventBox, _rscm.Seed));
+        _signalBus.Fire(new PasteEventBoxSeedSignal(_ebv._eventBoxView._eventBox, _rscm.Seed));
     }
 }

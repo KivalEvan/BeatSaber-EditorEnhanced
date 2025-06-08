@@ -1,5 +1,6 @@
 using System;
 using BeatmapEditor3D;
+using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
@@ -19,6 +20,7 @@ internal class ReorderEventBoxViewController : IInitializable, IDisposable
     private readonly EditorLayoutStackBuilder _editorLayoutStack;
     private readonly EditorTextBuilder _editorText;
     private readonly SignalBus _signalBus;
+    private EventBoxesView _ebv;
 
     public ReorderEventBoxViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
@@ -85,25 +87,25 @@ internal class ReorderEventBoxViewController : IInitializable, IDisposable
 
     private void MoveEventBoxTop()
     {
-        _signalBus.Fire(new ReorderEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox,
+        _signalBus.Fire(new ReorderEventBoxSignal(_ebv._eventBoxView._eventBox,
             ReorderType.Top));
     }
 
     private void MoveEventBoxUp()
     {
-        _signalBus.Fire(new ReorderEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox,
+        _signalBus.Fire(new ReorderEventBoxSignal(_ebv._eventBoxView._eventBox,
             ReorderType.Up));
     }
 
     private void MoveEventBoxDown()
     {
-        _signalBus.Fire(new ReorderEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox,
+        _signalBus.Fire(new ReorderEventBoxSignal(_ebv._eventBoxView._eventBox,
             ReorderType.Down));
     }
 
     private void MoveEventBoxBottom()
     {
-        _signalBus.Fire(new ReorderEventBoxSignal(_ebvc._eventBoxesView._eventBoxView._eventBox,
+        _signalBus.Fire(new ReorderEventBoxSignal(_ebv._eventBoxView._eventBox,
             ReorderType.Bottom));
     }
 }

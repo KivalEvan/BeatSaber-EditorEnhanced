@@ -12,6 +12,7 @@ internal static class RotationGizmo
         if (SObject != null) return SObject;
         var bundle = AssetLoader.LoadFromResource(nameof(EditorEnhanced) + ".model");
         var go = bundle.LoadAsset<GameObject>("Assets/rotation.prefab");
+        go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
         

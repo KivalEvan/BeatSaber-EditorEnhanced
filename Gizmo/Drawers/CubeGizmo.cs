@@ -10,6 +10,7 @@ internal static class CubeGizmo
     {
         if (SObject != null) return SObject;
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
         var lineRenderer = go.AddComponent<LineRenderer>();

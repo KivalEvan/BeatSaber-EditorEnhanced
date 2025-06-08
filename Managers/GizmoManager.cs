@@ -118,8 +118,7 @@ internal class GizmoManager : IInitializable, IDisposable
     }
 
     private void DoTheFunny(
-        IEnumerable<(int index, int groupIndex, EventBoxEditorData eventBoxContext, bool distributed, Transform
-            transform)> data,
+        IEnumerable<(int index, int boxIndex, EventBoxEditorData eventBoxContext, bool distributed, Transform transform)> data,
         EventBoxGroupType groupType,
         LightAxis axis,
         bool mirror, int maxCount, LightGroupSubsystem subsystemContext)
@@ -128,24 +127,24 @@ internal class GizmoManager : IInitializable, IDisposable
         if (!data.Any()) return;
         foreach (var item in data)
         {
-            var (idx, groupIndex, eventBoxContext, distributed, transform) = item;
+            var (idx, boxIndex, eventBoxContext, distributed, transform) = item;
 
-            var colorIdx = ColorAssignment.GetColorIndexEventBox(groupIndex, idx, distributed);
+            var colorIdx = ColorAssignment.GetColorIndexEventBox(boxIndex, idx, distributed);
             Vector3 localScale;
             Vector3 lossyScale;
             
-            if (!ids.Contains(groupIndex))
+            if (!ids.Contains(boxIndex))
             {
                 var laneGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
                 laneGizmo.transform.SetParent(_colorManager.transform.root, false);
-                laneGizmo.transform.localPosition = new Vector3((groupIndex - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
+                laneGizmo.transform.localPosition = new Vector3((boxIndex - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
                 
                 localScale = laneGizmo.transform.localScale;
                 lossyScale = laneGizmo.transform.lossyScale;
                 laneGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 0.333f, localScale.y / lossyScale.y * 0.1f, localScale.z / lossyScale.z * 0.1f);
 
                 _gizmos.Add(laneGizmo);
-                ids.Add(groupIndex);
+                ids.Add(boxIndex);
             }
 
             if (transform == null) continue;
@@ -158,10 +157,10 @@ internal class GizmoManager : IInitializable, IDisposable
             };
 
             var baseGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
-            
-            baseGizmo.transform.localPosition = Vector3.zero;
-            baseGizmo.transform.SetParent(transform.transform, false);
-
+            baseGizmo.transform.SetParent(transform.parent.transform, false);
+            baseGizmo.transform.position = transform.position;
+            // baseGizmo.transform.localRotation = transform.localRotation;
+            baseGizmo.transform.SetParent(transform.transform, true);
             localScale = baseGizmo.transform.localScale;
             lossyScale = baseGizmo.transform.lossyScale;
             baseGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 0.5f, localScale.y / lossyScale.y * 0.5f, localScale.z / lossyScale.z * 0.5f);
@@ -175,7 +174,6 @@ internal class GizmoManager : IInitializable, IDisposable
             if (modGizmo != null)
             {
                 modGizmo.transform.SetParent(baseGizmo.transform, false);
-                
                 localScale = modGizmo.transform.localScale;
                 lossyScale = modGizmo.transform.lossyScale;
                 modGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 2f, localScale.y / lossyScale.y * 2f, localScale.z / lossyScale.z * 2f);
@@ -193,12 +191,14 @@ internal class GizmoManager : IInitializable, IDisposable
                 };
             }
 
-            if (groupType is EventBoxGroupType.Translation || groupType is EventBoxGroupType.Rotation)
+            if (groupType == EventBoxGroupType.Translation || groupType == EventBoxGroupType.Rotation)
             {
                 var gizmoDraggable = modGizmo.GetComponent<GizmoDraggable>();
                 gizmoDraggable.EventBoxEditorDataContext = eventBoxContext;
                 gizmoDraggable.LightGroupSubsystemContext = subsystemContext;
                 gizmoDraggable.Axis = axis;
+                gizmoDraggable.TargetTransform = transform;
+                gizmoDraggable.Mirror = mirror;
 
                 // var lineRenderController = baseGizmo.GetComponent<LineRenderController>();
                 // var current = transform;
