@@ -5,6 +5,8 @@ using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
 using EditorEnhanced.Managers;
+using IPA.Utilities;
+using UnityEngine;
 using Zenject;
 
 namespace EditorEnhanced.Commands;
@@ -43,8 +45,31 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
         var prevBox = _signal.EventBoxEditorData;
         var prevList = _beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(prevBox.id).ToList();
 
-        _newItem = (EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(newItem.Value.box),
-            newItem.Value.events.Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d)).ToList());
+        var newEventBox = EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(_newItem.box);
+
+        if (_signal.Increment)
+        {
+            if (newEventBox.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division)
+            {
+                newEventBox.indexFilter.SetField("param1", newEventBox.indexFilter.param1 + 1);
+            }
+            else
+            {
+                newEventBox.indexFilter.SetField("param0", newEventBox.indexFilter.param0 + 1);
+            }
+        }
+
+        if (_signal.RandomSeed &&
+            newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
+        {
+            newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
+        }
+
+        _newItem = (newEventBox,
+            _signal.CopyEvent
+                ? newItem.Value.events.Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d))
+                    .ToList()
+                : []);
         _oldItem = (prevBox, prevList);
         _groupId = _eventBoxGroupsState.eventBoxGroupContext.id;
         _eventBoxId = _beatmapEventBoxGroupsDataModel.GetEventBoxIdxByEventBoxId(_newItem.box.id);

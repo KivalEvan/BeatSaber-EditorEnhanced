@@ -16,24 +16,34 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
 {
     private readonly EditBeatmapViewController _ebvc;
     private readonly EditorButtonBuilder _editorBtn;
+    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
     private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
     private readonly EditorLayoutStackBuilder _editorLayoutStack;
     private readonly EditorTextBuilder _editorText;
+    private readonly EditorCheckboxBuilder _editorCheckbox;
     private readonly SignalBus _signalBus;
     private EventBoxesView _ebv;
+
+    private bool _copyEvent;
+    private bool _randomSeed;
+    private bool _increment;
 
     public CopyEventBoxViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
         EditorLayoutStackBuilder editorLayoutStack,
+        EditorLayoutVerticalBuilder editorLayoutVertical,
         EditorLayoutHorizontalBuilder editorLayoutHorizontal,
         EditorButtonBuilder editorBtn,
+        EditorCheckboxBuilder editorCheckbox,
         EditorTextBuilder editorText)
     {
         _signalBus = signalBus;
         _ebvc = ebvc;
         _editorLayoutStack = editorLayoutStack;
+        _editorLayoutVertical = editorLayoutVertical;
         _editorLayoutHorizontal = editorLayoutHorizontal;
         _editorBtn = editorBtn;
+        _editorCheckbox = editorCheckbox;
         _editorText = editorText;
     }
 
@@ -49,11 +59,18 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
         var stackTag = _editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
+        var verticalTag = _editorLayoutVertical.CreateNew()
+            .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
+            .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
         var horizontalTag = _editorLayoutHorizontal.CreateNew()
             .SetChildAlignment(TextAnchor.LowerCenter)
-            .SetChildControlWidth(false)
+            .SetChildControlWidth(true)
+            .SetSpacing(8)
             .SetPadding(new RectOffset(8, 8, 8, 8));
         var btnTag = _editorBtn.CreateNew()
+            .SetFontSize(16);
+        var checkboxTag = _editorCheckbox.CreateNew()
+            .SetSize(28)
             .SetFontSize(16);
         var textTag = _editorText.CreateNew()
             .SetFontSize(20)
@@ -64,6 +81,7 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
         container.transform.SetAsFirstSibling();
         Object.Instantiate(target.transform.Find("GroupInfoView/Background4px"), container.transform,
             false);
+        container = verticalTag.CreateObject(container.transform); 
         var layout = horizontalTag.CreateObject(container.transform);
         textTag
             .SetText("COPY")
@@ -80,11 +98,21 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
             .SetText("Duplicate")
             .SetOnClick(DuplicateEventBox)
             .CreateObject(layout.transform);
-        textTag
-            .SetFontSize(16)
-            .SetFontWeight(FontWeight.Regular)
-            .SetTextAlignment(TextAlignmentOptions.Left)
-            .SetText("Increment")
+        layout = horizontalTag.CreateObject(container.transform);
+        checkboxTag
+            .SetText("Copy Event")
+            .SetBool(_copyEvent)
+            .SetOnValueChange(val => _copyEvent = val)
+            .CreateObject(layout.transform);
+        checkboxTag
+            .SetText("Random Seed")
+            .SetBool(_randomSeed)
+            .SetOnValueChange(val => _randomSeed = val)
+            .CreateObject(layout.transform);
+        checkboxTag
+            .SetText("Increment ID")
+            .SetBool(_increment)
+            .SetOnValueChange(val => _increment = val)
             .CreateObject(layout.transform);
     }
 
@@ -95,12 +123,12 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
 
     private void PasteEventBox()
     {
-        _signalBus.Fire(new PasteEventBoxSignal(_ebv._eventBoxView._eventBox));
+        _signalBus.Fire(new PasteEventBoxSignal(_ebv._eventBoxView._eventBox, _copyEvent, _randomSeed, _increment));
     }
 
     private void DuplicateEventBox()
     {
         _signalBus.Fire(
-            new DuplicateEventBoxSignal(_ebv._eventBoxView._eventBox));
+            new DuplicateEventBoxSignal(_ebv._eventBoxView._eventBox, _copyEvent, _randomSeed, _increment));
     }
 }

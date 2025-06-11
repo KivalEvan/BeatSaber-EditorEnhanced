@@ -4,6 +4,8 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
+using IPA.Utilities;
+using UnityEngine;
 using Zenject;
 
 namespace EditorEnhanced.Commands;
@@ -50,14 +52,37 @@ public class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
             var list = _beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(eventBoxEditorData.id).ToList();
             previousEventBoxes.Add((eventBoxEditorData, list));
             newEventBoxes.Add((eventBoxEditorData, list));
-            
+
             if (eventBoxEditorData.id != selectedEventBox.id) continue;
             newIdx = idx + 1;
-            newEventBoxes.Add((EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(eventBoxEditorData),
-                list
-                    .Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d))
-                    .ToList()));
+            var newEventBox = EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(eventBoxEditorData);
+
+            if (_signal.Increment)
+            {
+                if (newEventBox.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division)
+                {
+                    newEventBox.indexFilter.SetField("param1", newEventBox.indexFilter.param1 + 1);
+                }
+                else
+                {
+                    newEventBox.indexFilter.SetField("param0", newEventBox.indexFilter.param0 + 1);
+                }
+            }
+
+            if (_signal.RandomSeed &&
+                newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
+            {
+                newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
+            }
+
+            newEventBoxes.Add((newEventBox,
+                _signal.CopyEvent
+                    ? list
+                        .Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d))
+                        .ToList()
+                    : []));
         }
+
 
         _eventBoxGroupId = eventBoxGroupId;
         _newIdx = newIdx;

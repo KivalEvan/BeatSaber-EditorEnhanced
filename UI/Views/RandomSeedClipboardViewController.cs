@@ -90,6 +90,7 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
 
         ht = horizontalTag.CreateObject(vt.transform);
         checkboxTag
+            .SetSize(20)
             .SetBool(_rscm.RandomOnPaste)
             .SetText("Paste New")
             .SetOnValueChange(ToggleNewSeed)
@@ -97,6 +98,7 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
 
         ht = horizontalTag.CreateObject(vt.transform);
         checkboxTag
+            .SetSize(20)
             .SetBool(_rscm.UseClipboard)
             .SetText("Use Copy")
             .SetOnValueChange(ToggleClipboard)

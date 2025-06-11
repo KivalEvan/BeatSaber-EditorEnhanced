@@ -94,8 +94,8 @@ public class EditorCheckboxTag : IUIToggle, IUIText
         contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-        // var background = toggle.transform.Find("Background4px").gameObject;
-        // background.GetComponent<RectTransform>().sizeDelta = new Vector2(Size ?? 12f, Size ?? 12f);
+        var background = toggle.transform.Find("Background4px").gameObject;
+        background.GetComponent<RectTransform>().sizeDelta = new Vector2(Size ?? 12f, Size ?? 12f);
 
         toggleObject.SetActive(true);
         return toggleObject;
