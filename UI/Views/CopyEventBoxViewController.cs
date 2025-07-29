@@ -57,27 +57,26 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
     {
         _ebv = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
         var target = _ebv._eventBoxView;
+        var replacement = target.transform.GetChild(0);
+        replacement.gameObject.SetActive(false);
 
         var stackTag = _editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
         var verticalTag = _editorLayoutVertical.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
-            .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
+            .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
+            .SetPadding(new RectOffset(4, 4, 4, 4));
         var horizontalTag = _editorLayoutHorizontal.CreateNew()
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(true)
             .SetSpacing(8)
-            .SetPadding(new RectOffset(8, 8, 8, 8));
+            .SetPadding(new RectOffset(4, 4, 2, 4));
         var btnTag = _editorBtn.CreateNew()
             .SetFontSize(16);
         var checkboxTag = _editorCheckbox.CreateNew()
             .SetSize(28)
             .SetFontSize(16);
-        var textTag = _editorText.CreateNew()
-            .SetFontSize(20)
-            .SetFontWeight(FontWeight.Bold)
-            .SetTextAlignment(TextAlignmentOptions.Center);
 
         var container = stackTag.CreateObject(target.transform);
         container.transform.SetAsFirstSibling();
@@ -85,9 +84,8 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
             false);
         container = verticalTag.CreateObject(container.transform); 
         var layout = horizontalTag.CreateObject(container.transform);
-        textTag
-            .SetText("COPY")
-            .CreateObject(layout.transform);
+
+        replacement.GetChild(1).SetParent(layout.transform);
         btnTag
             .SetText("Copy")
             .SetOnClick(CopyEventBox)
