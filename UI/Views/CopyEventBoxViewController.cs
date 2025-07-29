@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using BeatmapEditor3D;
+using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
@@ -53,8 +55,8 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
 
     public void Initialize()
     {
-        _ebv = _ebvc._eventBoxesView;
-        var target = _ebvc._eventBoxesView._eventBoxView;
+        _ebv = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
+        var target = _ebv._eventBoxView;
 
         var stackTag = _editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)

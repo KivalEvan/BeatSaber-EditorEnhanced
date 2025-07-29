@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BeatmapEditor3D;
 using EditorEnhanced.Commands;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Zenject;
 
@@ -22,7 +23,41 @@ public class GizmoDraggable : MonoBehaviour
     private float _angleOffset;
     private bool _isDragging;
 
-    public void OnMouseDrag()
+    private Vector3 GetScreenPosition()
+    {
+        return new Vector3(Mouse.current.position.x.value, Mouse.current.position.y.value,
+            Camera.main.WorldToScreenPoint(transform.parent.position).z);
+    }
+
+    private void AddOutline()
+    {
+        var renderer = gameObject.GetComponent<Renderer>();
+        var mats = new List<Material>();
+        renderer.GetSharedMaterials(mats);
+        if (!mats.Contains(GizmoAssets.OutlineMaterial)) mats.Insert(0, GizmoAssets.OutlineMaterial);
+        renderer.SetSharedMaterials(mats);
+    }
+    
+    private void RemoveOutline()
+    {
+        var renderer = gameObject.GetComponent<Renderer>();
+        var mats = new List<Material>();
+        renderer.GetSharedMaterials(mats);
+        mats.Remove(GizmoAssets.OutlineMaterial);
+        renderer.SetSharedMaterials(mats);
+    }
+
+    public void OnPointerEnter()
+    {
+        if (!_isDragging) AddOutline();
+    }
+
+    public void OnPointerExit()
+    {
+        if (!_isDragging) RemoveOutline();
+    }
+
+    public void OnDrag()
     {
         var screenPosition = GetScreenPosition();
         var worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
@@ -54,9 +89,8 @@ public class GizmoDraggable : MonoBehaviour
         };
     }
 
-    public void OnMouseDown()
+    public void OnBeginDrag()
     {
-        // Plugin.Log.Info($"We drag mouse {gameObject.name}");
         _isDragging = true;
         transform.parent.SetParent(TargetTransform.parent, true);
         _initialScreenPosition = Camera.main.WorldToScreenPoint(transform.position);
@@ -68,7 +102,7 @@ public class GizmoDraggable : MonoBehaviour
         AddOutline();
     }
 
-    public void OnMouseUp()
+    public void OnEndDrag()
     {
         if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightRotationGroup lrg)
         {
@@ -94,40 +128,5 @@ public class GizmoDraggable : MonoBehaviour
         transform.parent.position = TargetTransform.position;
         RemoveOutline();
         _isDragging = false;
-    }
-
-    public void OnMouseEnter()
-    {
-        // Plugin.Log.Info($"We enter mouse {gameObject.name}");
-        if (!_isDragging) AddOutline();
-    }
-
-    public void OnMouseExit()
-    {
-        if (!_isDragging) RemoveOutline();
-    }
-
-    private Vector3 GetScreenPosition()
-    {
-        return new Vector3(Mouse.current.position.x.value, Mouse.current.position.y.value,
-            Camera.main.WorldToScreenPoint(transform.parent.position).z);
-    }
-
-    private void AddOutline()
-    {
-        var renderer = gameObject.GetComponent<Renderer>();
-        var mats = new List<Material>();
-        renderer.GetSharedMaterials(mats);
-        if (!mats.Contains(GizmoAssets.OutlineMaterial)) mats.Insert(0, GizmoAssets.OutlineMaterial);
-        renderer.SetSharedMaterials(mats);
-    }
-    
-    private void RemoveOutline()
-    {
-        var renderer = gameObject.GetComponent<Renderer>();
-        var mats = new List<Material>();
-        renderer.GetSharedMaterials(mats);
-        mats.Remove(GizmoAssets.OutlineMaterial);
-        renderer.SetSharedMaterials(mats);
     }
 }

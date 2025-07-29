@@ -4,6 +4,16 @@ using Zenject;
 
 namespace EditorEnhanced.Commands;
 
+public class CopyEventBoxSignal
+{
+    public readonly EventBoxEditorData EventBoxEditorData;
+
+    public CopyEventBoxSignal(EventBoxEditorData eventBoxEditorData)
+    {
+        EventBoxEditorData = eventBoxEditorData;
+    }
+}
+
 public class CopyEventBoxCommand : IBeatmapEditorCommand
 {
     private readonly EventBoxClipboardManager _clipboardManager;

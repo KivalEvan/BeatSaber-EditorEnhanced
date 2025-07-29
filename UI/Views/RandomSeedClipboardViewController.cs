@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BeatmapEditor3D;
+using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.Managers;
@@ -57,7 +59,7 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
 
     public void Initialize()
     {
-        _ebv = _ebvc._eventBoxesView;
+        _ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0].GetComponent<EventBoxesView>();
         var targetNav = _ebnvc._eventBoxGroupsToolbarView;
 
         var verticalTag = _elvb.CreateNew();

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
+using BeatmapEditor3D.Views;
 using Zenject;
 
 namespace EditorEnhanced.UI;
@@ -55,11 +57,11 @@ public class ScrollableYourInput : IInitializable
 
     public void Initialize()
     {
-        var ebv = _ebvc._eventBoxesView._eventBoxView;
+        var ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0].GetComponent<EventBoxesView>()._eventBoxView;
         
         ApplyScrollableFloatInput(ebv._beatDistributionInput,
-            val => ebv._beatDistributionInput.ValidateInput(
-                (ebv._beatDistributionInput.value + val * PrecisionFloat[_bs.scrollPrecision]).ToString(CultureInfo.InvariantCulture)));
+            val => ebv._beatDistributionInput.ValidateParsedInput(
+                ebv._beatDistributionInput.value + val * PrecisionFloat[_bs.scrollPrecision]));
         ebv._beatDistributionInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
 
         ApplyScrollableIntInput(ebv._indexFilterView._groupingValidator);
@@ -71,8 +73,8 @@ public class ScrollableYourInput : IInitializable
         ApplyScrollableIntInput(ebv._indexFilterView._randomSeedValidator);
 
         ApplyScrollableIntInput(ebv._indexFilterView._limitValidator,
-            val => ebv._indexFilterView._limitValidator.ValidateInput(
-                ((int)(ebv._indexFilterView._limitValidator.value + val * PrecisionInt[_bs.scrollPrecision])).ToString()));
+            val => ebv._indexFilterView._limitValidator.ValidateParsedInput(
+                (int)(ebv._indexFilterView._limitValidator.value + val * PrecisionInt[_bs.scrollPrecision])));
         ebv._indexFilterView._limitValidator._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
         ebv._indexFilterView._limitValidator._min = 0;
         ebv._indexFilterView._limitValidator._max = 100;
@@ -80,44 +82,44 @@ public class ScrollableYourInput : IInitializable
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
             FloatInputFieldValidator.ValidatorType.None;
         ApplyScrollableFloatInput(ebv._brightnessDistributionView._brightnessDistributionParamInput,
-            val => ebv._brightnessDistributionView._brightnessDistributionParamInput.ValidateInput(
-                (ebv._brightnessDistributionView._brightnessDistributionParamInput.value +
-                 val * LightColorEventHelper._precisions[_bs.scrollPrecision]).ToString(CultureInfo.InvariantCulture)));
+            val => ebv._brightnessDistributionView._brightnessDistributionParamInput.ValidateParsedInput(
+                ebv._brightnessDistributionView._brightnessDistributionParamInput.value +
+                val * LightColorEventHelper._precisions[_bs.scrollPrecision]));
 
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
             FloatInputFieldValidator.ValidatorType.None;
         ApplyScrollableFloatInput(ebv._rotationDistributionView._rotationDistributionParamInput,
-            val => ebv._rotationDistributionView._rotationDistributionParamInput.ValidateInput(
-                (ebv._rotationDistributionView._rotationDistributionParamInput.value +
-                 val * ModifyHoveredLightRotationDeltaRotationCommand._precisions[_bs.scrollPrecision]).ToString(CultureInfo.InvariantCulture)
+            val => ebv._rotationDistributionView._rotationDistributionParamInput.ValidateParsedInput(
+                ebv._rotationDistributionView._rotationDistributionParamInput.value +
+                val * ModifyHoveredLightRotationDeltaRotationCommand._precisions[_bs.scrollPrecision]
                 ));
 
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
             FloatInputFieldValidator.ValidatorType.None;
         ApplyScrollableFloatInput(ebv._gapDistributionView._translationDistributionParamInput,
-            val => ebv._gapDistributionView._translationDistributionParamInput.ValidateInput(
-                (ebv._gapDistributionView._translationDistributionParamInput.value +
-                 val * ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[_bs.scrollPrecision]).ToString(CultureInfo.InvariantCulture)
+            val => ebv._gapDistributionView._translationDistributionParamInput.ValidateParsedInput(
+                ebv._gapDistributionView._translationDistributionParamInput.value +
+                val * ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[_bs.scrollPrecision]
                 ));
 
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
             FloatInputFieldValidator.ValidatorType.None;
         ApplyScrollableFloatInput(ebv._fxDistributionView._fxDistributionParamInput,
-            val => ebv._fxDistributionView._fxDistributionParamInput.ValidateInput(
-                (ebv._fxDistributionView._fxDistributionParamInput.value +
-                 val * ModifyHoveredFloatFxDeltaValueCommand._precisions[_bs.scrollPrecision]).ToString(CultureInfo.InvariantCulture)
+            val => ebv._fxDistributionView._fxDistributionParamInput.ValidateParsedInput(
+                ebv._fxDistributionView._fxDistributionParamInput.value +
+                val * ModifyHoveredFloatFxDeltaValueCommand._precisions[_bs.scrollPrecision]
                 ));
     }
 
     private static void ApplyScrollableIntInput(IntInputFieldValidator component, Action<float> action = null)
     {
-        action ??= val => component.ValidateInput(((int)(component.value + val)).ToString());
+        action ??= val => component.ValidateParsedInput((int)(component.value + val));
         component.gameObject.AddComponent<ScrollableInput>().OnScrollAction = action;
     }
 
     private static void ApplyScrollableFloatInput(FloatInputFieldValidator component, Action<float> action = null)
     {
-        action ??= val => component.ValidateInput((component.value + val).ToString(CultureInfo.InvariantCulture));
+        action ??= val => component.ValidateParsedInput(component.value + val);
         component.gameObject.AddComponent<ScrollableInput>().OnScrollAction = action;
     }
 }

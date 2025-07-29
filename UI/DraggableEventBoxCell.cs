@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.LevelEditor;
@@ -26,7 +27,7 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
 
     public void Dispose()
     {
-        _signalBus.TryUnsubscribe<BeatmapEditingModeSwitched>(ApplyActionWithSignal);
+        _signalBus.TryUnsubscribe<BeatmapEditingModeSwitchedSignal>(ApplyActionWithSignal);
         _signalBus.TryUnsubscribe<EventBoxesUpdatedSignal>(ApplyAction);
         _signalBus.TryUnsubscribe<ModifyEventBoxSignal>(ApplyAction);
         _signalBus.TryUnsubscribe<InsertEventBoxSignal>(ApplyAction);
@@ -38,7 +39,7 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
 
     public void Initialize()
     {
-        _ebv = _ebvc._eventBoxesView;
+        _ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0].GetComponent<EventBoxesView>();
         
         SegmentedControlCell[] l =
         [
@@ -57,7 +58,7 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
 
         ApplyAction();
 
-        _signalBus.Subscribe<BeatmapEditingModeSwitched>(ApplyActionWithSignal);
+        _signalBus.Subscribe<BeatmapEditingModeSwitchedSignal>(ApplyActionWithSignal);
         _signalBus.Subscribe<EventBoxesUpdatedSignal>(ApplyAction);
         _signalBus.Subscribe<ModifyEventBoxSignal>(ApplyAction);
         _signalBus.Subscribe<InsertEventBoxSignal>(ApplyAction);
@@ -76,7 +77,7 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
         }
     }
 
-    private void ApplyActionWithSignal(BeatmapEditingModeSwitched signal)
+    private void ApplyActionWithSignal(BeatmapEditingModeSwitchedSignal signal)
     {
         if (signal.mode != BeatmapEditingMode.EventBoxes) return;
         ApplyAction();

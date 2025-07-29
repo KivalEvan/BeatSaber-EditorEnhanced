@@ -23,7 +23,6 @@ internal class Plugin
         var pluginConfig = ipaConfig.Generated<EEConfig>();
 
         zenjector.Install<EEAppInstaller>(Location.App, pluginConfig);
-        // zenjector.Install<EEMenuInstaller>(Location.Menu);
 
         zenjector.Install<EEEditorMainInstaller, BeatmapEditorMainInstaller>();
         zenjector.Install<EEEditorInstaller, BeatmapLevelEditorInstaller>();

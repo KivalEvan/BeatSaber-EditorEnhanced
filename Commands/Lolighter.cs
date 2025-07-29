@@ -78,6 +78,10 @@ internal static class Utils
     }
 }
 
+public class LolighterSignal
+{
+}
+
 public class LolighterCommand : IBeatmapEditorCommandWithHistory
 {
     private readonly BeatmapBasicEventsDataModel _beatmapBasicEventsDataModel;

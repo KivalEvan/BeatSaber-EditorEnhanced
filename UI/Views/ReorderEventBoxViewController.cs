@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using BeatmapEditor3D;
+using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
@@ -43,7 +45,7 @@ internal class ReorderEventBoxViewController : IInitializable, IDisposable
 
     public void Initialize()
     {
-        var target = _ebvc._eventBoxesView._eventBoxView;
+        var target = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0].GetComponent<EventBoxView>();
 
         var stackTag = _editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)

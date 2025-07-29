@@ -9,6 +9,29 @@ using Zenject;
 
 namespace EditorEnhanced.Commands;
 
+public enum ReorderType
+{
+    Top,
+    Up,
+    Down,
+    Bottom,
+    Any
+}
+
+public class ReorderEventBoxSignal
+{
+    public readonly EventBoxEditorData EventBoxEditorData;
+    public readonly int Index;
+    public readonly ReorderType ReorderType;
+
+    public ReorderEventBoxSignal(EventBoxEditorData eventBoxEditorData, ReorderType reorderType, int index = 0)
+    {
+        EventBoxEditorData = eventBoxEditorData;
+        ReorderType = reorderType;
+        Index = index;
+    }
+}
+
 public class ReorderEventBoxCommand : IBeatmapEditorCommandWithHistory
 {
     private readonly BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;

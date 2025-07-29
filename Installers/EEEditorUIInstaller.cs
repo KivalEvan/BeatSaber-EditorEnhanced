@@ -19,9 +19,6 @@ public class EEEditorUIInstaller : Installer
         Container.BindInterfacesAndSelfTo<EditorTextBuilder>().AsSingle();
         Container.BindInterfacesAndSelfTo<EditorToggleGroupBuilder>().AsSingle();
 
-        Container.BindInterfacesTo<CameraPresetViewController>().AsSingle();
-        Container.BindInterfacesAndSelfTo<CameraPresetManager>().AsSingle();
-
         Container.BindInterfacesTo<CopyEventBoxViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<EventBoxClipboardManager>().AsSingle();
 
@@ -33,7 +30,7 @@ public class EEEditorUIInstaller : Installer
         // Container.BindInterfacesTo<MassValueShiftViewController>().AsSingle();
         // Container.BindInterfacesTo<IntegratedScriptViewController>().AsSingle();
 
-        Container.BindInterfacesTo<ScrollableYourInput>().AsSingle();
+        // Container.BindInterfacesTo<ScrollableYourInput>().AsSingle();
         Container.BindInterfacesTo<DraggableEventBoxCell>().AsSingle();
     }
 }
