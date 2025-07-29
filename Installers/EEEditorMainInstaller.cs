@@ -13,5 +13,6 @@ public class EEEditorMainInstaller : Installer
         // Container.BindInterfacesAndSelfTo<ModifyHoveredLightRotationDeltaRotationCommandPatches>().AsSingle();
         Container.BindInterfacesAndSelfTo<PasteEventBoxGroupsCommandPatches>().AsSingle();
         // Container.BindInterfacesAndSelfTo<ObstacleLoaderSaverPatches>().AsSingle();
+        Container.BindInterfacesAndSelfTo<FloatInputFieldValidatorPatches>().AsSingle();
     }
 }
