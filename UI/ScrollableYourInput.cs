@@ -247,8 +247,6 @@ public class ScrollableYourInput : IInitializable
         ltdv._beatInputFieldValidator._max = 0;
         
         ApplyScrollableFloatInput(ltdv._valueInput, ModifyHoveredLightTranslationDeltaTranslationCommand._precisions);
-        ltdv._valueInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
-        ltdv._valueInput._max = 0;
     }
 
     private void ApplyToFloatFxDataView()
@@ -259,8 +257,6 @@ public class ScrollableYourInput : IInitializable
         ltdv._beatInputFieldValidator._max = 0;
         
         ApplyScrollableFloatInput(ltdv._valueInput, ModifyHoveredFloatFxDeltaValueCommand._precisions);
-        ltdv._valueInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
-        ltdv._valueInput._max = 0;
     }
 
     private void ApplyToEventBoxView()
