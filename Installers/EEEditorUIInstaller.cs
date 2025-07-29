@@ -30,7 +30,7 @@ public class EEEditorUIInstaller : Installer
         // Container.BindInterfacesTo<MassValueShiftViewController>().AsSingle();
         // Container.BindInterfacesTo<IntegratedScriptViewController>().AsSingle();
 
-        // Container.BindInterfacesTo<ScrollableYourInput>().AsSingle();
+        Container.BindInterfacesTo<ScrollableYourInput>().AsSingle();
         Container.BindInterfacesTo<DraggableEventBoxCell>().AsSingle();
     }
 }

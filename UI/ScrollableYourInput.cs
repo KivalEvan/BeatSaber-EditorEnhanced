@@ -7,41 +7,43 @@ using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
+using UnityEngine;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI;
 
 public class ScrollableYourInput : IInitializable
 {
-    private static readonly Dictionary<PrecisionType, float> PrecisionFloat = new()
+    private static readonly Dictionary<PrecisionType, float> NoPrecisionFloat = new()
     {
         {
-            PrecisionType.Ultra, 0.01f
+            PrecisionType.Ultra, 1f
         },
         {
-            PrecisionType.High, 0.1f
+            PrecisionType.High, 1f
         },
         {
-            PrecisionType.Standard, 0.5f
+            PrecisionType.Standard, 1f
         },
         {
             PrecisionType.Low, 1f
         }
     };
 
-    private static readonly Dictionary<PrecisionType, int> PrecisionInt = new()
+    private static readonly Dictionary<PrecisionType, int> NoPrecisionInt = new()
     {
         {
             PrecisionType.Ultra, 1
         },
         {
-            PrecisionType.High, 2
+            PrecisionType.High, 1
         },
         {
-            PrecisionType.Standard, 5
+            PrecisionType.Standard, 1
         },
         {
-            PrecisionType.Low, 10
+            PrecisionType.Low, 1
         }
     };
 
@@ -57,24 +59,22 @@ public class ScrollableYourInput : IInitializable
 
     public void Initialize()
     {
-        var ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0].GetComponent<EventBoxesView>()._eventBoxView;
-        
-        ApplyScrollableFloatInput(ebv._beatDistributionInput,
-            val => ebv._beatDistributionInput.ValidateParsedInput(
-                ebv._beatDistributionInput.value + val * PrecisionFloat[_bs.scrollPrecision]));
+        var ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox)
+            .elements[0].GetComponent<EventBoxesView>()._eventBoxView;
+
+        ApplyScrollableFloatInput(ebv._beatDistributionInput, null);
         ebv._beatDistributionInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
 
-        ApplyScrollableIntInput(ebv._indexFilterView._groupingValidator);
-        ApplyScrollableIntInput(ebv._indexFilterView._param0Input);
+        ApplyScrollableIntInput(ebv._indexFilterView._groupingValidator, NoPrecisionInt);
+        ApplyScrollableIntInput(ebv._indexFilterView._param0Input, NoPrecisionInt);
         ebv._indexFilterView._param0Input._validatorType = IntInputFieldValidator.ValidatorType.Max;
         ebv._indexFilterView._param0Input._max = 1;
-        ApplyScrollableIntInput(ebv._indexFilterView._param1Input);
-        ebv._indexFilterView._param1Input._validatorType = IntInputFieldValidator.ValidatorType.Max;
-        ApplyScrollableIntInput(ebv._indexFilterView._randomSeedValidator);
 
-        ApplyScrollableIntInput(ebv._indexFilterView._limitValidator,
-            val => ebv._indexFilterView._limitValidator.ValidateParsedInput(
-                (int)(ebv._indexFilterView._limitValidator.value + val * PrecisionInt[_bs.scrollPrecision])));
+        ApplyScrollableIntInput(ebv._indexFilterView._param1Input, NoPrecisionInt);
+        ebv._indexFilterView._param1Input._validatorType = IntInputFieldValidator.ValidatorType.Max;
+        ApplyScrollableIntInput(ebv._indexFilterView._randomSeedValidator, NoPrecisionInt);
+
+        ApplyScrollableIntInput(ebv._indexFilterView._limitValidator, null);
         ebv._indexFilterView._limitValidator._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
         ebv._indexFilterView._limitValidator._min = 0;
         ebv._indexFilterView._limitValidator._max = 100;
@@ -82,44 +82,40 @@ public class ScrollableYourInput : IInitializable
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
             FloatInputFieldValidator.ValidatorType.None;
         ApplyScrollableFloatInput(ebv._brightnessDistributionView._brightnessDistributionParamInput,
-            val => ebv._brightnessDistributionView._brightnessDistributionParamInput.ValidateParsedInput(
-                ebv._brightnessDistributionView._brightnessDistributionParamInput.value +
-                val * LightColorEventHelper._precisions[_bs.scrollPrecision]));
+            LightColorEventHelper._precisions);
 
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
             FloatInputFieldValidator.ValidatorType.None;
         ApplyScrollableFloatInput(ebv._rotationDistributionView._rotationDistributionParamInput,
-            val => ebv._rotationDistributionView._rotationDistributionParamInput.ValidateParsedInput(
-                ebv._rotationDistributionView._rotationDistributionParamInput.value +
-                val * ModifyHoveredLightRotationDeltaRotationCommand._precisions[_bs.scrollPrecision]
-                ));
+            ModifyHoveredLightRotationDeltaRotationCommand._precisions);
 
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
             FloatInputFieldValidator.ValidatorType.None;
         ApplyScrollableFloatInput(ebv._gapDistributionView._translationDistributionParamInput,
-            val => ebv._gapDistributionView._translationDistributionParamInput.ValidateParsedInput(
-                ebv._gapDistributionView._translationDistributionParamInput.value +
-                val * ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[_bs.scrollPrecision]
-                ));
+            ModifyHoveredLightTranslationDeltaTranslationCommand._precisions);
 
         ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
             FloatInputFieldValidator.ValidatorType.None;
         ApplyScrollableFloatInput(ebv._fxDistributionView._fxDistributionParamInput,
-            val => ebv._fxDistributionView._fxDistributionParamInput.ValidateParsedInput(
-                ebv._fxDistributionView._fxDistributionParamInput.value +
-                val * ModifyHoveredFloatFxDeltaValueCommand._precisions[_bs.scrollPrecision]
-                ));
+            ModifyHoveredFloatFxDeltaValueCommand._precisions);
     }
 
-    private static void ApplyScrollableIntInput(IntInputFieldValidator component, Action<float> action = null)
+    public void ApplyScrollableIntInput(IntInputFieldValidator component, Dictionary<PrecisionType, int> precision)
     {
-        action ??= val => component.ValidateParsedInput((int)(component.value + val));
-        component.gameObject.AddComponent<ScrollableInput>().OnScrollAction = action;
+        Object.Destroy(component.gameObject.GetComponent<IntInputFieldValidatorChangeOnScroll>());
+        var scrollable = component.gameObject.AddComponent<ScrollableInputInt>();
+        scrollable.fieldValidator = component;
+        scrollable.BeatmapState = _bs;
+        if (precision != null) scrollable.PrecisionDelta = precision;
     }
 
-    private static void ApplyScrollableFloatInput(FloatInputFieldValidator component, Action<float> action = null)
+    public void ApplyScrollableFloatInput(FloatInputFieldValidator component,
+        Dictionary<PrecisionType, float> precision)
     {
-        action ??= val => component.ValidateParsedInput(component.value + val);
-        component.gameObject.AddComponent<ScrollableInput>().OnScrollAction = action;
+        Object.Destroy(component.gameObject.GetComponent<FloatInputFieldValidatorChangeOnScroll>());
+        var scrollable = component.gameObject.AddComponent<ScrollableInputFloat>();
+        scrollable.fieldValidator = component;
+        scrollable.BeatmapState = _bs;
+        if (precision != null) scrollable.PrecisionDelta = precision;
     }
 }
