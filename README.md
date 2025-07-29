@@ -7,22 +7,26 @@ For level designer, by level designer, to improve your workflow with various QOL
 * v3 Light Gizmo
     * Highlight color, rotation, translation and FX with their orientation
     * Draggable translation gizmo
-      * Creates event based on event box context, cursor time and event box state
-* Camera Position Preset
-    * **[1]** Default Editor Camera
-    * **[2]** Player Stand Camera
-    * **[P]** Previous Camera
-    * **[L]** Saved Camera
-* Event Box Reordering
-    * Can drag index on the UI to reorder
+        * Creates event based on event box context, cursor time and event box state
+* Better Event Box Reordering
+    * Drag the tab to reorder them than using button
 * Event Box Copy & Duplicate
 * Random Seed Clipboard
 * Randomise Seed On Paste
 * Unclamped Value
     * Basic event float value and distribution value no longer have arbitrary clamp
     * Certain input like negative value and index filter field require clamp to prevent issue
-* Scrollable Input Value
+* Better Scrollable Input Value
 * Built-in auto-light for v2 (Lolighter)
+
+## Installation
+
+Simply place `EditorEnhanced.dll` onto `Plugins` folder.
+
+### Mods Required
+
+* BSIPA
+* SiraUtil
 
 ## To-do
 
@@ -40,7 +44,6 @@ For level designer, by level designer, to improve your workflow with various QOL
 
 ## Known Issue
 
-* Camera preset mouse look will always rotate to where it previously rotated towards
 * Gizmo does not remove when exiting event box page via other mean (F1, F3, etc.) and changing page tab
 * Gizmo may not accurately show correct direction and position in which object appear
 * UI do not have audio feedback
