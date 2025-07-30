@@ -14,5 +14,6 @@ public class EEEditorMainInstaller : Installer
         Container.BindInterfacesAndSelfTo<PasteEventBoxGroupsCommandPatches>().AsSingle();
         // Container.BindInterfacesAndSelfTo<ObstacleLoaderSaverPatches>().AsSingle();
         Container.BindInterfacesAndSelfTo<FloatInputFieldValidatorPatches>().AsSingle();
+        Container.BindInterfacesAndSelfTo<IntInputFieldValidatorPatches>().AsSingle();
     }
 }

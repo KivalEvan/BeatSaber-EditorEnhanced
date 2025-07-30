@@ -251,12 +251,12 @@ public class ScrollableYourInput : IInitializable
 
     private void ApplyToFloatFxDataView()
     {
-        var ltdv = _ebvc._editBeatmapRightPanelView._editObjectView._floatFxDataView;
-        ApplyScrollableFloatInput(ltdv._beatInputFieldValidator, null);
-        ltdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
-        ltdv._beatInputFieldValidator._max = 0;
+        var ffdv = _ebvc._editBeatmapRightPanelView._editObjectView._floatFxDataView;
+        ApplyScrollableFloatInput(ffdv._beatInputFieldValidator, null);
+        ffdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
+        ffdv._beatInputFieldValidator._max = 0;
         
-        ApplyScrollableFloatInput(ltdv._valueInput, ModifyHoveredFloatFxDeltaValueCommand._precisions);
+        ApplyScrollableFloatInput(ffdv._valueInput, ModifyHoveredFloatFxDeltaValueCommand._precisions);
     }
 
     private void ApplyToEventBoxView()
