@@ -4,6 +4,15 @@ using InputAction = UnityEngine.InputSystem.InputAction;
 
 namespace EditorEnhanced.Gizmo;
 
+interface IGizmoInput
+{
+    public void OnPointerEnter();
+    public void OnPointerExit();
+    public void OnDrag();
+    public void OnBeginDrag();
+    public void OnEndDrag();
+}
+
 public class GizmoDragInputSystem : MonoBehaviour
 {
     private Camera _mainCamera;
@@ -11,7 +20,7 @@ public class GizmoDragInputSystem : MonoBehaviour
     private bool _isDragging;
     private Plane _dragPlane;
     private GameObject _currentHoveredObject;
-    private GizmoDraggable _currentGizmoDraggable;
+    private IGizmoInput _currentGizmoDraggable;
     private LayerMask _draggableLayer;
 
     private InputAction _pointerPositionAction;
@@ -116,7 +125,7 @@ public class GizmoDragInputSystem : MonoBehaviour
             }
 
             _currentHoveredObject = hit.collider.gameObject;
-            _currentGizmoDraggable = _currentHoveredObject.GetComponent<GizmoDraggable>();
+            _currentGizmoDraggable = _currentHoveredObject.GetComponent<IGizmoInput>();
             if (_currentGizmoDraggable != null) _currentGizmoDraggable.OnPointerEnter();
         }
         else
