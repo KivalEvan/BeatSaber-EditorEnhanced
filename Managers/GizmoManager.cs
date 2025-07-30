@@ -29,7 +29,7 @@ internal class GizmoManager : IInitializable, IDisposable
     private FloatFxGroupEffectManager _fxManager;
     private LightRotationGroupEffectManager _rotationManager;
     private LightTranslationGroupEffectManager _translationManager;
-    
+
     private GizmoDragInputSystem _gizmoDragInputSystem;
 
     public GizmoManager(GizmoAssets gizmoAssets,
@@ -68,7 +68,7 @@ internal class GizmoManager : IInitializable, IDisposable
         go.name = "GizmoDragInputSystem";
         go.SetActive(false);
         _gizmoDragInputSystem = go.AddComponent<GizmoDragInputSystem>();
-        
+
         _colorManager = Object.FindAnyObjectByType<LightColorGroupEffectManager>();
         _rotationManager =
             Object.FindAnyObjectByType<LightRotationGroupEffectManager>();
@@ -105,6 +105,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 break;
             default: throw new ArgumentOutOfRangeException();
         }
+
         _gizmoDragInputSystem.gameObject.SetActive(true);
     }
 
@@ -129,19 +130,22 @@ internal class GizmoManager : IInitializable, IDisposable
     }
 
     private void DoTheFunny(
-        IEnumerable<(int index, int globalBoxIndex, int localBoxIndex, EventBoxEditorData eventBoxContext, bool
-            distributed, Transform transform)> data,
+        IEnumerable<LightTransformData> list,
         EventBoxGroupType groupType,
         LightAxis axis,
         bool mirror, int maxCount, LightGroupSubsystem subsystemContext)
     {
         HashSet<(LightAxis, int)> ids = [];
-        if (!data.Any()) return;
-        foreach (var item in data)
+        foreach (var data in list)
         {
-            var (idx, globalBoxIdx, localBoxIdx, eventBoxContext, distributed, transform) = item;
+            var idx = data.Index;
+            var globalBoxIdx = data.GlobalBoxIndex;
+            var axisBoxIdx = data.AxisBoxIndex;
+            var eventBoxContext = data.EventBoxContext;
+            var distributed = data.Distributed;
+            var transform = data.Transform;
 
-            var colorIdx = ColorAssignment.GetColorIndexEventBox(localBoxIdx, idx, distributed);
+            var colorIdx = ColorAssignment.GetColorIndexEventBox(axisBoxIdx, idx, distributed);
             Vector3 localScale;
             Vector3 lossyScale;
 
@@ -205,10 +209,7 @@ internal class GizmoManager : IInitializable, IDisposable
                     },
                     _ => modGizmo.transform.localRotation
                 };
-            }
-
-            if (groupType == EventBoxGroupType.Translation || groupType == EventBoxGroupType.Rotation)
-            {
+                
                 var gizmoDraggable = modGizmo.GetComponent<GizmoDraggable>();
                 gizmoDraggable.EventBoxEditorDataContext = eventBoxContext;
                 gizmoDraggable.LightGroupSubsystemContext = subsystemContext;
@@ -245,46 +246,59 @@ internal class GizmoManager : IInitializable, IDisposable
     {
         var ebg = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
             .Cast<LightColorEventBoxEditorData>();
+        var max = ebg.Count();
 
         foreach (var l in _colorManager.lightGroups
                      .Where(x => x.groupId == _ebgs.eventBoxGroupContext.groupId))
         {
-            var markId = new Dictionary<int, (int boxIndex, EventBoxEditorData eventBox, bool distributed)>();
-            foreach (var item in ebg.Select((eb, i) =>
-                         (i, eb, eb.beatDistributionParam > 0,
+            var markId = new Dictionary<int, LightTransformData>();
+            foreach (var item in ebg.Select((eb, boxIdx) =>
+                         (boxIdx, eb, eb.beatDistributionParam > 0,
                              IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.numberOfElements))))
             {
-                var (groupIndex, eventBox, distributed, list) = item;
-                foreach (var i in list.Where(i => !markId.ContainsKey(i)))
-                    markId.Add(i, (groupIndex, eventBox, distributed));
+                var (boxIdx, eventBox, distributed, indexFilterIds) = item;
+                foreach (var idx in indexFilterIds.Where(i => !markId.ContainsKey(i)))
+                {
+                    markId.Add(idx, new LightTransformData
+                    {
+                        GlobalBoxIndex = boxIdx, AxisBoxIndex = boxIdx, EventBoxContext = eventBox,
+                        Distributed = distributed
+                    });
+                }
             }
 
-            var data =
-                new List<(int index, int globalBoxIndex, int localBoxIndex, EventBoxEditorData eventBox, bool
-                    distributed, Transform transform)>();
+            var list = new List<LightTransformData>();
             foreach (var item in markId
-                         .Select(i => (boxIndex: i.Value.boxIndex, i.Value.eventBox, i.Value.distributed,
-                             _colorManager
+                         .Select(i =>
+                         {
+                             return (i.Value, _colorManager
                                  ._lightColorGroupEffects
                                  .FirstOrDefault(x => x._lightId == l.startLightId + i.Key)
-                                 ?._lightManager._lights.ElementAt(l.startLightId + i.Key)))
-                         .Where(item => item.Item4 != null)
-                         .Select((l, i) => (i, l.boxIndex, l.eventBox, l.distributed, l.Item4)))
-            foreach (var lightWithId in item.Item5)
-                switch (lightWithId)
+                                 ?._lightManager._lights.ElementAt(l.startLightId + i.Key));
+                         })
+                         .Where(item => item.Item2 != null)
+                         .Select((item, i) =>
+                         {
+                             var data = item.Value;
+                             data.Index = i;
+                             return (data, LightWithIds: item.Item2);
+                         }))
+            {
+                foreach (var lightWithId in item.LightWithIds)
                 {
-                    case MaterialLightWithId matLightWithId:
-                        data.Add((item.i, item.boxIndex, item.boxIndex, item.eventBox, item.distributed,
-                            matLightWithId.transform));
-                        break;
-                    case TubeBloomPrePassLightWithId tubeBloomPrePassLightWithId:
-                        data.Add((item.i, item.boxIndex, item.boxIndex, item.eventBox, item.distributed,
-                            tubeBloomPrePassLightWithId.transform));
-                        break;
+                    switch (lightWithId)
+                    {
+                        case MaterialLightWithId matLightWithId:
+                            list.Add(item.data with { Transform = matLightWithId.transform });
+                            break;
+                        case TubeBloomPrePassLightWithId tubeBloomPrePassLightWithId:
+                            list.Add(item.data with { Transform = tubeBloomPrePassLightWithId.transform });
+                            break;
+                    }
                 }
+            }
 
-            DoTheFunny(data, _ebgs.eventBoxGroupContext.type, LightAxis.X, false,
-                ebg.Count(), null);
+            DoTheFunny(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, max, null);
         }
     }
 
@@ -292,26 +306,21 @@ internal class GizmoManager : IInitializable, IDisposable
     {
         var ebg = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
             .Cast<LightRotationEventBoxEditorData>();
+        var max = ebg.Count();
 
-        // foreach (var l in manager._lightTranslationGroups)
         foreach (var l in _rotationManager._lightRotationGroups.Where(x =>
                      x.groupId == _ebgs.eventBoxGroupContext.groupId))
         {
-            var markXIdx =
-                new Dictionary<int, (int globalBoxIndex, int localBoxIndex, EventBoxEditorData eventBox, bool
-                    distributed)>();
-            var markYIdx =
-                new Dictionary<int, (int globalBoxIndex, int localBoxIndex, EventBoxEditorData eventBox, bool
-                    distributed)>();
-            var markZIdx =
-                new Dictionary<int, (int globalBoxIndex, int localBoxIndex, EventBoxEditorData eventBox, bool
-                    distributed)>();
-            foreach (var item in ebg.Select((eb, i) =>
-                         (i, eb, eb.beatDistributionParam > 0,
-                             IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter,
-                                 l.lightGroup.numberOfElements), eb.axis)))
+            var axisCount = new Dictionary<LightAxis, int>
+                { { LightAxis.X, 0 }, { LightAxis.Y, 0 }, { LightAxis.Z, 0 } };
+            var markXIdx = new Dictionary<int, LightTransformData>();
+            var markYIdx = new Dictionary<int, LightTransformData>();
+            var markZIdx = new Dictionary<int, LightTransformData>();
+            foreach (var item in ebg.Select((eb, boxIdx) =>
+                         (boxIdx, eb, eb.beatDistributionParam > 0, IndexFilterHelpers.GetIndexFilterRange(
+                             eb.indexFilter, l.lightGroup.numberOfElements), eb.axis)))
             {
-                var (groupIndex, eventBox, distributed, list, axis) = item;
+                var (boxIdx, eventBox, distributed, indexFilterIds, axis) = item;
                 var putTo = axis switch
                 {
                     LightAxis.X => markXIdx,
@@ -319,8 +328,16 @@ internal class GizmoManager : IInitializable, IDisposable
                     LightAxis.Z => markZIdx,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                foreach (var i in list.Where(i => !putTo.ContainsKey(i)))
-                    putTo.Add(i, (groupIndex, putTo.Count, eventBox, distributed));
+                foreach (var i in indexFilterIds.Where(i => !putTo.ContainsKey(i)))
+                {
+                    putTo.Add(i, new LightTransformData
+                    {
+                        GlobalBoxIndex = boxIdx, AxisBoxIndex = axisCount[axis], EventBoxContext = eventBox,
+                        Distributed = distributed
+                    });
+                }
+
+                axisCount[axis]++;
             }
 
             var transformsXYZ = new[] { l.xTransforms, l.yTransforms, l.zTransforms };
@@ -329,10 +346,14 @@ internal class GizmoManager : IInitializable, IDisposable
             {
                 var transforms = transformsXYZ[(int)axis];
                 var markId = markIdXYZ[(int)axis];
-                var data = markId
-                    .Select(item => (item.Key, item.Value.globalBoxIndex, item.Value.localBoxIndex, item.Value.eventBox,
-                        item.Value.distributed,
-                        transforms.ElementAtOrDefault(item.Key)));
+                var list = markId
+                    .Select(item =>
+                    {
+                        var data = item.Value;
+                        data.Index = item.Key;
+                        data.Transform = transforms.ElementAtOrDefault(item.Key);
+                        return data;
+                    });
 
                 var mirror = axis switch
                 {
@@ -341,8 +362,7 @@ internal class GizmoManager : IInitializable, IDisposable
                     LightAxis.Z => l.mirrorZ,
                     _ => false
                 };
-                DoTheFunny(data, _ebgs.eventBoxGroupContext.type, axis, mirror,
-                    ebg.Count(), l);
+                DoTheFunny(list, _ebgs.eventBoxGroupContext.type, axis, mirror, max, l);
             }
         }
     }
@@ -351,26 +371,21 @@ internal class GizmoManager : IInitializable, IDisposable
     {
         var ebg = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
             .Cast<LightTranslationEventBoxEditorData>();
+        var max = ebg.Count();
 
-        // foreach (var l in manager._lightTranslationGroups)
         foreach (var l in _translationManager._lightTranslationGroups.Where(x =>
                      x.groupId == _ebgs.eventBoxGroupContext.groupId))
         {
-            var markXIdx =
-                new Dictionary<int, (int globalBoxIndex, int localBoxIndex, EventBoxEditorData eventBox, bool
-                    distributed)>();
-            var markYIdx =
-                new Dictionary<int, (int globalBoxIndex, int localBoxIndex, EventBoxEditorData eventBox, bool
-                    distributed)>();
-            var markZIdx =
-                new Dictionary<int, (int globalBoxIndex, int localBoxIndex, EventBoxEditorData eventBox, bool
-                    distributed)>();
-            foreach (var item in ebg.Select((eb, i) =>
-                         (i, eb, eb.beatDistributionParam > 0,
-                             IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter,
-                                 l.lightGroup.numberOfElements), eb.axis)))
+            var axisCount = new Dictionary<LightAxis, int>
+                { { LightAxis.X, 0 }, { LightAxis.Y, 0 }, { LightAxis.Z, 0 } };
+            var markXIdx = new Dictionary<int, LightTransformData>();
+            var markYIdx = new Dictionary<int, LightTransformData>();
+            var markZIdx = new Dictionary<int, LightTransformData>();
+            foreach (var item in ebg.Select((eb, boxIdx) =>
+                         (boxIdx, eb, eb.beatDistributionParam > 0, IndexFilterHelpers.GetIndexFilterRange(
+                             eb.indexFilter, l.lightGroup.numberOfElements), eb.axis)))
             {
-                var (boxIndex, eventBox, distributed, list, axis) = item;
+                var (boxIdx, eventBox, distributed, indexFilterIds, axis) = item;
                 var putTo = axis switch
                 {
                     LightAxis.X => markXIdx,
@@ -378,8 +393,16 @@ internal class GizmoManager : IInitializable, IDisposable
                     LightAxis.Z => markZIdx,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                foreach (var i in list.Where(i => !putTo.ContainsKey(i)))
-                    putTo.Add(i, (boxIndex, putTo.Count, eventBox, distributed));
+                foreach (var i in indexFilterIds.Where(i => !putTo.ContainsKey(i)))
+                {
+                    putTo.Add(i, new LightTransformData
+                    {
+                        GlobalBoxIndex = boxIdx, AxisBoxIndex = axisCount[axis], EventBoxContext = eventBox,
+                        Distributed = distributed
+                    });
+                }
+
+                axisCount[axis]++;
             }
 
             var transformsXYZ = new[] { l.xTransforms, l.yTransforms, l.zTransforms };
@@ -388,10 +411,14 @@ internal class GizmoManager : IInitializable, IDisposable
             {
                 var transforms = transformsXYZ[(int)axis];
                 var markId = markIdXYZ[(int)axis];
-                var data = markId
-                    .Select(item => (item.Key, item.Value.globalBoxIndex, item.Value.localBoxIndex, item.Value.eventBox,
-                        item.Value.distributed,
-                        transforms.ElementAtOrDefault(item.Key)));
+                var list = markId
+                    .Select(item =>
+                    {
+                        var data = item.Value;
+                        data.Index = item.Key;
+                        data.Transform = transforms.ElementAtOrDefault(item.Key);
+                        return data;
+                    });
 
                 var mirror = axis switch
                 {
@@ -400,8 +427,7 @@ internal class GizmoManager : IInitializable, IDisposable
                     LightAxis.Z => l.mirrorZ,
                     _ => false
                 };
-                DoTheFunny(data, _ebgs.eventBoxGroupContext.type, axis, mirror,
-                    ebg.Count(), l);
+                DoTheFunny(list, _ebgs.eventBoxGroupContext.type, axis, mirror, max, l);
             }
         }
     }
@@ -410,27 +436,46 @@ internal class GizmoManager : IInitializable, IDisposable
     {
         var ebg = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
             .Cast<FxEventBoxEditorData>();
+        var max = ebg.Count();
 
-        // foreach (var l in manager._lightTranslationGroups)
         foreach (var l in _fxManager._floatFxGroups.Where(x =>
                      x.groupId == _ebgs.eventBoxGroupContext.groupId))
         {
-            var markId = new Dictionary<int, (int boxIndex, EventBoxEditorData eventBox, bool distributed)>();
-            foreach (var item in ebg.Select((eb, i) =>
-                         (i, eb, eb.beatDistributionParam > 0,
+            var markId = new Dictionary<int, LightTransformData>();
+            foreach (var item in ebg.Select((eb, boxIdx) =>
+                         (boxIdx, eb, eb.beatDistributionParam > 0,
                              IndexFilterHelpers.GetIndexFilterRange(eb.indexFilter, l.lightGroup.numberOfElements))))
             {
-                var (groupIndex, eventBox, distributed, list) = item;
-                foreach (var i in list.Where(i => !markId.ContainsKey(i)))
-                    markId.Add(i, (groupIndex, eventBox, distributed));
+                var (boxIdx, eventBox, distributed, indexFilterIds) = item;
+                foreach (var idx in indexFilterIds.Where(i => !markId.ContainsKey(i)))
+                {
+                    markId.Add(idx, new LightTransformData
+                    {
+                        GlobalBoxIndex = boxIdx, AxisBoxIndex = boxIdx, EventBoxContext = eventBox,
+                        Distributed = distributed
+                    });
+                }
             }
 
-            var data = markId
-                .Select(item => (item.Key, item.Value.boxIndex, item.Value.boxIndex, item.Value.eventBox,
-                    item.Value.distributed,
-                    l.targets.Select(t => t.transform).ElementAtOrDefault(item.Key)));
-            DoTheFunny(data, _ebgs.eventBoxGroupContext.type, LightAxis.X, false,
-                ebg.Count(), l);
+            var list = markId
+                .Select(item =>
+                {
+                    var data = item.Value;
+                    data.Index = item.Key;
+                    data.Transform = l.targets.Select(t => t.transform).ElementAtOrDefault(item.Key);
+                    return data;
+                });
+            DoTheFunny(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, max, l);
         }
     }
+}
+
+internal record struct LightTransformData
+{
+    public int Index;
+    public int GlobalBoxIndex;
+    public int AxisBoxIndex;
+    public bool Distributed;
+    public EventBoxEditorData EventBoxContext;
+    public Transform Transform;
 }
