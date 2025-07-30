@@ -16,8 +16,7 @@ public class GizmoDragInputSystem : MonoBehaviour
 
     private InputAction _pointerPositionAction;
     private InputAction _clickAction;
-
-
+    
     private void Awake()
     {
         _mainCamera = Camera.main;

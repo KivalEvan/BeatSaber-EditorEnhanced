@@ -29,6 +29,8 @@ internal class GizmoManager : IInitializable, IDisposable
     private FloatFxGroupEffectManager _fxManager;
     private LightRotationGroupEffectManager _rotationManager;
     private LightTranslationGroupEffectManager _translationManager;
+    
+    private GizmoDragInputSystem _gizmoDragInputSystem;
 
     public GizmoManager(GizmoAssets gizmoAssets,
         SignalBus signalBus,
@@ -57,13 +59,15 @@ internal class GizmoManager : IInitializable, IDisposable
         _rotationManager = null;
         _translationManager = null;
         _fxManager = null;
+        _gizmoDragInputSystem = null;
     }
 
     public void Initialize()
     {
         var go = new GameObject();
         go.name = "GizmoDragInputSystem";
-        go.AddComponent<GizmoDragInputSystem>();
+        go.SetActive(false);
+        _gizmoDragInputSystem = go.AddComponent<GizmoDragInputSystem>();
         
         _colorManager = Object.FindAnyObjectByType<LightColorGroupEffectManager>();
         _rotationManager =
@@ -89,18 +93,19 @@ internal class GizmoManager : IInitializable, IDisposable
         {
             case EventBoxGroupType.Color:
                 AddColorGizmo();
-                return;
+                break;
             case EventBoxGroupType.Rotation:
                 AddRotationGizmo();
-                return;
+                break;
             case EventBoxGroupType.Translation:
                 AddTranslationGizmo();
-                return;
+                break;
             case EventBoxGroupType.FloatFx:
                 AddFxGizmo();
-                return;
+                break;
             default: throw new ArgumentOutOfRangeException();
         }
+        _gizmoDragInputSystem.gameObject.SetActive(true);
     }
 
     private void RemoveGizmo()
@@ -108,6 +113,7 @@ internal class GizmoManager : IInitializable, IDisposable
         foreach (var gizmo in _gizmos)
             gizmo.SetActive(false);
         _gizmos.Clear();
+        _gizmoDragInputSystem.gameObject.SetActive(false);
     }
 
     private void UpdateGizmoWithSignal(BeatmapEditingModeSwitchedSignal signal)
