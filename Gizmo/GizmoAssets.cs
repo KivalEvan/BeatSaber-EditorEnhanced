@@ -20,8 +20,7 @@ internal enum GizmoType
 
 internal class GizmoAssets : IInitializable, IDisposable
 {
-    private readonly SignalBus _signalBus;
-    private readonly BeatmapState _beatmapState;
+    private readonly DiContainer _diContainer;
 
     public static readonly Material DefaultMaterial = FetchMaterial("Assets/Shaders/Gizmo.mat");
     public static readonly Material OutlineMaterial = FetchMaterial("Assets/Shaders/Outline.mat");
@@ -45,10 +44,9 @@ internal class GizmoAssets : IInitializable, IDisposable
         _fxObjects.Clear();
     }
 
-    public GizmoAssets(SignalBus signalBus, BeatmapState beatmapState)
+    public GizmoAssets(DiContainer diContainer)
     {
-        _signalBus = signalBus;
-        _beatmapState = beatmapState;
+        _diContainer = diContainer;
     }
 
     public void Initialize()
@@ -97,10 +95,10 @@ internal class GizmoAssets : IInitializable, IDisposable
         {
             go = gizmoType switch
             {
-                GizmoType.Cube => Object.Instantiate(CubeGizmo.SObject),
-                GizmoType.Rotation => Object.Instantiate(RotationGizmo.SObject),
-                GizmoType.Translation => Object.Instantiate(TranslationGizmo.SObject),
-                GizmoType.Sphere => Object.Instantiate(SphereGizmo.SObject),
+                GizmoType.Cube => _diContainer.InstantiatePrefab(CubeGizmo.SObject),
+                GizmoType.Rotation => _diContainer.InstantiatePrefab(RotationGizmo.SObject),
+                GizmoType.Translation => _diContainer.InstantiatePrefab(TranslationGizmo.SObject),
+                GizmoType.Sphere => _diContainer.InstantiatePrefab(SphereGizmo.SObject),
                 _ => throw new ArgumentOutOfRangeException(nameof(gizmoType), gizmoType, null)
             };
             objects.Add(go);
@@ -109,20 +107,13 @@ internal class GizmoAssets : IInitializable, IDisposable
         var mat = GetOrCreateMaterial(colorIdx);
         go.GetComponent<Renderer>().sharedMaterial = mat;
         
-        var gizmoDraggable = go.GetComponent<GizmoDraggable>();
-        if (gizmoDraggable != null)
-        {
-            gizmoDraggable.SignalBus = _signalBus;
-            gizmoDraggable.beatmapState = _beatmapState;
-        }
-
-        var lineRenderController = go.GetComponent<LineRenderController>();
-        if (lineRenderController != null)
-        {
-            lineRenderController.SetMaterial(mat);
-            lineRenderController.SetTransforms([]);
-            lineRenderController.enabled = false;
-        }
+        // var lineRenderController = go.GetComponent<LineRenderController>();
+        // if (lineRenderController != null)
+        // {
+        //     lineRenderController.SetMaterial(mat);
+        //     lineRenderController.SetTransforms([]);
+        //     lineRenderController.enabled = false;
+        // }
 
         go.SetActive(true);
         return go;

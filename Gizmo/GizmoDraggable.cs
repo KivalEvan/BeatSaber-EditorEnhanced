@@ -13,11 +13,12 @@ namespace EditorEnhanced.Gizmo;
 
 public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
 {
-    public BeatmapState beatmapState;
+    [Inject] public BeatmapState beatmapState;
+    [Inject] public SignalBus SignalBus;
+    
     public LightGroupSubsystem LightGroupSubsystemContext;
     public EventBoxEditorData EventBoxEditorDataContext;
     public LightAxis Axis;
-    public SignalBus SignalBus;
     public Transform TargetTransform;
     public bool Mirror;
     
