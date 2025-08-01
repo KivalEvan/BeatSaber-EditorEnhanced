@@ -1,18 +1,12 @@
-using System;
 using System.Collections.Generic;
-using BeatmapEditor3D;
-using EditorEnhanced.Commands;
-using HarmonyLib;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using Zenject;
 
 namespace EditorEnhanced.Gizmo;
 
-public class GizmoHighlighterGrouped : MonoBehaviour, IGizmoInput
+public class GizmoHighlighterGroup : MonoBehaviour, IGizmoInput
 {
-    private readonly List<GizmoHighlighter> _highlighters = [];
+    private List<GizmoHighlighter> _highlighters = [];
+    private bool _isDragging;
 
     public void Highlight()
     {
@@ -37,19 +31,24 @@ public class GizmoHighlighterGrouped : MonoBehaviour, IGizmoInput
         _highlighters.Add(gizmoHighlighter);
     }
 
+    public void SharedWith(GizmoHighlighterGroup gizmoHighlighterGroup)
+    {
+        _highlighters = gizmoHighlighterGroup._highlighters;
+    }
+
     public void Clear()
     {
-        _highlighters.Clear();
+        _highlighters = [];
     }
 
     public void OnPointerEnter()
     {
-        Highlight();
+        if (!_isDragging) Highlight();
     }
 
     public void OnPointerExit()
     {
-        Unhighlight();
+        if (!_isDragging) Unhighlight();
     }
 
     public void OnDrag()
@@ -58,9 +57,13 @@ public class GizmoHighlighterGrouped : MonoBehaviour, IGizmoInput
 
     public void OnBeginDrag()
     {
+        _isDragging = true;
+        Highlight();
     }
 
     public void OnEndDrag()
     {
+        Unhighlight();
+        _isDragging = false;
     }
 }

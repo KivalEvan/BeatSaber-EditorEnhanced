@@ -1,33 +1,32 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
+using BeatmapEditor3D.DataModels;
 using EditorEnhanced.Commands;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace EditorEnhanced.Gizmo;
 
 public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
 {
+    public BeatmapState beatmapState;
     public LightGroupSubsystem LightGroupSubsystemContext;
     public EventBoxEditorData EventBoxEditorDataContext;
     public LightAxis Axis;
     public SignalBus SignalBus;
     public Transform TargetTransform;
     public bool Mirror;
-
-    public GizmoHighlighter Highlighter;
     
     protected Camera Camera;
     protected Vector3 InitialScreenPosition;
-    protected bool IsDragging;
 
     private void Awake()
     {
         Camera = Camera.main;
-        Highlighter = GetComponent<GizmoHighlighter>();
     }
 
     protected Vector3 GetScreenPosition()
@@ -38,12 +37,10 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
 
     public void OnPointerEnter()
     {
-        if (!IsDragging) Highlighter.AddOutline();
     }
 
     public void OnPointerExit()
     {
-        if (!IsDragging) Highlighter.RemoveOutline();
     }
 
     public abstract void OnDrag();

@@ -22,7 +22,7 @@ internal static class CubeGizmo
         // lineRenderController.enabled = false;
         
         go.AddComponent<GizmoHighlighter>();
-        go.AddComponent<GizmoHighlighterGrouped>();
+        go.AddComponent<GizmoHighlighterGroup>();
 
         return go;
     }

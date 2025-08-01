@@ -17,6 +17,7 @@ internal static class TranslationGizmo
         go.GetComponent<Renderer>().material = material;
         
         go.AddComponent<GizmoHighlighter>();
+        go.AddComponent<GizmoHighlighterGroup>();
         go.AddComponent<GizmoDraggableTranslation>();
         
         return go;

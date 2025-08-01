@@ -22,7 +22,7 @@ internal static class SphereGizmo
         // lineRenderController.enabled = false;
         
         go.AddComponent<GizmoHighlighter>();
-        go.AddComponent<GizmoHighlighterGrouped>();
+        go.AddComponent<GizmoHighlighterGroup>();
 
         return go;
     }

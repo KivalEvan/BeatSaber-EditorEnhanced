@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BeatmapEditor3D.DataModels;
 using EditorEnhanced.Gizmo.Drawers;
 using EditorEnhanced.Utils;
 using UnityEngine;
@@ -20,6 +21,7 @@ internal enum GizmoType
 internal class GizmoAssets : IInitializable, IDisposable
 {
     private readonly SignalBus _signalBus;
+    private readonly BeatmapState _beatmapState;
 
     public static readonly Material DefaultMaterial = FetchMaterial("Assets/Shaders/Gizmo.mat");
     public static readonly Material OutlineMaterial = FetchMaterial("Assets/Shaders/Outline.mat");
@@ -43,9 +45,10 @@ internal class GizmoAssets : IInitializable, IDisposable
         _fxObjects.Clear();
     }
 
-    public GizmoAssets(SignalBus signalBus)
+    public GizmoAssets(SignalBus signalBus, BeatmapState beatmapState)
     {
         _signalBus = signalBus;
+        _beatmapState = beatmapState;
     }
 
     public void Initialize()
@@ -110,6 +113,7 @@ internal class GizmoAssets : IInitializable, IDisposable
         if (gizmoDraggable != null)
         {
             gizmoDraggable.SignalBus = _signalBus;
+            gizmoDraggable.beatmapState = _beatmapState;
         }
 
         var lineRenderController = go.GetComponent<LineRenderController>();

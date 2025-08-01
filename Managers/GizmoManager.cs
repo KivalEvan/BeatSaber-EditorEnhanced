@@ -135,7 +135,7 @@ internal class GizmoManager : IInitializable, IDisposable
         LightAxis axis,
         bool mirror, int maxCount, LightGroupSubsystem subsystemContext)
     {
-        var highlighterMap = new Dictionary<(LightAxis, int), GizmoHighlighterGrouped>();
+        var highlighterMap = new Dictionary<(LightAxis, int), GizmoHighlighterGroup>();
         foreach (var data in list)
         {
             var idx = data.Index;
@@ -156,7 +156,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 laneGizmo.transform.localPosition = new Vector3((globalBoxIdx - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
                 laneGizmo.transform.rotation = Quaternion.identity;
 
-                var groupHighlighter = laneGizmo.GetComponent<GizmoHighlighterGrouped>();
+                var groupHighlighter = laneGizmo.GetComponent<GizmoHighlighterGroup>();
                 groupHighlighter.Clear();
                 groupHighlighter.Add(laneGizmo);
 
@@ -179,8 +179,8 @@ internal class GizmoManager : IInitializable, IDisposable
             };
 
             var baseGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
-            var oldGroupHighlighter = baseGizmo.GetComponent<GizmoHighlighterGrouped>();
-            oldGroupHighlighter.Clear();
+            var baseGroupHighlighter = baseGizmo.GetComponent<GizmoHighlighterGroup>();
+            baseGroupHighlighter.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
             highlighterMap[(axis, globalBoxIdx)].Add(baseGizmo);
 
             baseGizmo.transform.SetParent(transform.parent.transform, false);
@@ -200,13 +200,26 @@ internal class GizmoManager : IInitializable, IDisposable
             };
             if (modGizmo != null)
             {
-                modGizmo.transform.SetParent(baseGizmo.transform, false);
+                var modGroupHighlighter = modGizmo.GetComponent<GizmoHighlighterGroup>();
+                modGroupHighlighter.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
                 highlighterMap[(axis, globalBoxIdx)].Add(modGizmo);
+                modGizmo.transform.SetParent(baseGizmo.transform, false);
 
                 localScale = modGizmo.transform.localScale;
                 lossyScale = modGizmo.transform.lossyScale;
                 modGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 2f,
                     localScale.y / lossyScale.y * 2f, localScale.z / lossyScale.z * 2f);
+
+                if (groupType == EventBoxGroupType.Translation)
+                {
+                    modGizmo.transform.localPosition = axis switch
+                    {
+                        LightAxis.X => mirror ? new Vector3(-.75f, 0f, 0f) : new Vector3(.75f, 0f, 0f),
+                        LightAxis.Y => mirror ? new Vector3(0f, -.75f, 0f) : new Vector3(0f, .75f, 0f),
+                        LightAxis.Z => mirror ? new Vector3(0f, 0f, -.75f) : new Vector3(0f, 0f, .75f),
+                        _ => Vector3.zero
+                    };
+                }
 
                 modGizmo.transform.localRotation = groupType switch
                 {

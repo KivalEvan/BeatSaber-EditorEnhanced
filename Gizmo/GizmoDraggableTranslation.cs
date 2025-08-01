@@ -1,38 +1,49 @@
 using System;
+using BeatmapEditor3D.Commands;
 using EditorEnhanced.Commands;
+using UnityEngine;
 
 namespace EditorEnhanced.Gizmo;
 
 public class GizmoDraggableTranslation : GizmoDraggable
 {
+    private float SnapPosition(float v, float limit)
+    {
+        var precision = ModifyHoveredLightTranslationDeltaTranslationCommand._precisions
+            [beatmapState.scrollPrecision] / limit;
+        return
+            Mathf.Round(v / precision) * precision;
+    }
+
     public override void OnDrag()
     {
         var screenPosition = GetScreenPosition();
         var worldPosition = Camera.ScreenToWorldPoint(screenPosition);
         transform.parent.position = worldPosition;
 
-        transform.parent.localPosition = Axis switch
+        if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightTranslationGroup ltg)
         {
-            LightAxis.X => transform.parent.localPosition with
+            transform.parent.localPosition = Axis switch
             {
-                y = TargetTransform.localPosition.y, z = TargetTransform.localPosition.z
-            },
-            LightAxis.Y => transform.parent.localPosition with
-            {
-                x = TargetTransform.localPosition.x, z = TargetTransform.localPosition.z
-            },
-            LightAxis.Z => transform.parent.localPosition with
-            {
-                x = TargetTransform.localPosition.x, y = TargetTransform.localPosition.y
-            },
-            _ => throw new ArgumentOutOfRangeException()
-        };
+                LightAxis.X => new Vector3(SnapPosition(transform.parent.localPosition.x, ltg.xTranslationLimits.y),
+                    TargetTransform.localPosition.y, TargetTransform.localPosition.z
+                ),
+                LightAxis.Y => new Vector3(
+                    TargetTransform.localPosition.x,
+                    SnapPosition(transform.parent.localPosition.y, ltg.yTranslationLimits.y),
+                    TargetTransform.localPosition.z
+                ),
+                LightAxis.Z => new Vector3(
+                    TargetTransform.localPosition.x, TargetTransform.localPosition.y,
+                    SnapPosition(transform.parent.localPosition.z, ltg.zTranslationLimits.y)
+                ),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
     }
 
     public override void OnBeginDrag()
     {
-        IsDragging = true;
-        Highlighter.AddOutline();
         transform.parent.SetParent(TargetTransform.parent, true);
         InitialScreenPosition = Camera.WorldToScreenPoint(transform.position);
     }
@@ -56,7 +67,5 @@ public class GizmoDraggableTranslation : GizmoDraggable
         // transform.parent.localPosition = Vector3.zero;
         transform.parent.SetParent(TargetTransform, true);
         transform.parent.position = TargetTransform.position;
-        Highlighter.RemoveOutline();
-        IsDragging = false;
     }
 }

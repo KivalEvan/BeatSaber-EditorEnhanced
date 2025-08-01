@@ -20,7 +20,7 @@ public class GizmoDragInputSystem : MonoBehaviour
     private bool _isDragging;
     private Plane _dragPlane;
     private GameObject _currentHoveredObject;
-    private IGizmoInput _currentGizmoDraggable;
+    private IGizmoInput[] _currentGizmoDraggables;
     private LayerMask _draggableLayer;
 
     private InputAction _pointerPositionAction;
@@ -79,14 +79,20 @@ public class GizmoDragInputSystem : MonoBehaviour
             _offset = transform.position - ray.GetPoint(distance);
         }
 
-        if (_currentGizmoDraggable != null) _currentGizmoDraggable.OnBeginDrag();
+        foreach (var currentGizmoDraggable in _currentGizmoDraggables)
+        {
+            currentGizmoDraggable.OnBeginDrag();
+        }
     }
 
     private void OnClickCanceled(InputAction.CallbackContext context)
     {
         if (!_isDragging) return;
         _isDragging = false;
-        if (_currentGizmoDraggable != null) _currentGizmoDraggable.OnEndDrag();
+        foreach (var currentGizmoDraggable in _currentGizmoDraggables)
+        {
+            currentGizmoDraggable.OnEndDrag();
+        }
     }
 
     private void Update()
@@ -102,7 +108,10 @@ public class GizmoDragInputSystem : MonoBehaviour
                 transform.position = ray.GetPoint(distance) + _offset;
             }
 
-            if (_currentGizmoDraggable != null) _currentGizmoDraggable.OnDrag();
+            foreach (var currentGizmoDraggable in _currentGizmoDraggables)
+            {
+                currentGizmoDraggable.OnDrag();
+            }
         }
         else
         {
@@ -121,17 +130,26 @@ public class GizmoDragInputSystem : MonoBehaviour
             if (hit.collider.gameObject == _currentHoveredObject) return;
             if (_currentHoveredObject != null)
             {
-                if (_currentGizmoDraggable != null) _currentGizmoDraggable.OnPointerExit();
+                foreach (var currentGizmoDraggable in _currentGizmoDraggables)
+                {
+                    currentGizmoDraggable.OnPointerExit();
+                }
             }
 
             _currentHoveredObject = hit.collider.gameObject;
-            _currentGizmoDraggable = _currentHoveredObject.GetComponent<IGizmoInput>();
-            if (_currentGizmoDraggable != null) _currentGizmoDraggable.OnPointerEnter();
+            _currentGizmoDraggables = _currentHoveredObject.GetComponents<IGizmoInput>();
+            foreach (var currentGizmoDraggable in _currentGizmoDraggables)
+            {
+                currentGizmoDraggable.OnPointerEnter();
+            }
         }
         else
         {
             if (_currentHoveredObject == null) return;
-            if (_currentGizmoDraggable != null) _currentGizmoDraggable.OnPointerExit();
+            foreach (var currentGizmoDraggable in _currentGizmoDraggables)
+            {
+                currentGizmoDraggable.OnPointerExit();
+            }
             _currentHoveredObject = null;
         }
     }
