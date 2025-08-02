@@ -18,6 +18,10 @@ public class EEEditorCommandInitializer : IInitializable
         _signalBinder._commandContainer
             .BindFactory<DragGizmoLightTranslationEventBoxCommand, PlaceholderFactory<DragGizmoLightTranslationEventBoxCommand>>();
         _signalBinder._commandContainer
+            .BindFactory<SortAxisEventBoxGroupCommand, PlaceholderFactory<SortAxisEventBoxGroupCommand>>();
+        _signalBinder._commandContainer
+            .BindFactory<SortIdEventBoxGroupCommand, PlaceholderFactory<SortIdEventBoxGroupCommand>>();
+        _signalBinder._commandContainer
             .BindFactory<ReorderEventBoxCommand, PlaceholderFactory<ReorderEventBoxCommand>>();
         _signalBinder._commandContainer
             .BindFactory<CopyEventBoxCommand, PlaceholderFactory<CopyEventBoxCommand>>();

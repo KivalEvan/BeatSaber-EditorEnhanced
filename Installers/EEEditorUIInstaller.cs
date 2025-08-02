@@ -19,11 +19,15 @@ public class EEEditorUIInstaller : Installer
         Container.BindInterfacesAndSelfTo<EditorTextBuilder>().AsSingle();
         Container.BindInterfacesAndSelfTo<EditorToggleGroupBuilder>().AsSingle();
 
+        Container.BindInterfacesTo<SortEventBoxViewController>().AsSingle();
+        
         Container.BindInterfacesTo<CopyEventBoxViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<EventBoxClipboardManager>().AsSingle();
 
         Container.BindInterfacesTo<RandomSeedClipboardViewController>().AsSingle();
         Container.BindInterfacesAndSelfTo<RandomSeedClipboardManager>().AsSingle();
+
+        // Container.BindInterfacesTo<DifficultySwitchViewController>().AsSingle();
 
         // Container.BindInterfacesTo<LolighterViewController>().AsSingle();
         // Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();

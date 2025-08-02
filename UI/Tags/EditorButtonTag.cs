@@ -30,7 +30,7 @@ public class EditorButtonBuilder
     }
 }
 
-public class EditorButtonTag : IUIButton, IUIText
+public class EditorButtonTag : IUIButton, IUIText, IUILayout
 {
     private readonly EditBeatmapViewController _ebvc;
     private readonly TimeTweeningManager _twm;
@@ -66,12 +66,28 @@ public class EditorButtonTag : IUIButton, IUIText
         btnObject.SetActive(false);
         var stackLayoutGroup = btnObject.AddComponent<StackLayoutGroup>();
         var layoutElement = btnObject.AddComponent<LayoutElement>();
+        ((RectTransform)layoutElement.transform).sizeDelta = Size ?? ((RectTransform)layoutElement.transform).sizeDelta;
         layoutElement.flexibleWidth = 1f;
+        layoutElement.flexibleHeight = 1f;
+        stackLayoutGroup.padding = Padding ?? stackLayoutGroup.padding;
 
         var contentWrapper = new GameObject("ContentWrapper");
         contentWrapper.transform.SetParent(btnObject.transform, false);
+        layoutElement = contentWrapper.AddComponent<LayoutElement>();
+        ((RectTransform)layoutElement.transform).sizeDelta = Size ?? ((RectTransform)layoutElement.transform).sizeDelta;
+        layoutElement.flexibleWidth = 1f;
+        layoutElement.flexibleHeight = 1f;
+        if (Size.HasValue)
+        {
+            layoutElement.preferredWidth = Size.Value.x;
+            layoutElement.preferredHeight = Size.Value.y;
+        }
+        
         stackLayoutGroup = contentWrapper.AddComponent<StackLayoutGroup>();
-        stackLayoutGroup.padding = new RectOffset(12, 12, 6, 6);
+        stackLayoutGroup.childForceExpandWidth = ChildForceExpandWidth ?? stackLayoutGroup.childForceExpandWidth;
+        stackLayoutGroup.childForceExpandHeight = ChildForceExpandHeight ?? stackLayoutGroup.childForceExpandHeight;
+        stackLayoutGroup.padding = Padding ?? new RectOffset(12, 12, 6, 6);
+
 
         var labelObject = button.transform.Find("BeatmapEditorLabel").gameObject;
         labelObject.transform.SetParent(contentWrapper.transform, false);
@@ -89,4 +105,25 @@ public class EditorButtonTag : IUIButton, IUIText
         btnObject.SetActive(true);
         return btnObject;
     }
+
+    public EditorButtonTag SetSize(Vector2 size)
+    {
+        Size = size;
+        return this;
+    }
+
+    public Vector2? Size { get; set; }
+    public float? Spacing { get; set; }
+    public RectOffset Padding { get; set; }
+    public ContentSizeFitter.FitMode? VerticalFit { get; set; }
+    public ContentSizeFitter.FitMode? HorizontalFit { get; set; }
+    public TextAnchor? ChildAlignment { get; set; }
+    public bool? ChildControlWidth { get; set; }
+    public bool? ChildControlHeight { get; set; }
+    public bool? ChildScaleWidth { get; set; }
+    public bool? ChildScaleHeight { get; set; }
+    public bool? ChildForceExpandWidth { get; set; }
+    public bool? ChildForceExpandHeight { get; set; }
+    public float? FlexibleWidth { get; set; }
+    public float? FlexibleHeight { get; set; }
 }

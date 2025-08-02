@@ -1,13 +1,10 @@
 using System;
-using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
-using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -15,7 +12,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CopyEventBoxViewController : IInitializable, IDisposable
+public class DifficultySwitchViewController : IInitializable, IDisposable
 {
     private readonly EditBeatmapViewController _ebvc;
     private readonly EditorButtonBuilder _editorBtn;
@@ -25,14 +22,16 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
     private readonly EditorTextBuilder _editorText;
     private readonly EditorCheckboxBuilder _editorCheckbox;
     private readonly SignalBus _signalBus;
-    private EventBoxesView _ebv;
+    private readonly EditBeatmapLevelViewController _eblvc;
+    private readonly EditBeatmapLevelNavigationViewController _eblnvc;
+    [Inject] private readonly BeatmapFlowCoordinator _bfc;
+    [Inject] private readonly BeatmapLevelFlowCoordinator _blfc;
+    [Inject] private readonly BeatmapProjectManager _bpm;
 
-    private bool _copyEvent;
-    private bool _randomSeed;
-    private bool _increment;
-
-    public CopyEventBoxViewController(SignalBus signalBus,
+    public DifficultySwitchViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
+        EditBeatmapLevelViewController eblvc,
+        EditBeatmapLevelNavigationViewController eblnvc,
         EditorLayoutStackBuilder editorLayoutStack,
         EditorLayoutVerticalBuilder editorLayoutVertical,
         EditorLayoutHorizontalBuilder editorLayoutHorizontal,
@@ -42,6 +41,8 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
     {
         _signalBus = signalBus;
         _ebvc = ebvc;
+        _eblvc = eblvc;
+        _eblnvc = eblnvc;
         _editorLayoutStack = editorLayoutStack;
         _editorLayoutVertical = editorLayoutVertical;
         _editorLayoutHorizontal = editorLayoutHorizontal;
@@ -56,10 +57,7 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
 
     public void Initialize()
     {
-        _ebv = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
-        var target = _ebv._eventBoxView;
-        var replacement = target.transform.GetChild(0);
-        replacement.gameObject.SetActive(false);
+        var target = _ebvc.transform;
 
         var stackTag = _editorLayoutStack.CreateNew()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
@@ -72,64 +70,45 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(true)
             .SetSpacing(8)
-            .SetPadding(new RectOffset(4, 4, 2, 2));
+            .SetPadding(new RectOffset(4, 4, 2, 4));
         var btnTag = _editorBtn.CreateNew()
             .SetFontSize(16);
         var checkboxTag = _editorCheckbox.CreateNew()
             .SetSize(28)
             .SetFontSize(16);
-        
-        var container = stackTag.CreateObject(target.transform);
-        container.transform.SetAsFirstSibling();
-        Object.Instantiate(target.transform.Find("GroupInfoView/Background4px"), container.transform,
-            false);
-        container = verticalTag.CreateObject(container.transform); 
+
+        var container = verticalTag.CreateObject(target.transform);
         var layout = horizontalTag.CreateObject(container.transform);
 
-        replacement.GetChild(1).SetParent(layout.transform);
         btnTag
-            .SetText("Copy")
-            .SetOnClick(CopyEventBox)
+            .SetText("Switch Difficulty")
+            .SetOnClick(() =>
+            {
+                if (_bfc.anyDataModelDirty)
+                {
+                    _bfc._simpleMessageViewController.Init("Switching Difficulty",
+                        "You have unsaved changes, do you want to save them?", "Save and switch", "No and switch",
+                        "No and stay", buttonIdx =>
+                        {
+                            _bfc.SetDialogScreenViewController(null);
+                            if (buttonIdx == 2)
+                                return;
+                            _blfc.HandleBeatmapFlowCoordinatorDidFinish(
+                                buttonIdx == 0 ? SaveType.Save : SaveType.DontSave,
+                                _bfc._beatmapCharacteristic, _bfc._beatmapDifficulty);
+                            _blfc.HandleEditBeatmapViewControllerOpenBeatmapLevel(_bfc._beatmapCharacteristic,
+                                BeatmapDifficulty.Easy);
+                        });
+                    _bfc.SetDialogScreenViewController(_bfc._simpleMessageViewController, true);
+                }
+                else
+                {
+                    _blfc.HandleBeatmapFlowCoordinatorDidFinish(SaveType.DontSave, _bfc._beatmapCharacteristic,
+                        _bfc._beatmapDifficulty);
+                    _blfc.HandleEditBeatmapViewControllerOpenBeatmapLevel(_bfc._beatmapCharacteristic,
+                        BeatmapDifficulty.Easy);
+                }
+            })
             .CreateObject(layout.transform);
-        btnTag
-            .SetText("Paste")
-            .SetOnClick(PasteEventBox)
-            .CreateObject(layout.transform);
-        btnTag
-            .SetText("Duplicate")
-            .SetOnClick(DuplicateEventBox)
-            .CreateObject(layout.transform);
-        layout = horizontalTag.CreateObject(container.transform);
-        checkboxTag
-            .SetText("Copy Event")
-            .SetBool(_copyEvent)
-            .SetOnValueChange(val => _copyEvent = val)
-            .CreateObject(layout.transform);
-        checkboxTag
-            .SetText("Random Seed")
-            .SetBool(_randomSeed)
-            .SetOnValueChange(val => _randomSeed = val)
-            .CreateObject(layout.transform);
-        checkboxTag
-            .SetText("Increment ID")
-            .SetBool(_increment)
-            .SetOnValueChange(val => _increment = val)
-            .CreateObject(layout.transform);
-    }
-
-    private void CopyEventBox()
-    {
-        _signalBus.Fire(new CopyEventBoxSignal(_ebv._eventBoxView._eventBox));
-    }
-
-    private void PasteEventBox()
-    {
-        _signalBus.Fire(new PasteEventBoxSignal(_ebv._eventBoxView._eventBox, _copyEvent, _randomSeed, _increment));
-    }
-
-    private void DuplicateEventBox()
-    {
-        _signalBus.Fire(
-            new DuplicateEventBoxSignal(_ebv._eventBoxView._eventBox, _copyEvent, _randomSeed, _increment));
     }
 }
