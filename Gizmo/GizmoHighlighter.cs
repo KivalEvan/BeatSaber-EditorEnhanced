@@ -5,26 +5,20 @@ namespace EditorEnhanced.Gizmo;
 
 public class GizmoHighlighter : MonoBehaviour
 {
-    private Renderer _renderer;
+    private GameObject _highlightObject;
 
     private void Awake()
     {
-        _renderer = gameObject.GetComponent<Renderer>();
+        _highlightObject = gameObject.transform.Find("Highlight").gameObject;
     }
 
     public void AddOutline()
     {
-        var mats = new List<Material>();
-        _renderer.GetSharedMaterials(mats);
-        if (!mats.Contains(GizmoAssets.OutlineMaterial)) mats.Insert(0, GizmoAssets.OutlineMaterial);
-        _renderer.SetSharedMaterials(mats);
+        _highlightObject.SetActive(true);
     }
 
     public void RemoveOutline()
     {
-        var mats = new List<Material>();
-        _renderer.GetSharedMaterials(mats);
-        mats.Remove(GizmoAssets.OutlineMaterial);
-        _renderer.SetSharedMaterials(mats);
+        _highlightObject.SetActive(false);
     }
 }

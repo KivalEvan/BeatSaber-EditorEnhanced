@@ -19,7 +19,9 @@ public static class ColorAssignment
     {
         return distributed
             ? HueRange / 2 * eventBoxIdx + idx * 2 % HueRange
-            : (WhiteIndex + eventBoxIdx * HueRange / 12) % HueRange;
+            : eventBoxIdx == 0
+                ? WhiteIndex
+                : (eventBoxIdx - 1) * HueRange / 12 % HueRange;
     }
 
     public static Color GetColorFromIndex(int index)

@@ -13,6 +13,15 @@ internal static class SphereGizmo
         go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
+        
+        var highlight = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        Object.Destroy(highlight.GetComponent<SphereCollider>());
+        highlight.name = "Highlight";
+        highlight.SetActive(false);
+        highlight.GetComponent<Renderer>().material = GizmoAssets.OutlineMaterial;
+        highlight.transform.localScale *= 1.5f;
+        highlight.transform.SetParent(go.transform, false);
+        
         // var lineRenderer = go.AddComponent<LineRenderer>();
         // lineRenderer.startWidth = 0.1f;
         // lineRenderer.endWidth = 0.1f;

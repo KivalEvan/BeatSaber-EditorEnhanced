@@ -31,6 +31,9 @@ internal class GizmoManager : IInitializable, IDisposable
     private LightRotationGroupEffectManager _rotationManager;
     private LightTranslationGroupEffectManager _translationManager;
 
+    private const float GizmoBaseSize = 0.5f;
+    private const float GizmoModSize = 2.5f;
+
     public GizmoManager(GizmoAssets gizmoAssets,
         SignalBus signalBus,
         EventBoxGroupsState ebgs,
@@ -134,6 +137,8 @@ internal class GizmoManager : IInitializable, IDisposable
         LightAxis axis,
         bool mirror, int maxCount, LightGroupSubsystem subsystemContext)
     {
+        var onlyUnique = list.Select(d => d.AxisBoxIndex).ToHashSet().Count == 1;
+
         var highlighterMap = new Dictionary<(LightAxis, int), GizmoHighlighterGroup>();
         foreach (var data in list)
         {
@@ -144,6 +149,7 @@ internal class GizmoManager : IInitializable, IDisposable
             var distributed = data.Distributed;
             var transform = data.Transform;
 
+            if (!onlyUnique) axisBoxIdx += 1;
             var colorIdx = ColorAssignment.GetColorIndexEventBox(axisBoxIdx, idx, distributed);
             Vector3 localScale;
             Vector3 lossyScale;
@@ -188,9 +194,9 @@ internal class GizmoManager : IInitializable, IDisposable
             localScale = baseGizmo.transform.localScale;
             lossyScale = baseGizmo.transform.lossyScale;
             baseGizmo.transform.localScale = new Vector3(
-                Mathf.Abs(localScale.x / (lossyScale.x != 0 ? lossyScale.x : 1) * 0.5f),
-                Mathf.Abs(localScale.y / (lossyScale.y != 0 ? lossyScale.y : 1) * 0.5f),
-                Mathf.Abs(localScale.z / (lossyScale.z != 0 ? lossyScale.z : 1) * 0.5f));
+                Mathf.Abs(localScale.x / (lossyScale.x != 0 ? lossyScale.x : 1) * GizmoBaseSize),
+                Mathf.Abs(localScale.y / (lossyScale.y != 0 ? lossyScale.y : 1) * GizmoBaseSize),
+                Mathf.Abs(localScale.z / (lossyScale.z != 0 ? lossyScale.z : 1) * GizmoBaseSize));
             baseGizmo.transform.SetParent(transform.transform, true);
 
             var modGizmo = groupType switch
@@ -208,17 +214,8 @@ internal class GizmoManager : IInitializable, IDisposable
 
                 localScale = modGizmo.transform.localScale;
                 lossyScale = modGizmo.transform.lossyScale;
-                modGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 2f,
-                    localScale.y / lossyScale.y * 2f, localScale.z / lossyScale.z * 2f);
-
-                if (groupType == EventBoxGroupType.Translation)
-                    modGizmo.transform.localPosition = axis switch
-                    {
-                        LightAxis.X => mirror ? new Vector3(-.75f, 0f, 0f) : new Vector3(.75f, 0f, 0f),
-                        LightAxis.Y => mirror ? new Vector3(0f, -.75f, 0f) : new Vector3(0f, .75f, 0f),
-                        LightAxis.Z => mirror ? new Vector3(0f, 0f, -.75f) : new Vector3(0f, 0f, .75f),
-                        _ => Vector3.zero
-                    };
+                modGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * GizmoModSize,
+                    localScale.y / lossyScale.y * GizmoModSize, localScale.z / lossyScale.z * GizmoModSize);
 
                 modGizmo.transform.localRotation = groupType switch
                 {
