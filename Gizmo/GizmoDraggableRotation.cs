@@ -6,8 +6,8 @@ namespace EditorEnhanced.Gizmo;
 
 public class GizmoDraggableRotation : GizmoDraggable
 {
-    private Vector3 _initialEuler;
     private float _angleOffset;
+    private Vector3 _initialEuler;
 
     private float SnapRotation(float v)
     {
@@ -45,9 +45,7 @@ public class GizmoDraggableRotation : GizmoDraggable
     public override void OnEndDrag()
     {
         if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightRotationGroup lrg)
-        {
             transform.eulerAngles = _initialEuler;
-        }
 
         // transform.parent.localPosition = Vector3.zero;
         transform.parent.SetParent(TargetTransform, true);

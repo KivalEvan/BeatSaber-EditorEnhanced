@@ -45,7 +45,22 @@ public class EditorButtonTag : IUIButton, IUIText, IUILayout
 
     private Button PrefabButton => _ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
 
+    public Vector2? Size { get; set; }
+
     [CanBeNull] public List<Action> OnClick { get; set; } = [];
+    public float? Spacing { get; set; }
+    public RectOffset Padding { get; set; }
+    public ContentSizeFitter.FitMode? VerticalFit { get; set; }
+    public ContentSizeFitter.FitMode? HorizontalFit { get; set; }
+    public TextAnchor? ChildAlignment { get; set; }
+    public bool? ChildControlWidth { get; set; }
+    public bool? ChildControlHeight { get; set; }
+    public bool? ChildScaleWidth { get; set; }
+    public bool? ChildScaleHeight { get; set; }
+    public bool? ChildForceExpandWidth { get; set; }
+    public bool? ChildForceExpandHeight { get; set; }
+    public float? FlexibleWidth { get; set; }
+    public float? FlexibleHeight { get; set; }
     [CanBeNull] public string Text { get; set; }
     public TextAlignmentOptions? TextAlignment { get; set; }
     public bool? RichText { get; set; }
@@ -82,7 +97,7 @@ public class EditorButtonTag : IUIButton, IUIText, IUILayout
             layoutElement.preferredWidth = Size.Value.x;
             layoutElement.preferredHeight = Size.Value.y;
         }
-        
+
         stackLayoutGroup = contentWrapper.AddComponent<StackLayoutGroup>();
         stackLayoutGroup.childForceExpandWidth = ChildForceExpandWidth ?? stackLayoutGroup.childForceExpandWidth;
         stackLayoutGroup.childForceExpandHeight = ChildForceExpandHeight ?? stackLayoutGroup.childForceExpandHeight;
@@ -111,19 +126,4 @@ public class EditorButtonTag : IUIButton, IUIText, IUILayout
         Size = size;
         return this;
     }
-
-    public Vector2? Size { get; set; }
-    public float? Spacing { get; set; }
-    public RectOffset Padding { get; set; }
-    public ContentSizeFitter.FitMode? VerticalFit { get; set; }
-    public ContentSizeFitter.FitMode? HorizontalFit { get; set; }
-    public TextAnchor? ChildAlignment { get; set; }
-    public bool? ChildControlWidth { get; set; }
-    public bool? ChildControlHeight { get; set; }
-    public bool? ChildScaleWidth { get; set; }
-    public bool? ChildScaleHeight { get; set; }
-    public bool? ChildForceExpandWidth { get; set; }
-    public bool? ChildForceExpandHeight { get; set; }
-    public float? FlexibleWidth { get; set; }
-    public float? FlexibleHeight { get; set; }
 }

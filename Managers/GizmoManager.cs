@@ -10,7 +10,6 @@ using EditorEnhanced.Gizmo;
 using EditorEnhanced.Helpers;
 using EditorEnhanced.Utils;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Zenject;
 using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupType;
 using Object = UnityEngine.Object;
@@ -22,15 +21,15 @@ internal class GizmoManager : IInitializable, IDisposable
     private readonly BeatmapEventBoxGroupsDataModel _bebgdm;
     private readonly EventBoxGroupsState _ebgs;
     private readonly GizmoAssets _gizmoAssets;
-    private readonly SignalBus _signalBus;
 
     private readonly List<GameObject> _gizmos = [];
+    private readonly SignalBus _signalBus;
     private LightColorGroupEffectManager _colorManager;
     private FloatFxGroupEffectManager _fxManager;
-    private LightRotationGroupEffectManager _rotationManager;
-    private LightTranslationGroupEffectManager _translationManager;
 
     private GizmoDragInputSystem _gizmoDragInputSystem;
+    private LightRotationGroupEffectManager _rotationManager;
+    private LightTranslationGroupEffectManager _translationManager;
 
     public GizmoManager(GizmoAssets gizmoAssets,
         SignalBus signalBus,
@@ -211,7 +210,6 @@ internal class GizmoManager : IInitializable, IDisposable
                     localScale.y / lossyScale.y * 2f, localScale.z / lossyScale.z * 2f);
 
                 if (groupType == EventBoxGroupType.Translation)
-                {
                     modGizmo.transform.localPosition = axis switch
                     {
                         LightAxis.X => mirror ? new Vector3(-.75f, 0f, 0f) : new Vector3(.75f, 0f, 0f),
@@ -219,7 +217,6 @@ internal class GizmoManager : IInitializable, IDisposable
                         LightAxis.Z => mirror ? new Vector3(0f, 0f, -.75f) : new Vector3(0f, 0f, .75f),
                         _ => Vector3.zero
                     };
-                }
 
                 modGizmo.transform.localRotation = groupType switch
                 {
@@ -281,13 +278,11 @@ internal class GizmoManager : IInitializable, IDisposable
             {
                 var (boxIdx, eventBox, distributed, indexFilterIds) = item;
                 foreach (var idx in indexFilterIds.Where(i => !markId.ContainsKey(i)))
-                {
                     markId.Add(idx, new LightTransformData
                     {
                         GlobalBoxIndex = boxIdx, AxisBoxIndex = boxIdx, EventBoxContext = eventBox,
                         Distributed = distributed
                     });
-                }
             }
 
             var list = new List<LightTransformData>();
@@ -306,20 +301,16 @@ internal class GizmoManager : IInitializable, IDisposable
                              data.Index = i;
                              return (data, LightWithIds: item.Item2);
                          }))
-            {
-                foreach (var lightWithId in item.LightWithIds)
+            foreach (var lightWithId in item.LightWithIds)
+                switch (lightWithId)
                 {
-                    switch (lightWithId)
-                    {
-                        case MaterialLightWithId matLightWithId:
-                            list.Add(item.data with { Transform = matLightWithId.transform });
-                            break;
-                        case TubeBloomPrePassLightWithId tubeBloomPrePassLightWithId:
-                            list.Add(item.data with { Transform = tubeBloomPrePassLightWithId.transform });
-                            break;
-                    }
+                    case MaterialLightWithId matLightWithId:
+                        list.Add(item.data with { Transform = matLightWithId.transform });
+                        break;
+                    case TubeBloomPrePassLightWithId tubeBloomPrePassLightWithId:
+                        list.Add(item.data with { Transform = tubeBloomPrePassLightWithId.transform });
+                        break;
                 }
-            }
 
             DoTheFunny(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, max, null);
         }
@@ -352,13 +343,11 @@ internal class GizmoManager : IInitializable, IDisposable
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 foreach (var i in indexFilterIds.Where(i => !putTo.ContainsKey(i)))
-                {
                     putTo.Add(i, new LightTransformData
                     {
                         GlobalBoxIndex = boxIdx, AxisBoxIndex = axisCount[axis], EventBoxContext = eventBox,
                         Distributed = distributed
                     });
-                }
 
                 axisCount[axis]++;
             }
@@ -417,13 +406,11 @@ internal class GizmoManager : IInitializable, IDisposable
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 foreach (var i in indexFilterIds.Where(i => !putTo.ContainsKey(i)))
-                {
                     putTo.Add(i, new LightTransformData
                     {
                         GlobalBoxIndex = boxIdx, AxisBoxIndex = axisCount[axis], EventBoxContext = eventBox,
                         Distributed = distributed
                     });
-                }
 
                 axisCount[axis]++;
             }
@@ -471,13 +458,11 @@ internal class GizmoManager : IInitializable, IDisposable
             {
                 var (boxIdx, eventBox, distributed, indexFilterIds) = item;
                 foreach (var idx in indexFilterIds.Where(i => !markId.ContainsKey(i)))
-                {
                     markId.Add(idx, new LightTransformData
                     {
                         GlobalBoxIndex = boxIdx, AxisBoxIndex = boxIdx, EventBoxContext = eventBox,
                         Distributed = distributed
                     });
-                }
             }
 
             var list = markId
@@ -495,10 +480,10 @@ internal class GizmoManager : IInitializable, IDisposable
 
 internal record struct LightTransformData
 {
-    public int Index;
-    public int GlobalBoxIndex;
     public int AxisBoxIndex;
     public bool Distributed;
     public EventBoxEditorData EventBoxContext;
+    public int GlobalBoxIndex;
+    public int Index;
     public Transform Transform;
 }

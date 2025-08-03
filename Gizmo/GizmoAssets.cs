@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BeatmapEditor3D.DataModels;
 using EditorEnhanced.Gizmo.Drawers;
 using EditorEnhanced.Utils;
 using UnityEngine;
@@ -20,16 +19,20 @@ internal enum GizmoType
 
 internal class GizmoAssets : IInitializable, IDisposable
 {
-    private readonly DiContainer _diContainer;
-
     public static readonly Material DefaultMaterial = FetchMaterial("Assets/Shaders/Gizmo.mat");
     public static readonly Material OutlineMaterial = FetchMaterial("Assets/Shaders/Outline.mat");
     private readonly List<GameObject> _colorObjects = [];
+    private readonly DiContainer _diContainer;
     private readonly List<GameObject> _fxObjects = [];
     private readonly List<GameObject> _rotationObjects = [];
-    private readonly List<GameObject> _translationObjects = [];
 
     private readonly Material[] _sharedMaterials = new Material[ColorAssignment.HueRange];
+    private readonly List<GameObject> _translationObjects = [];
+
+    public GizmoAssets(DiContainer diContainer)
+    {
+        _diContainer = diContainer;
+    }
 
     public void Dispose()
     {
@@ -42,11 +45,6 @@ internal class GizmoAssets : IInitializable, IDisposable
         _rotationObjects.Clear();
         _translationObjects.Clear();
         _fxObjects.Clear();
-    }
-
-    public GizmoAssets(DiContainer diContainer)
-    {
-        _diContainer = diContainer;
     }
 
     public void Initialize()
@@ -106,7 +104,7 @@ internal class GizmoAssets : IInitializable, IDisposable
 
         var mat = GetOrCreateMaterial(colorIdx);
         go.GetComponent<Renderer>().sharedMaterial = mat;
-        
+
         // var lineRenderController = go.GetComponent<LineRenderController>();
         // if (lineRenderController != null)
         // {

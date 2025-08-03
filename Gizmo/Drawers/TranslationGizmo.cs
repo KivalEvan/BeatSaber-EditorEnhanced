@@ -15,11 +15,11 @@ internal static class TranslationGizmo
         go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
-        
+
         go.AddComponent<GizmoHighlighter>();
         go.AddComponent<GizmoHighlighterGroup>();
         go.AddComponent<GizmoDraggableTranslation>();
-        
+
         return go;
     }
 }

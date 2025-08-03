@@ -4,18 +4,12 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
-using BeatmapSaveDataCommon;
-using IPA.Utilities;
-using UnityEngine;
 using Zenject;
 
 namespace EditorEnhanced.Commands;
 
 public class SortAxisEventBoxGroupSignal
 {
-    public SortAxisEventBoxGroupSignal()
-    {
-    }
 }
 
 public class SortAxisEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
@@ -54,8 +48,8 @@ public class SortAxisEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
             previousEventBoxes.Add((eventBoxEditorData, list));
             newEventBoxes.Add((eventBoxEditorData, list));
         }
-        
-        newEventBoxes = newEventBoxes.OrderBy((eventBoxes) =>
+
+        newEventBoxes = newEventBoxes.OrderBy(eventBoxes =>
         {
             return eventBoxes.Item1 switch
             {
@@ -64,7 +58,7 @@ public class SortAxisEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
                 _ => LightAxis.X
             };
         }).ToList();
-        
+
         _eventBoxGroupId = eventBoxGroupId;
         _previousEventBoxes = previousEventBoxes;
         _newEventBoxes = newEventBoxes;

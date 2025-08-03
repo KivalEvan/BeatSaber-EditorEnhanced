@@ -6,7 +6,7 @@ namespace EditorEnhanced.Gizmo;
 public class GizmoHighlighter : MonoBehaviour
 {
     private Renderer _renderer;
-    
+
     private void Awake()
     {
         _renderer = gameObject.GetComponent<Renderer>();

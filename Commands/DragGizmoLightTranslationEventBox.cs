@@ -10,7 +10,7 @@ public class DragGizmoLightTranslationEventBoxSignal
 {
     public readonly EventBoxEditorData EventBoxEditorData;
     public readonly float Value;
-    
+
     public DragGizmoLightTranslationEventBoxSignal(EventBoxEditorData eventBoxEditorData, float value)
     {
         EventBoxEditorData = eventBoxEditorData;
@@ -20,16 +20,14 @@ public class DragGizmoLightTranslationEventBoxSignal
 
 public class DragGizmoLightTranslationEventBoxCommand : IBeatmapEditorCommand, IBeatmapEditorCommandWithHistory
 {
-    private DragGizmoLightTranslationEventBoxSignal _signal;
-    private SignalBus _signalBus;
-    private BeatmapState _beatmapState;
-    private EventBoxGroupsState _eventBoxGroupsState;
-    private BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;
-
-    public bool shouldAddToHistory { get; private set; }
-    private BeatmapEditorObjectId _eventBoxId;
-    private BaseEditorData _event;
+    private readonly BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;
+    private readonly BeatmapState _beatmapState;
+    private readonly EventBoxGroupsState _eventBoxGroupsState;
+    private readonly DragGizmoLightTranslationEventBoxSignal _signal;
+    private readonly SignalBus _signalBus;
     private BaseEditorData _conflict;
+    private BaseEditorData _event;
+    private BeatmapEditorObjectId _eventBoxId;
 
     public DragGizmoLightTranslationEventBoxCommand(DragGizmoLightTranslationEventBoxSignal signal,
         SignalBus signalBus, BeatmapState beatmapState, EventBoxGroupsState eventBoxGroupsState,
@@ -53,6 +51,8 @@ public class DragGizmoLightTranslationEventBoxCommand : IBeatmapEditorCommand, I
         shouldAddToHistory = true;
         Redo();
     }
+
+    public bool shouldAddToHistory { get; private set; }
 
     public void Redo()
     {

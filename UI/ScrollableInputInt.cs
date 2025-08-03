@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace EditorEnhanced.UI;
 

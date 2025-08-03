@@ -1,15 +1,10 @@
 using System;
-using System.Linq;
 using BeatmapEditor3D;
-using BeatmapEditor3D.DataModels;
-using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -17,20 +12,20 @@ namespace EditorEnhanced.UI.Views;
 
 internal class SortEventBoxViewController : IInitializable, IDisposable
 {
+    private readonly DiContainer _container;
     private readonly EditBeatmapViewController _ebvc;
     private readonly EditorButtonBuilder _editorBtn;
-    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
+    private readonly EditorCheckboxBuilder _editorCheckbox;
     private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
     private readonly EditorLayoutStackBuilder _editorLayoutStack;
+    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
     private readonly EditorTextBuilder _editorText;
-    private readonly EditorCheckboxBuilder _editorCheckbox;
     private readonly SignalBus _signalBus;
-    private readonly DiContainer _container;
-    private EventBoxesView _ebv;
 
     private bool _copyEvent;
-    private bool _randomSeed;
+    private EventBoxesView _ebv;
     private bool _increment;
+    private bool _randomSeed;
 
     public SortEventBoxViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
@@ -77,14 +72,11 @@ internal class SortEventBoxViewController : IInitializable, IDisposable
 
         instance.transform.localPosition = new Vector3(40f, -80f, 0f);
         var behev = instance.GetComponent<BeatmapEditorHoverExpandView>();
-        for (var i = behev._content.childCount - 1; i >= 0; i--)
-        {
-            Object.Destroy(behev._content.GetChild(i).gameObject);
-        }
+        for (var i = behev._content.childCount - 1; i >= 0; i--) Object.Destroy(behev._content.GetChild(i).gameObject);
 
         var btnTag = _editorBtn.CreateNew()
             .SetSize(new Vector2(40f, 40f))
-            .SetPadding(new RectOffset(0,0,0,0))
+            .SetPadding(new RectOffset(0, 0, 0, 0))
             .SetChildForceExpandWidth(true)
             .SetChildForceExpandHeight(true)
             .SetFontSize(12f);

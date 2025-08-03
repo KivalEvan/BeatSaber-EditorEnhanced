@@ -1,9 +1,6 @@
 using System;
-using System.Globalization;
-using BeatmapEditor3D;
-using BeatmapEditor3D.Views;
+using System.Data;
 using SiraUtil.Affinity;
-using UnityEngine;
 
 namespace EditorEnhanced.Patches;
 
@@ -15,7 +12,7 @@ public class IntInputFieldValidatorPatches : IAffinity
     {
         try
         {
-            var table = new System.Data.DataTable();
+            var table = new DataTable();
             var computed = table.Compute(input, "");
             input = computed.ToString();
         }

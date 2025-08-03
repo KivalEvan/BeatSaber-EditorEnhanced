@@ -3,12 +3,9 @@ using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
-using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
-using IPA.Utilities;
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 
 namespace EditorEnhanced.UI.Views;
@@ -28,6 +25,10 @@ public class OffsetDurationDistributionViewController : IInitializable, IDisposa
         _editorButton = editorButton;
     }
 
+    public void Dispose()
+    {
+    }
+
     public void Initialize()
     {
         _ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox)
@@ -37,19 +38,15 @@ public class OffsetDurationDistributionViewController : IInitializable, IDisposa
             .SetFontSize(16);
 
         buttonTag
-                .SetText("-0.001")
-                .SetOnClick(OffsetNegative)
-                .CreateObject(_ebv._beatDistributionInput.transform.parent).transform.localPosition =
-            new Vector3(160f, 25f, 0f);
+            .SetText("-0.001")
+            .SetOnClick(OffsetNegative)
+            .CreateObject(_ebv._beatDistributionInput.transform.parent)
+            .transform.localPosition = new Vector3(160f, 25f, 0f);
         buttonTag
-                .SetText("+0.001")
-                .SetOnClick(OffsetPositive)
-                .CreateObject(_ebv._beatDistributionInput.transform.parent).transform.localPosition =
-            new Vector3(240f, 25f, 0f);
-    }
-
-    public void Dispose()
-    {
+            .SetText("+0.001")
+            .SetOnClick(OffsetPositive)
+            .CreateObject(_ebv._beatDistributionInput.transform.parent)
+            .transform.localPosition = new Vector3(240f, 25f, 0f);
     }
 
     private void OffsetNegative()

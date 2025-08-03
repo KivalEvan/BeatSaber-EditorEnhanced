@@ -17,10 +17,10 @@ internal static class CubeGizmo
         // lineRenderer.startWidth = 0.1f;
         // lineRenderer.endWidth = 0.1f;
         // lineRenderer.positionCount = 0;
-        
+
         // var lineRenderController = go.AddComponent<LineRenderController>();
         // lineRenderController.enabled = false;
-        
+
         go.AddComponent<GizmoHighlighter>();
         go.AddComponent<GizmoHighlighterGroup>();
 

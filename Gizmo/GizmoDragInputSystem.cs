@@ -4,7 +4,7 @@ using InputAction = UnityEngine.InputSystem.InputAction;
 
 namespace EditorEnhanced.Gizmo;
 
-interface IGizmoInput
+internal interface IGizmoInput
 {
     public void OnPointerEnter();
     public void OnPointerExit();
@@ -15,17 +15,17 @@ interface IGizmoInput
 
 public class GizmoDragInputSystem : MonoBehaviour
 {
+    private InputAction _clickAction;
+    private IGizmoInput[] _currentGizmoDraggables;
+    private GameObject _currentHoveredObject;
+    private LayerMask _draggableLayer;
+    private Plane _dragPlane;
+    private bool _isDragging;
     private Camera _mainCamera;
     private Vector3 _offset;
-    private bool _isDragging;
-    private Plane _dragPlane;
-    private GameObject _currentHoveredObject;
-    private IGizmoInput[] _currentGizmoDraggables;
-    private LayerMask _draggableLayer;
 
     private InputAction _pointerPositionAction;
-    private InputAction _clickAction;
-    
+
     private void Awake()
     {
         _mainCamera = Camera.main;
@@ -47,6 +47,24 @@ public class GizmoDragInputSystem : MonoBehaviour
         _pointerPositionAction.Enable();
     }
 
+    private void Update()
+    {
+        if (_isDragging)
+        {
+            var mouseScreenPos = _pointerPositionAction.ReadValue<Vector2>();
+            var ray = _mainCamera.ScreenPointToRay(mouseScreenPos);
+
+            float distance;
+            if (_dragPlane.Raycast(ray, out distance)) transform.position = ray.GetPoint(distance) + _offset;
+
+            foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnDrag();
+        }
+        else
+        {
+            HandleHover();
+        }
+    }
+
     private void OnDestroy()
     {
         if (_clickAction != null)
@@ -56,16 +74,13 @@ public class GizmoDragInputSystem : MonoBehaviour
             _clickAction.Disable();
         }
 
-        if (_pointerPositionAction != null)
-        {
-            _pointerPositionAction.Disable();
-        }
+        if (_pointerPositionAction != null) _pointerPositionAction.Disable();
     }
 
     private void OnClickPerformed(InputAction.CallbackContext context)
     {
-        Vector2 mouseScreenPos = _pointerPositionAction.ReadValue<Vector2>();
-        Ray ray = _mainCamera.ScreenPointToRay(mouseScreenPos);
+        var mouseScreenPos = _pointerPositionAction.ReadValue<Vector2>();
+        var ray = _mainCamera.ScreenPointToRay(mouseScreenPos);
         RaycastHit hit;
 
         if (!Physics.Raycast(ray, out hit, Mathf.Infinity, _draggableLayer)) return;
@@ -74,82 +89,39 @@ public class GizmoDragInputSystem : MonoBehaviour
         _dragPlane = new Plane(_mainCamera.transform.forward, transform.position);
 
         float distance;
-        if (_dragPlane.Raycast(ray, out distance))
-        {
-            _offset = transform.position - ray.GetPoint(distance);
-        }
+        if (_dragPlane.Raycast(ray, out distance)) _offset = transform.position - ray.GetPoint(distance);
 
-        foreach (var currentGizmoDraggable in _currentGizmoDraggables)
-        {
-            currentGizmoDraggable.OnBeginDrag();
-        }
+        foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnBeginDrag();
     }
 
     private void OnClickCanceled(InputAction.CallbackContext context)
     {
         if (!_isDragging) return;
         _isDragging = false;
-        foreach (var currentGizmoDraggable in _currentGizmoDraggables)
-        {
-            currentGizmoDraggable.OnEndDrag();
-        }
-    }
-
-    private void Update()
-    {
-        if (_isDragging)
-        {
-            Vector2 mouseScreenPos = _pointerPositionAction.ReadValue<Vector2>();
-            Ray ray = _mainCamera.ScreenPointToRay(mouseScreenPos);
-
-            float distance;
-            if (_dragPlane.Raycast(ray, out distance))
-            {
-                transform.position = ray.GetPoint(distance) + _offset;
-            }
-
-            foreach (var currentGizmoDraggable in _currentGizmoDraggables)
-            {
-                currentGizmoDraggable.OnDrag();
-            }
-        }
-        else
-        {
-            HandleHover();
-        }
+        foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnEndDrag();
     }
 
     private void HandleHover()
     {
-        Vector2 mouseScreenPos = _pointerPositionAction.ReadValue<Vector2>();
-        Ray ray = _mainCamera.ScreenPointToRay(mouseScreenPos);
+        var mouseScreenPos = _pointerPositionAction.ReadValue<Vector2>();
+        var ray = _mainCamera.ScreenPointToRay(mouseScreenPos);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, _draggableLayer))
         {
             if (hit.collider.gameObject == _currentHoveredObject) return;
             if (_currentHoveredObject != null)
-            {
                 foreach (var currentGizmoDraggable in _currentGizmoDraggables)
-                {
                     currentGizmoDraggable.OnPointerExit();
-                }
-            }
 
             _currentHoveredObject = hit.collider.gameObject;
             _currentGizmoDraggables = _currentHoveredObject.GetComponents<IGizmoInput>();
-            foreach (var currentGizmoDraggable in _currentGizmoDraggables)
-            {
-                currentGizmoDraggable.OnPointerEnter();
-            }
+            foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnPointerEnter();
         }
         else
         {
             if (_currentHoveredObject == null) return;
-            foreach (var currentGizmoDraggable in _currentGizmoDraggables)
-            {
-                currentGizmoDraggable.OnPointerExit();
-            }
+            foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnPointerExit();
             _currentHoveredObject = null;
         }
     }

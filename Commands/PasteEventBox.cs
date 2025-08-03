@@ -13,10 +13,10 @@ namespace EditorEnhanced.Commands;
 
 public class PasteEventBoxSignal
 {
-    public readonly EventBoxEditorData EventBoxEditorData;
     public readonly bool CopyEvent;
-    public readonly bool RandomSeed;
+    public readonly EventBoxEditorData EventBoxEditorData;
     public readonly bool Increment;
+    public readonly bool RandomSeed;
 
     public PasteEventBoxSignal(EventBoxEditorData eventBoxEditorData, bool copyEvent, bool randomSeed, bool increment)
     {
@@ -66,20 +66,14 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
         if (_signal.Increment)
         {
             if (newEventBox.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division)
-            {
                 newEventBox.indexFilter.SetField("param1", newEventBox.indexFilter.param1 + 1);
-            }
             else
-            {
                 newEventBox.indexFilter.SetField("param0", newEventBox.indexFilter.param0 + 1);
-            }
         }
 
         if (_signal.RandomSeed &&
             newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
-        {
             newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
-        }
 
         _newItem = (newEventBox,
             _signal.CopyEvent

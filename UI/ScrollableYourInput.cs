@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
@@ -64,14 +62,14 @@ public class ScrollableYourInput : IInitializable
         ApplyToObstacleDataView();
         ApplyToArcDataView();
         ApplyToChainDataView();
-        
+
         ApplyToBasicEventDataView();
         ApplyToEventBoxGroupDataView();
         ApplyToLightColorDataView();
         ApplyToLightRotationDataView();
         ApplyToLightTranslationDataView();
         ApplyToFloatFxDataView();
-        
+
         ApplyToEventBoxView();
     }
 
@@ -184,9 +182,7 @@ public class ScrollableYourInput : IInitializable
 
         var prec = new Dictionary<PrecisionType, float>();
         foreach (var keyValuePair in LightColorEventHelper._precisions)
-        {
             prec[keyValuePair.Key] = keyValuePair.Value / 100f;
-        }
         ApplyScrollableFloatInput(bedv._floatValueInput, prec);
         bedv._floatValueInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         bedv._floatValueInput._max = 0;
@@ -206,20 +202,18 @@ public class ScrollableYourInput : IInitializable
         ApplyScrollableFloatInput(lcdv._beatInputFieldValidator, null);
         lcdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lcdv._beatInputFieldValidator._max = 0;
-        
+
         var prec = new Dictionary<PrecisionType, float>();
         foreach (var keyValuePair in LightColorEventHelper._precisions)
-        {
             prec[keyValuePair.Key] = keyValuePair.Value / 100f;
-        }
         ApplyScrollableFloatInput(lcdv._valueInput, null);
         lcdv._valueInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lcdv._valueInput._max = 0;
-        
+
         ApplyScrollableFloatInput(lcdv._strobeBrightnessInput, null);
         lcdv._strobeBrightnessInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lcdv._strobeBrightnessInput._max = 0;
-        
+
         ApplyScrollableIntInput(lcdv._strobeFrequencyInput, NoPrecisionInt);
         lcdv._strobeFrequencyInput._validatorType = IntInputFieldValidator.ValidatorType.Max;
         lcdv._strobeFrequencyInput._max = 0;
@@ -231,9 +225,9 @@ public class ScrollableYourInput : IInitializable
         ApplyScrollableFloatInput(lrdv._beatInputFieldValidator, null);
         lrdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lrdv._beatInputFieldValidator._max = 0;
-        
+
         ApplyScrollableFloatInput(lrdv._valueInput, ModifyHoveredLightRotationDeltaRotationCommand._precisions);
-        
+
         ApplyScrollableIntInput(lrdv._loopsInput, NoPrecisionInt);
         lrdv._loopsInput._validatorType = IntInputFieldValidator.ValidatorType.Max;
         lrdv._loopsInput._max = 0;
@@ -245,7 +239,7 @@ public class ScrollableYourInput : IInitializable
         ApplyScrollableFloatInput(ltdv._beatInputFieldValidator, null);
         ltdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         ltdv._beatInputFieldValidator._max = 0;
-        
+
         ApplyScrollableFloatInput(ltdv._valueInput, ModifyHoveredLightTranslationDeltaTranslationCommand._precisions);
     }
 
@@ -255,7 +249,7 @@ public class ScrollableYourInput : IInitializable
         ApplyScrollableFloatInput(ffdv._beatInputFieldValidator, null);
         ffdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         ffdv._beatInputFieldValidator._max = 0;
-        
+
         ApplyScrollableFloatInput(ffdv._valueInput, ModifyHoveredFloatFxDeltaValueCommand._precisions);
     }
 

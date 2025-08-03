@@ -39,8 +39,9 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
 
     public void Initialize()
     {
-        _ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0].GetComponent<EventBoxesView>();
-        
+        _ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0]
+            .GetComponent<EventBoxesView>();
+
         SegmentedControlCell[] l =
         [
             _ebv._eventBoxButtonsTextSegmentedControl._firstCellPrefab,

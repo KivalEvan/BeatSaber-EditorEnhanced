@@ -22,7 +22,6 @@ public class GizmoDraggableTranslation : GizmoDraggable
         transform.parent.position = worldPosition;
 
         if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightTranslationGroup ltg)
-        {
             transform.parent.localPosition = Axis switch
             {
                 LightAxis.X => new Vector3(SnapPosition(transform.parent.localPosition.x, ltg.xTranslationLimits.y),
@@ -39,7 +38,6 @@ public class GizmoDraggableTranslation : GizmoDraggable
                 ),
                 _ => throw new ArgumentOutOfRangeException()
             };
-        }
     }
 
     public override void OnBeginDrag()

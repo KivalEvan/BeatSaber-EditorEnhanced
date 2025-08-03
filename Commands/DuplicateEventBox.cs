@@ -12,12 +12,13 @@ namespace EditorEnhanced.Commands;
 
 public class DuplicateEventBoxSignal
 {
-    public readonly EventBoxEditorData EventBoxEditorData;
     public readonly bool CopyEvent;
-    public readonly bool RandomSeed;
+    public readonly EventBoxEditorData EventBoxEditorData;
     public readonly bool Increment;
+    public readonly bool RandomSeed;
 
-    public DuplicateEventBoxSignal(EventBoxEditorData eventBoxEditorData, bool copyEvent, bool randomSeed, bool increment)
+    public DuplicateEventBoxSignal(EventBoxEditorData eventBoxEditorData, bool copyEvent, bool randomSeed,
+        bool increment)
     {
         EventBoxEditorData = eventBoxEditorData;
         CopyEvent = copyEvent;
@@ -76,20 +77,14 @@ public class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
             if (_signal.Increment)
             {
                 if (newEventBox.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division)
-                {
                     newEventBox.indexFilter.SetField("param1", newEventBox.indexFilter.param1 + 1);
-                }
                 else
-                {
                     newEventBox.indexFilter.SetField("param0", newEventBox.indexFilter.param0 + 1);
-                }
             }
 
             if (_signal.RandomSeed &&
                 newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
-            {
                 newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
-            }
 
             newEventBoxes.Add((newEventBox,
                 _signal.CopyEvent

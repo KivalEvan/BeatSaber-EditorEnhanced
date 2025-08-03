@@ -54,7 +54,7 @@ public class EventBoxClipboardManager : IInitializable
             EventBoxGroupType.Rotation => lightRotationEventBoxClipboard,
             EventBoxGroupType.Translation => lightTranslationEventBoxClipboard,
             EventBoxGroupType.FloatFx => fxEventBoxClipboard,
-            _ => null,
+            _ => null
         };
     }
 }

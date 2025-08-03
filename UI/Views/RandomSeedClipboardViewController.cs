@@ -59,7 +59,8 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
 
     public void Initialize()
     {
-        _ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0].GetComponent<EventBoxesView>();
+        _ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0]
+            .GetComponent<EventBoxesView>();
         var targetNav = _ebnvc._eventBoxGroupsToolbarView;
 
         var verticalTag = _elvb.CreateNew();
@@ -114,10 +115,12 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
         _texts.Add(text);
         text.GetComponent<RectTransform>()
             .anchoredPosition = new Vector2(-55f, -30f);
-        buttonTag.SetText("C").SetOnClick(CopySeed).CreateObject(_ebv._eventBoxView._indexFilterView._newSeedButton.transform.parent)
+        buttonTag.SetText("C").SetOnClick(CopySeed)
+            .CreateObject(_ebv._eventBoxView._indexFilterView._newSeedButton.transform.parent)
             .GetComponent<RectTransform>()
             .anchoredPosition = new Vector2(-32f, -30f);
-        buttonTag.SetText("P").SetOnClick(PasteSeed).CreateObject(_ebv._eventBoxView._indexFilterView._newSeedButton.transform.parent)
+        buttonTag.SetText("P").SetOnClick(PasteSeed)
+            .CreateObject(_ebv._eventBoxView._indexFilterView._newSeedButton.transform.parent)
             .GetComponent<RectTransform>()
             .anchoredPosition = new Vector2(0f, -30f);
     }

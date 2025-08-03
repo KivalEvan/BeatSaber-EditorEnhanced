@@ -15,7 +15,7 @@ internal static class RotationGizmo
         go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
-        
+
         go.AddComponent<GizmoHighlighter>();
         go.AddComponent<GizmoHighlighterGroup>();
         go.AddComponent<GizmoDraggableRotation>();

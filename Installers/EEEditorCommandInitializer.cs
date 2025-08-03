@@ -16,7 +16,8 @@ public class EEEditorCommandInitializer : IInitializable
     public void Initialize()
     {
         _signalBinder._commandContainer
-            .BindFactory<DragGizmoLightTranslationEventBoxCommand, PlaceholderFactory<DragGizmoLightTranslationEventBoxCommand>>();
+            .BindFactory<DragGizmoLightTranslationEventBoxCommand,
+                PlaceholderFactory<DragGizmoLightTranslationEventBoxCommand>>();
         _signalBinder._commandContainer
             .BindFactory<SortAxisEventBoxGroupCommand, PlaceholderFactory<SortAxisEventBoxGroupCommand>>();
         _signalBinder._commandContainer

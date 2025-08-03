@@ -10,7 +10,7 @@ public class EEEditorInstaller : Installer
     {
         Container.BindInterfacesAndSelfTo<GizmoAssets>().AsSingle();
         Container.BindInterfacesTo<GizmoManager>().AsSingle();
-        
+
         // Container.BindInterfacesAndSelfTo<ObstaclePlacementPatches>().AsSingle();
     }
 }

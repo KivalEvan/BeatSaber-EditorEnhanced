@@ -2,31 +2,29 @@ using System;
 using BeatmapEditor3D;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
-using BeatmapEditor3D.Views;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
 public class DifficultySwitchViewController : IInitializable, IDisposable
 {
-    private readonly EditBeatmapViewController _ebvc;
-    private readonly EditorButtonBuilder _editorBtn;
-    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
-    private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
-    private readonly EditorLayoutStackBuilder _editorLayoutStack;
-    private readonly EditorTextBuilder _editorText;
-    private readonly EditorCheckboxBuilder _editorCheckbox;
-    private readonly SignalBus _signalBus;
-    private readonly EditBeatmapLevelViewController _eblvc;
-    private readonly EditBeatmapLevelNavigationViewController _eblnvc;
     [Inject] private readonly BeatmapFlowCoordinator _bfc;
     [Inject] private readonly BeatmapLevelFlowCoordinator _blfc;
     [Inject] private readonly BeatmapProjectManager _bpm;
+    private readonly EditBeatmapLevelNavigationViewController _eblnvc;
+    private readonly EditBeatmapLevelViewController _eblvc;
+    private readonly EditBeatmapViewController _ebvc;
+    private readonly EditorButtonBuilder _editorBtn;
+    private readonly EditorCheckboxBuilder _editorCheckbox;
+    private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
+    private readonly EditorLayoutStackBuilder _editorLayoutStack;
+    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
+    private readonly EditorTextBuilder _editorText;
+    private readonly SignalBus _signalBus;
 
     public DifficultySwitchViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,

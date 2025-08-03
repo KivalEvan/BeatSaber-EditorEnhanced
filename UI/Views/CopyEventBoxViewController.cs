@@ -1,13 +1,9 @@
 using System;
-using System.Linq;
 using BeatmapEditor3D;
-using BeatmapEditor3D.DataModels;
-using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -19,17 +15,17 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
 {
     private readonly EditBeatmapViewController _ebvc;
     private readonly EditorButtonBuilder _editorBtn;
-    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
+    private readonly EditorCheckboxBuilder _editorCheckbox;
     private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
     private readonly EditorLayoutStackBuilder _editorLayoutStack;
+    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
     private readonly EditorTextBuilder _editorText;
-    private readonly EditorCheckboxBuilder _editorCheckbox;
     private readonly SignalBus _signalBus;
-    private EventBoxesView _ebv;
 
     private bool _copyEvent;
-    private bool _randomSeed;
+    private EventBoxesView _ebv;
     private bool _increment;
+    private bool _randomSeed;
 
     public CopyEventBoxViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
@@ -78,12 +74,12 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
         var checkboxTag = _editorCheckbox.CreateNew()
             .SetSize(28)
             .SetFontSize(16);
-        
+
         var container = stackTag.CreateObject(target.transform);
         container.transform.SetAsFirstSibling();
         Object.Instantiate(target.transform.Find("GroupInfoView/Background4px"), container.transform,
             false);
-        container = verticalTag.CreateObject(container.transform); 
+        container = verticalTag.CreateObject(container.transform);
         var layout = horizontalTag.CreateObject(container.transform);
 
         replacement.GetChild(1).SetParent(layout.transform);
