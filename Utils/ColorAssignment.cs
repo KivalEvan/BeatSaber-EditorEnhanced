@@ -26,6 +26,6 @@ public static class ColorAssignment
 
     public static Color GetColorFromIndex(int index)
     {
-        return Color.HSVToRGB(Convert.ToSingle(index) / Convert.ToSingle(HueRange), 1f, 1f);
+        return Color.HSVToRGB(Convert.ToSingle(index) / Convert.ToSingle(HueRange), 0.8125f, 1f);
     }
 }
