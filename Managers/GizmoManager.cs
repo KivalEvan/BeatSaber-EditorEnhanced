@@ -6,6 +6,7 @@ using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
 using BeatmapEditor3D.Types;
+using EditorEnhanced.Commands;
 using EditorEnhanced.Gizmo;
 using EditorEnhanced.Helpers;
 using EditorEnhanced.Utils;
@@ -55,6 +56,8 @@ internal class GizmoManager : IInitializable, IDisposable
         _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
         _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
         _signalBus.TryUnsubscribe<DeleteEventBoxSignal>(UpdateGizmo);
+        _signalBus.TryUnsubscribe<SortAxisEventBoxGroupSignal>(UpdateGizmo);
+        _signalBus.TryUnsubscribe<SortIdEventBoxGroupSignal>(UpdateGizmo);
 
         _gizmos.Clear();
         _colorManager = null;
@@ -87,6 +90,8 @@ internal class GizmoManager : IInitializable, IDisposable
         _signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(UpdateGizmo);
         _signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(UpdateGizmo);
         _signalBus.Subscribe<DeleteEventBoxSignal>(UpdateGizmo);
+        _signalBus.Subscribe<SortAxisEventBoxGroupSignal>(UpdateGizmo);
+        _signalBus.Subscribe<SortIdEventBoxGroupSignal>(UpdateGizmo);
     }
 
     private void AddGizmo()
@@ -160,7 +165,8 @@ internal class GizmoManager : IInitializable, IDisposable
                 laneGizmo.transform.SetParent(_colorManager.transform.root, false);
                 laneGizmo.transform.localPosition = new Vector3((globalBoxIdx - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
                 laneGizmo.transform.rotation = Quaternion.identity;
-
+                
+                laneGizmo.GetComponent<GizmoClickable>().EventBoxEditorDataContext = eventBoxContext;
                 var groupHighlighter = laneGizmo.GetComponent<GizmoHighlighterGroup>();
                 groupHighlighter.Init();
                 groupHighlighter.Add(laneGizmo);
@@ -184,6 +190,7 @@ internal class GizmoManager : IInitializable, IDisposable
             };
 
             var baseGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
+            baseGizmo.GetComponent<GizmoClickable>().EventBoxEditorDataContext  = eventBoxContext;
             var baseGroupHighlighter = baseGizmo.GetComponent<GizmoHighlighterGroup>();
             baseGroupHighlighter.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
             highlighterMap[(axis, globalBoxIdx)].Add(baseGizmo);

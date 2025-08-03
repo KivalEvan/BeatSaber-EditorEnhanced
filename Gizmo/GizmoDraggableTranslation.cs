@@ -10,7 +10,7 @@ public class GizmoDraggableTranslation : GizmoDraggable
     private float SnapPosition(float v, float limit)
     {
         var precision = ModifyHoveredLightTranslationDeltaTranslationCommand._precisions
-            [beatmapState.scrollPrecision] / limit;
+            [_beatmapState.scrollPrecision] / limit;
         return
             Mathf.Round(v / precision) * precision;
     }
@@ -40,13 +40,13 @@ public class GizmoDraggableTranslation : GizmoDraggable
             };
     }
 
-    public override void OnBeginDrag()
+    public override void OnMouseClick()
     {
         transform.parent.SetParent(TargetTransform.parent, true);
         InitialScreenPosition = Camera.WorldToScreenPoint(transform.position);
     }
 
-    public override void OnEndDrag()
+    public override void OnMouseRelease()
     {
         if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightTranslationGroup ltg)
         {
@@ -59,7 +59,7 @@ public class GizmoDraggableTranslation : GizmoDraggable
                 _ => throw new ArgumentOutOfRangeException()
             };
             if (Mirror) value = -value;
-            SignalBus.Fire(new DragGizmoLightTranslationEventBoxSignal(EventBoxEditorDataContext, value));
+            _signalBus.Fire(new DragGizmoLightTranslationEventBoxSignal(EventBoxEditorDataContext, value));
         }
 
         // transform.parent.localPosition = Vector3.zero;

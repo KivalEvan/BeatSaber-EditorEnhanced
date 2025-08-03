@@ -12,7 +12,7 @@ public class GizmoDraggableRotation : GizmoDraggable
     private float SnapRotation(float v)
     {
         var precision = ModifyHoveredLightRotationDeltaRotationCommand._precisions
-            [beatmapState.scrollPrecision];
+            [_beatmapState.scrollPrecision];
         return
             Mathf.Round(v / precision) * precision;
     }
@@ -33,7 +33,7 @@ public class GizmoDraggableRotation : GizmoDraggable
         transform.eulerAngles = _initialEuler + deltaRotation;
     }
 
-    public override void OnBeginDrag()
+    public override void OnMouseClick()
     {
         transform.parent.SetParent(TargetTransform.parent, true);
         InitialScreenPosition = Camera.WorldToScreenPoint(transform.position);
@@ -42,7 +42,7 @@ public class GizmoDraggableRotation : GizmoDraggable
         _angleOffset = 0f;
     }
 
-    public override void OnEndDrag()
+    public override void OnMouseRelease()
     {
         if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightRotationGroup lrg)
             transform.eulerAngles = _initialEuler;

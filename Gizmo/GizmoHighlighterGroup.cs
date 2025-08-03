@@ -22,13 +22,13 @@ public class GizmoHighlighterGroup : MonoBehaviour, IGizmoInput
     {
     }
 
-    public void OnBeginDrag()
+    public void OnMouseClick()
     {
         _isDragging = true;
         Highlight();
     }
 
-    public void OnEndDrag()
+    public void OnMouseRelease()
     {
         Unhighlight();
         _isDragging = false;

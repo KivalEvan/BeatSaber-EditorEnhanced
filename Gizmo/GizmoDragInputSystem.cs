@@ -9,8 +9,8 @@ internal interface IGizmoInput
     public void OnPointerEnter();
     public void OnPointerExit();
     public void OnDrag();
-    public void OnBeginDrag();
-    public void OnEndDrag();
+    public void OnMouseClick();
+    public void OnMouseRelease();
 }
 
 public class GizmoDragInputSystem : MonoBehaviour
@@ -91,14 +91,14 @@ public class GizmoDragInputSystem : MonoBehaviour
         float distance;
         if (_dragPlane.Raycast(ray, out distance)) _offset = transform.position - ray.GetPoint(distance);
 
-        foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnBeginDrag();
+        foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnMouseClick();
     }
 
     private void OnClickCanceled(InputAction.CallbackContext context)
     {
         if (!_isDragging) return;
         _isDragging = false;
-        foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnEndDrag();
+        foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnMouseRelease();
     }
 
     private void HandleHover()

@@ -32,6 +32,7 @@ internal static class SphereGizmo
 
         go.AddComponent<GizmoHighlighter>();
         go.AddComponent<GizmoHighlighterGroup>();
+        go.AddComponent<GizmoClickable>();
 
         return go;
     }

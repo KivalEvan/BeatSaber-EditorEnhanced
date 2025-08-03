@@ -8,16 +8,17 @@ namespace EditorEnhanced.Gizmo;
 
 public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
 {
+    public EventBoxEditorData EventBoxEditorDataContext;
     public LightGroupSubsystem LightGroupSubsystemContext;
     public LightAxis Axis;
     public Transform TargetTransform;
     public bool Mirror;
-    [Inject] public BeatmapState beatmapState;
-
+    
     protected Camera Camera;
-    public EventBoxEditorData EventBoxEditorDataContext;
     protected Vector3 InitialScreenPosition;
-    [Inject] public SignalBus SignalBus;
+
+    [Inject] protected readonly BeatmapState _beatmapState;
+    [Inject] protected readonly SignalBus _signalBus;
 
     private void Awake()
     {
@@ -33,8 +34,8 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
     }
 
     public abstract void OnDrag();
-    public abstract void OnBeginDrag();
-    public abstract void OnEndDrag();
+    public abstract void OnMouseClick();
+    public abstract void OnMouseRelease();
 
     protected Vector3 GetScreenPosition()
     {
