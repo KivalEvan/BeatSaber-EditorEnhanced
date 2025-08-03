@@ -29,6 +29,6 @@ public class CopyEventBoxCommand : IBeatmapEditorCommand
 
     public void Execute()
     {
-        _clipboardManager.Add(_signal.EventBoxEditorData);
+        _clipboardManager.Copy(_signal.EventBoxEditorData);
     }
 }

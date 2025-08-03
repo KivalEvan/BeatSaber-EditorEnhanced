@@ -34,10 +34,11 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
     private readonly EventBoxGroupsState _eventBoxGroupsState;
     private readonly PasteEventBoxSignal _signal;
     private readonly SignalBus _signalBus;
-    private int _eventBoxId;
-    private BeatmapEditorObjectId _groupId;
-    private (EventBoxEditorData box, List<BaseEditorData> events) _newItem;
-    private (EventBoxEditorData box, List<BaseEditorData> events) _oldItem;
+
+    private BeatmapEditorObjectId _eventBoxGroupId;
+    private int _newIdx;
+    private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _newEventBoxes;
+    private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _previousEventBoxes;
 
     public PasteEventBoxCommand(SignalBus signalBus,
         PasteEventBoxSignal signal,
@@ -56,12 +57,16 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
 
     public void Execute()
     {
-        var newItem = _clipboardManager.Paste(_eventBoxGroupsState.eventBoxGroupContext.type);
-        if (newItem == null) return;
-        var prevBox = _signal.EventBoxEditorData;
-        var prevList = _beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(prevBox.id).ToList();
+        var selectedEventBox = _signal.EventBoxEditorData;
 
-        var newEventBox = EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(_newItem.box);
+        var newItem = _clipboardManager.Paste(_eventBoxGroupsState.eventBoxGroupContext.type);
+        if (!newItem.HasValue) return;
+        var newEventBox = EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(newItem.Value.box);
+        var toReplace = (newEventBox,
+            _signal.CopyEvent
+                ? newItem.Value.events
+                    .Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d)).ToList()
+                : []);
 
         if (_signal.Increment)
         {
@@ -73,45 +78,80 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
 
         if (_signal.RandomSeed &&
             newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
+        {
             newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
+        }
 
-        _newItem = (newEventBox,
-            _signal.CopyEvent
-                ? newItem.Value.events.Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d))
-                    .ToList()
-                : []);
-        _oldItem = (prevBox, prevList);
-        _groupId = _eventBoxGroupsState.eventBoxGroupContext.id;
-        _eventBoxId = _beatmapEventBoxGroupsDataModel.GetEventBoxIdxByEventBoxId(_newItem.box.id);
+        var eventBoxGroupId = _eventBoxGroupsState.eventBoxGroupContext.id;
+        var byEventBoxGroupId = _beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);
+        if (byEventBoxGroupId.Count == 0)
+            return;
+        var previousEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>(byEventBoxGroupId.Count);
+        var newEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>();
+
+        var newIdx = 0;
+        for (var idx = 0; idx < byEventBoxGroupId.Count; idx++)
+        {
+            var eventBoxEditorData = byEventBoxGroupId[idx];
+            var list = _beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(eventBoxEditorData.id).ToList();
+            previousEventBoxes.Add((eventBoxEditorData, list));
+            if (eventBoxEditorData.id != selectedEventBox.id)
+            {
+                newEventBoxes.Add((eventBoxEditorData, list));
+            }
+            else
+            {
+                newEventBoxes.Add(toReplace);
+                newIdx = idx;
+            }
+        }
+
+
+        _eventBoxGroupId = eventBoxGroupId;
+        _newIdx = newIdx;
+        _previousEventBoxes = previousEventBoxes;
+        _newEventBoxes = newEventBoxes;
         shouldAddToHistory = true;
         Redo();
     }
 
     public void Undo()
     {
-        _beatmapEventBoxGroupsDataModel.RemoveBaseEditorDataList(_newItem.box.id, _newItem.events);
-        _beatmapEventBoxGroupsDataModel.RemoveEventBox(_groupId, _newItem.box);
+        foreach (var newEventBox in _newEventBoxes)
+        {
+            _beatmapEventBoxGroupsDataModel.RemoveBaseEditorDataList(newEventBox.eventBox.id, newEventBox.baseList);
+            _beatmapEventBoxGroupsDataModel.RemoveEventBox(_eventBoxGroupId, newEventBox.eventBox);
+        }
 
-        _beatmapEventBoxGroupsDataModel.InsertEventBox(_groupId, _oldItem.box);
-        if (_oldItem.events != null)
-            _beatmapEventBoxGroupsDataModel.InsertBaseEditorDataList(_oldItem.box.id,
-                _oldItem.events);
+        foreach (var previousEventBox in _previousEventBoxes)
+        {
+            _beatmapEventBoxGroupsDataModel.InsertEventBox(_eventBoxGroupId, previousEventBox.eventBox);
+            if (previousEventBox.baseList != null)
+                _beatmapEventBoxGroupsDataModel.InsertBaseEditorDataList(previousEventBox.eventBox.id,
+                    previousEventBox.baseList);
+        }
 
-        _signalBus.Fire(new EventBoxesUpdatedSignal(_eventBoxId));
+        _signalBus.Fire(new EventBoxesUpdatedSignal(_newIdx));
         _signalBus.Fire<BeatmapLevelUpdatedSignal>();
     }
 
     public void Redo()
     {
-        _beatmapEventBoxGroupsDataModel.RemoveBaseEditorDataList(_oldItem.box.id,
-            _oldItem.events);
-        _beatmapEventBoxGroupsDataModel.RemoveEventBox(_groupId, _oldItem.box);
+        foreach (var previousEventBox in _previousEventBoxes)
+        {
+            _beatmapEventBoxGroupsDataModel.RemoveBaseEditorDataList(previousEventBox.eventBox.id,
+                previousEventBox.baseList);
+            _beatmapEventBoxGroupsDataModel.RemoveEventBox(_eventBoxGroupId, previousEventBox.eventBox);
+        }
 
-        _beatmapEventBoxGroupsDataModel.InsertEventBox(_groupId, _newItem.box);
-        if (_newItem.events != null)
-            _beatmapEventBoxGroupsDataModel.InsertBaseEditorDataList(_newItem.box.id, _newItem.events);
+        foreach (var newEventBox in _newEventBoxes)
+        {
+            _beatmapEventBoxGroupsDataModel.InsertEventBox(_eventBoxGroupId, newEventBox.eventBox);
+            if (newEventBox.baseList != null)
+                _beatmapEventBoxGroupsDataModel.InsertBaseEditorDataList(newEventBox.eventBox.id, newEventBox.baseList);
+        }
 
-        _signalBus.Fire(new EventBoxesUpdatedSignal(_eventBoxId - 1));
+        _signalBus.Fire(new EventBoxesUpdatedSignal(_newIdx));
         _signalBus.Fire<BeatmapLevelUpdatedSignal>();
     }
 }

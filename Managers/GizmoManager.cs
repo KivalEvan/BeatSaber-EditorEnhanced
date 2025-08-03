@@ -156,8 +156,9 @@ internal class GizmoManager : IInitializable, IDisposable
                 laneGizmo.transform.rotation = Quaternion.identity;
 
                 var groupHighlighter = laneGizmo.GetComponent<GizmoHighlighterGroup>();
-                groupHighlighter.Clear();
+                groupHighlighter.Init();
                 groupHighlighter.Add(laneGizmo);
+                highlighterMap.Add((axis, globalBoxIdx), groupHighlighter);
 
                 localScale = laneGizmo.transform.localScale;
                 lossyScale = laneGizmo.transform.lossyScale;
@@ -165,7 +166,6 @@ internal class GizmoManager : IInitializable, IDisposable
                     localScale.y / lossyScale.y * 0.1f, localScale.z / lossyScale.z * 0.1f);
 
                 _gizmos.Add(laneGizmo);
-                highlighterMap.Add((axis, globalBoxIdx), groupHighlighter);
             }
 
             if (transform == null) continue;
@@ -187,8 +187,10 @@ internal class GizmoManager : IInitializable, IDisposable
             baseGizmo.transform.rotation = transform.parent.rotation;
             localScale = baseGizmo.transform.localScale;
             lossyScale = baseGizmo.transform.lossyScale;
-            baseGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 0.5f,
-                localScale.y / lossyScale.y * 0.5f, localScale.z / lossyScale.z * 0.5f);
+            baseGizmo.transform.localScale = new Vector3(
+                Mathf.Abs(localScale.x / (lossyScale.x != 0 ? lossyScale.x : 1) * 0.5f),
+                Mathf.Abs(localScale.y / (lossyScale.y != 0 ? lossyScale.y : 1) * 0.5f),
+                Mathf.Abs(localScale.z / (lossyScale.z != 0 ? lossyScale.z : 1) * 0.5f));
             baseGizmo.transform.SetParent(transform.transform, true);
 
             var modGizmo = groupType switch

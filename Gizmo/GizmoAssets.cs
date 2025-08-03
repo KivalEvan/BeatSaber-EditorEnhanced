@@ -21,6 +21,7 @@ internal class GizmoAssets : IInitializable, IDisposable
 {
     public static readonly Material DefaultMaterial = FetchMaterial("Assets/Shaders/Gizmo.mat");
     public static readonly Material OutlineMaterial = FetchMaterial("Assets/Shaders/Outline.mat");
+    private static readonly int MatColorId = Shader.PropertyToID("_Color");
     private readonly List<GameObject> _colorObjects = [];
     private readonly DiContainer _diContainer;
     private readonly List<GameObject> _fxObjects = [];
@@ -73,7 +74,7 @@ internal class GizmoAssets : IInitializable, IDisposable
     private static Material CreateMaterial(Color color)
     {
         var mat = new Material(DefaultMaterial);
-        mat.SetColor("_Color", color);
+        mat.SetColor(MatColorId, color);
         return mat;
     }
 

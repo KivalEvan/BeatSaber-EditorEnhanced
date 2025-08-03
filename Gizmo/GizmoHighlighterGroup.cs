@@ -5,7 +5,7 @@ namespace EditorEnhanced.Gizmo;
 
 public class GizmoHighlighterGroup : MonoBehaviour, IGizmoInput
 {
-    private List<GizmoHighlighter> _highlighters = [];
+    private List<GizmoHighlighter> _highlighters;
     private bool _isDragging;
 
     public void OnPointerEnter()
@@ -56,7 +56,7 @@ public class GizmoHighlighterGroup : MonoBehaviour, IGizmoInput
         _highlighters = gizmoHighlighterGroup._highlighters;
     }
 
-    public void Clear()
+    public void Init()
     {
         _highlighters = [];
     }

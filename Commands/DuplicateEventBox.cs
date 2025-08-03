@@ -34,8 +34,8 @@ public class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
     private readonly DuplicateEventBoxSignal _signal;
     private readonly SignalBus _signalBus;
     private BeatmapEditorObjectId _eventBoxGroupId;
-    private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _newEventBoxes;
     private int _newIdx;
+    private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _newEventBoxes;
     private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _previousEventBoxes;
 
     public DuplicateEventBoxCommand(DuplicateEventBoxSignal signal,
@@ -119,7 +119,7 @@ public class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
                     previousEventBox.baseList);
         }
 
-        _signalBus.Fire(new EventBoxesUpdatedSignal(_newIdx));
+        _signalBus.Fire(new EventBoxesUpdatedSignal(_newIdx - 1));
         _signalBus.Fire<BeatmapLevelUpdatedSignal>();
     }
 

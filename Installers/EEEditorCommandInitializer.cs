@@ -29,8 +29,6 @@ public class EEEditorCommandInitializer : IInitializable
         _signalBinder._commandContainer
             .BindFactory<PasteEventBoxCommand, PlaceholderFactory<PasteEventBoxCommand>>();
         _signalBinder._commandContainer
-            .BindFactory<PasteEventBoxSeedCommand, PlaceholderFactory<PasteEventBoxSeedCommand>>();
-        _signalBinder._commandContainer
             .BindFactory<DuplicateEventBoxCommand, PlaceholderFactory<DuplicateEventBoxCommand>>();
         _signalBinder._commandContainer
             .BindFactory<LolighterCommand, PlaceholderFactory<LolighterCommand>>();

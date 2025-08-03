@@ -143,6 +143,6 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
 
     private void PasteSeed()
     {
-        _signalBus.Fire(new PasteEventBoxSeedSignal(_ebv._eventBoxView._eventBox, _rscm.Seed));
+        _ebv._eventBoxView._indexFilterView._randomSeedValidator.SetValue(_rscm.Seed);
     }
 }

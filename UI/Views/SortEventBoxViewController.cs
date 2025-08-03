@@ -22,10 +22,7 @@ internal class SortEventBoxViewController : IInitializable, IDisposable
     private readonly EditorTextBuilder _editorText;
     private readonly SignalBus _signalBus;
 
-    private bool _copyEvent;
     private EventBoxesView _ebv;
-    private bool _increment;
-    private bool _randomSeed;
 
     public SortEventBoxViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,

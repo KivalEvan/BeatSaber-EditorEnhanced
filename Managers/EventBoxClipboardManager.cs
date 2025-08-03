@@ -26,7 +26,7 @@ public class EventBoxClipboardManager : IInitializable
     {
     }
 
-    public void Add(EventBoxEditorData eventBoxEditorData)
+    public void Copy(EventBoxEditorData eventBoxEditorData)
     {
         var l = _beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(eventBoxEditorData.id).ToList();
         switch (eventBoxEditorData)
