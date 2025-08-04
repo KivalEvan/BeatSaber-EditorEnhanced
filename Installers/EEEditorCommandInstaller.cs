@@ -19,6 +19,8 @@ public class EEEditorCommandInstaller
         InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container);
         InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>(Container);
         InstallCommands<LolighterSignal, LolighterCommand>(Container);
+        
+        Container.DeclareSignal<EventBoxSelectedSignal>().OptionalSubscriber();
     }
 
     private static void InstallCommands<TSignal, TCommand>(DiContainer container) where TCommand : IBeatmapEditorCommand

@@ -35,6 +35,8 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
         _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsSignal>(ApplyAction);
         _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsAndAxisSignal>(ApplyAction);
         _signalBus.TryUnsubscribe<DeleteEventBoxSignal>(ApplyAction);
+        _signalBus.TryUnsubscribe<SortAxisEventBoxGroupSignal>(ApplyAction);
+        _signalBus.TryUnsubscribe<SortIdEventBoxGroupSignal>(ApplyAction);
     }
 
     public void Initialize()
@@ -67,6 +69,8 @@ public class DraggableEventBoxCell : IInitializable, IDisposable
         _signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(ApplyAction);
         _signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(ApplyAction);
         _signalBus.Subscribe<DeleteEventBoxSignal>(ApplyAction);
+        _signalBus.Subscribe<SortAxisEventBoxGroupSignal>(ApplyAction);
+        _signalBus.Subscribe<SortIdEventBoxGroupSignal>(ApplyAction);
     }
 
     private void ApplyAction()

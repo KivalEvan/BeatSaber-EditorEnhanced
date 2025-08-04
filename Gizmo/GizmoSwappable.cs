@@ -1,3 +1,4 @@
+using System;
 using BeatmapEditor3D;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Views;
@@ -13,6 +14,7 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
     public EventBoxEditorData EventBoxEditorDataContext;
 
     private Camera Camera;
+    private GameObject SelectionObject;
 
     [Inject] private readonly BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;
     [Inject] private readonly EditBeatmapViewController _ebvc;
@@ -30,6 +32,7 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
     private void Awake()
     {
         Camera = Camera.main;
+        SelectionObject = transform.Find("Selection").gameObject;
         _eventBoxesView = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
     }
 
@@ -37,7 +40,19 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
     {
         _index = _bebgdm.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id);
         _maxIndex = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id).Count;
-        transform.localPosition = new Vector3((_index - (_maxIndex - 1) / 2f) / 2f, -0.1f, 0f);
+        transform.position = new Vector3((_index - (_maxIndex - 1) / 2f) / 2f, -0.1f, 0f);
+        ToggleSelection();
+        _signalBus.Subscribe<EventBoxSelectedSignal>(ToggleSelection);
+    }
+
+    private void OnDisable()
+    {
+        _signalBus.TryUnsubscribe<EventBoxSelectedSignal>(ToggleSelection);
+    }
+
+    private void ToggleSelection()
+    {
+        SelectionObject.SetActive(_eventBoxesView._activeEventBoxIdx == _index);
     }
 
     public void OnPointerEnter()
@@ -70,10 +85,14 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
     {
         var screenPosition = GetScreenPosition();
         var worldPosition = Camera.ScreenToWorldPoint(screenPosition);
-        transform.position = worldPosition;
-
-        transform.localPosition = new Vector3(
-            SnapPosition(transform.localPosition.x),
+        if (Math.Abs(_initialPosition.x - worldPosition.x) < 0.5f)
+        {
+            transform.position = _initialPosition;
+            return;
+        };
+        
+        transform.position = new Vector3(
+            SnapPosition(worldPosition.x),
             0.05f,
             0f
         );
@@ -94,6 +113,9 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
         else if (_startIndex < _index - 1)
             _signalBus.Fire(new ReorderEventBoxSignal(EventBoxEditorDataContext, ReorderType.Any, _index - 1));
         else
+        {
+            _index = _startIndex;
             transform.position = _initialPosition;
+        }
     }
 }

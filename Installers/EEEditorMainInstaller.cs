@@ -7,6 +7,7 @@ public class EEEditorMainInstaller : Installer
 {
     public override void InstallBindings()
     {
+        Container.BindInterfacesAndSelfTo<EventBoxesViewPatches>().AsSingle();
         Container.BindInterfacesAndSelfTo<LightEventsPayloadPatches>().AsSingle();
         Container.BindInterfacesAndSelfTo<ModifyHoveredLightEventDeltaIntensityCommandPatches>().AsSingle();
         Container.BindInterfacesAndSelfTo<ModifyHoveredLightTranslationDeltaTranslationCommandPatches>().AsSingle();
