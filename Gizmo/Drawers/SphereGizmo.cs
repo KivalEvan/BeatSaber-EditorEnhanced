@@ -30,6 +30,7 @@ internal static class SphereGizmo
         // var lineRenderController = go.AddComponent<LineRenderController>();
         // lineRenderController.enabled = false;
 
+        go.AddComponent<GizmoNone>();
         go.AddComponent<GizmoHighlighter>();
         go.AddComponent<GizmoHighlighterGroup>();
 

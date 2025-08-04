@@ -120,7 +120,6 @@ internal class GizmoAssets : IInitializable, IDisposable
         //     lineRenderController.enabled = false;
         // }
 
-        go.SetActive(true);
         return go;
     }
 }

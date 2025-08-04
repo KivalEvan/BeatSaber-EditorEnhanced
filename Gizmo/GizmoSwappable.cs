@@ -26,10 +26,18 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
     private int _maxIndex;
     private Vector3 _initialPosition;
 
+
     private void Awake()
     {
         Camera = Camera.main;
         _eventBoxesView = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
+    }
+
+    private void OnEnable()
+    {
+        _index = _bebgdm.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id);
+        _maxIndex = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id).Count;
+        transform.localPosition = new Vector3((_index - (_maxIndex - 1) / 2f) / 2f, -0.1f, 0f);
     }
 
     public void OnPointerEnter()
@@ -42,7 +50,7 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
 
     private int GetIndex(float v)
     {
-        var t = Mathf.InverseLerp(-_maxIndex / 4f, _maxIndex / 4f, v);
+        var t = Mathf.InverseLerp(-_maxIndex / 4f, _maxIndex / 4f, v + .25f);
         return (int)Mathf.Lerp(0, _maxIndex, t);
     }
 
@@ -66,15 +74,14 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
 
         transform.localPosition = new Vector3(
             SnapPosition(transform.localPosition.x),
-            0f,
+            0.05f,
             0f
         );
     }
 
     public void OnMouseClick()
     {
-        _startIndex = _bebgdm.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id);
-        _maxIndex = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id).Count;
+        _startIndex = _index;
         _eventBoxesView.DisplayEventBoxes(
             _beatmapEventBoxGroupsDataModel.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id));
         _initialPosition = transform.position;

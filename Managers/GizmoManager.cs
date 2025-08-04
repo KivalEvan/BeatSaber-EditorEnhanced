@@ -33,7 +33,6 @@ internal class GizmoManager : IInitializable, IDisposable
     private LightTranslationGroupEffectManager _translationManager;
 
     private const float GizmoBaseSize = 0.5f;
-    private const float GizmoModSize = 2.5f;
 
     public GizmoManager(GizmoAssets gizmoAssets,
         SignalBus signalBus,
@@ -163,19 +162,14 @@ internal class GizmoManager : IInitializable, IDisposable
             {
                 var laneGizmo = _gizmoAssets.GetOrCreate(GizmoType.Lane, colorIdx);
                 laneGizmo.transform.SetParent(_colorManager.transform.root, false);
-                laneGizmo.transform.localPosition = new Vector3((globalBoxIdx - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
-
                 laneGizmo.GetComponent<GizmoSwappable>().EventBoxEditorDataContext = eventBoxContext;
+                
                 var groupHighlighter = laneGizmo.GetComponent<GizmoHighlighterGroup>();
                 groupHighlighter.Init();
                 groupHighlighter.Add(laneGizmo);
                 highlighterMap.Add((axis, globalBoxIdx), groupHighlighter);
 
-                localScale = laneGizmo.transform.localScale;
-                lossyScale = laneGizmo.transform.lossyScale;
-                laneGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * 0.333f,
-                    localScale.y / lossyScale.y * 0.1f, localScale.z / lossyScale.z * 0.1f);
-
+                laneGizmo.SetActive(true);
                 _gizmos.Add(laneGizmo);
             }
 
@@ -192,17 +186,7 @@ internal class GizmoManager : IInitializable, IDisposable
             var baseGroupHighlighter = baseGizmo.GetComponent<GizmoHighlighterGroup>();
             baseGroupHighlighter.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
             highlighterMap[(axis, globalBoxIdx)].Add(baseGizmo);
-
-            baseGizmo.transform.SetParent(transform.parent.transform, false);
-            baseGizmo.transform.position = transform.position;
-            baseGizmo.transform.rotation = transform.parent.rotation;
-            localScale = baseGizmo.transform.localScale;
-            lossyScale = baseGizmo.transform.lossyScale;
-            baseGizmo.transform.localScale = new Vector3(
-                Mathf.Abs(localScale.x / (lossyScale.x != 0 ? lossyScale.x : 1) * GizmoBaseSize),
-                Mathf.Abs(localScale.y / (lossyScale.y != 0 ? lossyScale.y : 1) * GizmoBaseSize),
-                Mathf.Abs(localScale.z / (lossyScale.z != 0 ? lossyScale.z : 1) * GizmoBaseSize));
-            baseGizmo.transform.SetParent(transform.transform, true);
+            baseGizmo.GetComponent<GizmoNone>().TargetTransform = transform;
 
             var modGizmo = groupType switch
             {
@@ -212,27 +196,10 @@ internal class GizmoManager : IInitializable, IDisposable
             };
             if (modGizmo != null)
             {
+                modGizmo.transform.SetParent(baseGizmo.transform, false);
                 var modGroupHighlighter = modGizmo.GetComponent<GizmoHighlighterGroup>();
                 modGroupHighlighter.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
                 highlighterMap[(axis, globalBoxIdx)].Add(modGizmo);
-                modGizmo.transform.SetParent(baseGizmo.transform, false);
-
-                localScale = modGizmo.transform.localScale;
-                lossyScale = modGizmo.transform.lossyScale;
-                modGizmo.transform.localScale = new Vector3(localScale.x / lossyScale.x * GizmoModSize,
-                    localScale.y / lossyScale.y * GizmoModSize, localScale.z / lossyScale.z * GizmoModSize);
-
-                modGizmo.transform.localRotation = groupType switch
-                {
-                    EventBoxGroupType.Translation or EventBoxGroupType.Rotation => axis switch
-                    {
-                        LightAxis.X => mirror ? Quaternion.Euler(0, 270, 0) : Quaternion.Euler(0, 90, 0),
-                        LightAxis.Y => mirror ? Quaternion.Euler(90, 0, 0) : Quaternion.Euler(270, 0, 0),
-                        LightAxis.Z => mirror ? Quaternion.Euler(180, 0, 0) : Quaternion.Euler(0, 0, 0),
-                        _ => Quaternion.identity
-                    },
-                    _ => modGizmo.transform.localRotation
-                };
 
                 var gizmoDraggable = modGizmo.GetComponent<GizmoDraggable>();
                 gizmoDraggable.EventBoxEditorDataContext = eventBoxContext;
@@ -240,6 +207,9 @@ internal class GizmoManager : IInitializable, IDisposable
                 gizmoDraggable.Axis = axis;
                 gizmoDraggable.TargetTransform = transform;
                 gizmoDraggable.Mirror = mirror;
+
+                modGizmo.SetActive(true);
+                _gizmos.Add(modGizmo);
 
                 // var lineRenderController = baseGizmo.GetComponent<LineRenderController>();
                 // var current = transform;
@@ -261,8 +231,8 @@ internal class GizmoManager : IInitializable, IDisposable
                 // }
             }
 
+            baseGizmo.SetActive(true);
             _gizmos.Add(baseGizmo);
-            if (modGizmo != null) _gizmos.Add(modGizmo);
         }
     }
 
