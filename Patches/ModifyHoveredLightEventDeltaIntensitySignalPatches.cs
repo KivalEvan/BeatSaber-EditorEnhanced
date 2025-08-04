@@ -27,6 +27,6 @@ public class ModifyHoveredLightEventDeltaIntensityCommandPatches : IAffinity
             __instance._signal.newDeltaIntensity,
             _beatmapState.scrollPrecision);
         var lightEventsPayload = new LightEventsPayload(originalBasicEventData.value, (float)floatValue);
-        __result.SetField("floatValue", lightEventsPayload);
+        __result.SetField("floatValue", lightEventsPayload.intensity);
     }
 }
