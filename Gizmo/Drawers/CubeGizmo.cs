@@ -32,7 +32,6 @@ internal static class CubeGizmo
 
         go.AddComponent<GizmoHighlighter>();
         go.AddComponent<GizmoHighlighterGroup>();
-        go.AddComponent<GizmoClickable>();
 
         return go;
     }

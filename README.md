@@ -6,11 +6,13 @@ For level designer, by level designer, to improve your workflow with various QOL
 
 * v3 Light Gizmo
     * View gizmo for color, rotation, translation and FX with their orientation
-    * Highlight selected gizmo when hovered on lane
+    * Highlight current event box lane and selected gizmo when hovered on lane
     * Draggable translation gizmo
         * Creates event based on event box context, cursor time and event box state
+    * Clickable to select event box
 * Better Event Box Reordering
     * Drag the tab to reorder them than using button
+    * Lane gizmo can also be dragged to reorder
 * Sort Event Box
 * Event Box Copy & Duplicate
 * Random Seed Clipboard

@@ -2,26 +2,27 @@ using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Drawers;
 
-internal static class SphereGizmo
+internal static class LaneGizmo
 {
     public static GameObject SObject;
 
     public static GameObject Create(Material material)
     {
         if (SObject != null) return SObject;
-        var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.layer = 22;
+        go.transform.localScale = new Vector3(0.333f, 0.1f, 0.1f);
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
         
-        var highlight = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        Object.Destroy(highlight.GetComponent<SphereCollider>());
+        var highlight = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        Object.Destroy(highlight.GetComponent<BoxCollider>());
         highlight.name = "Highlight";
         highlight.SetActive(false);
         highlight.GetComponent<Renderer>().material = GizmoAssets.OutlineMaterial;
         highlight.transform.localScale *= 1.5f;
         highlight.transform.SetParent(go.transform, false);
-        
+
         // var lineRenderer = go.AddComponent<LineRenderer>();
         // lineRenderer.startWidth = 0.1f;
         // lineRenderer.endWidth = 0.1f;
@@ -32,6 +33,7 @@ internal static class SphereGizmo
 
         go.AddComponent<GizmoHighlighter>();
         go.AddComponent<GizmoHighlighterGroup>();
+        go.AddComponent<GizmoSwappable>();
 
         return go;
     }

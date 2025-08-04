@@ -22,9 +22,9 @@ internal class GizmoManager : IInitializable, IDisposable
     private readonly BeatmapEventBoxGroupsDataModel _bebgdm;
     private readonly EventBoxGroupsState _ebgs;
     private readonly GizmoAssets _gizmoAssets;
+    private readonly SignalBus _signalBus;
 
     private readonly List<GameObject> _gizmos = [];
-    private readonly SignalBus _signalBus;
     private LightColorGroupEffectManager _colorManager;
     private FloatFxGroupEffectManager _fxManager;
 
@@ -161,12 +161,11 @@ internal class GizmoManager : IInitializable, IDisposable
 
             if (!highlighterMap.ContainsKey((axis, globalBoxIdx)))
             {
-                var laneGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
+                var laneGizmo = _gizmoAssets.GetOrCreate(GizmoType.Lane, colorIdx);
                 laneGizmo.transform.SetParent(_colorManager.transform.root, false);
                 laneGizmo.transform.localPosition = new Vector3((globalBoxIdx - (maxCount - 1) / 2f) / 2f, -0.1f, 0f);
-                laneGizmo.transform.rotation = Quaternion.identity;
-                
-                laneGizmo.GetComponent<GizmoClickable>().EventBoxEditorDataContext = eventBoxContext;
+
+                laneGizmo.GetComponent<GizmoSwappable>().EventBoxEditorDataContext = eventBoxContext;
                 var groupHighlighter = laneGizmo.GetComponent<GizmoHighlighterGroup>();
                 groupHighlighter.Init();
                 groupHighlighter.Add(laneGizmo);
@@ -190,7 +189,6 @@ internal class GizmoManager : IInitializable, IDisposable
             };
 
             var baseGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
-            baseGizmo.GetComponent<GizmoClickable>().EventBoxEditorDataContext  = eventBoxContext;
             var baseGroupHighlighter = baseGizmo.GetComponent<GizmoHighlighterGroup>();
             baseGroupHighlighter.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
             highlighterMap[(axis, globalBoxIdx)].Add(baseGizmo);

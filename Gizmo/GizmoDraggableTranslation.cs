@@ -43,7 +43,6 @@ public class GizmoDraggableTranslation : GizmoDraggable
     public override void OnMouseClick()
     {
         transform.parent.SetParent(TargetTransform.parent, true);
-        InitialScreenPosition = Camera.WorldToScreenPoint(transform.position);
     }
 
     public override void OnMouseRelease()

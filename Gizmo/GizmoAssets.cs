@@ -14,7 +14,8 @@ internal enum GizmoType
     Cube,
     Rotation,
     Translation,
-    Sphere
+    Sphere,
+    Lane
 }
 
 internal class GizmoAssets : IInitializable, IDisposable
@@ -22,13 +23,15 @@ internal class GizmoAssets : IInitializable, IDisposable
     public static readonly Material DefaultMaterial = FetchMaterial("Assets/Shaders/Gizmo.mat");
     public static readonly Material OutlineMaterial = FetchMaterial("Assets/Shaders/Outline.mat");
     private static readonly int MatColorId = Shader.PropertyToID("_Color");
-    private readonly List<GameObject> _colorObjects = [];
     private readonly DiContainer _diContainer;
-    private readonly List<GameObject> _fxObjects = [];
+
+    private readonly List<GameObject> _colorObjects = [];
+    private readonly List<GameObject> _translationObjects = [];
     private readonly List<GameObject> _rotationObjects = [];
+    private readonly List<GameObject> _fxObjects = [];
+    private readonly List<GameObject> _laneObjects = [];
 
     private readonly Material[] _sharedMaterials = new Material[ColorAssignment.HueRange];
-    private readonly List<GameObject> _translationObjects = [];
 
     public GizmoAssets(DiContainer diContainer)
     {
@@ -54,9 +57,10 @@ internal class GizmoAssets : IInitializable, IDisposable
         RotationGizmo.SObject = RotationGizmo.Create(DefaultMaterial);
         TranslationGizmo.SObject = TranslationGizmo.Create(DefaultMaterial);
         SphereGizmo.SObject = SphereGizmo.Create(DefaultMaterial);
+        LaneGizmo.SObject = LaneGizmo.Create(DefaultMaterial);
     }
 
-    public Material GetOrCreateMaterial(int index)
+    private Material GetOrCreateMaterial(int index)
     {
         if (index < 0 || index >= ColorAssignment.HueRange) return DefaultMaterial;
         if (_sharedMaterials[index] != null) return _sharedMaterials[index];
@@ -86,6 +90,7 @@ internal class GizmoAssets : IInitializable, IDisposable
             GizmoType.Rotation => _rotationObjects,
             GizmoType.Translation => _translationObjects,
             GizmoType.Sphere => _fxObjects,
+            GizmoType.Lane => _laneObjects,
             _ => throw new ArgumentOutOfRangeException(nameof(gizmoType), gizmoType, null)
         };
 
@@ -98,6 +103,7 @@ internal class GizmoAssets : IInitializable, IDisposable
                 GizmoType.Rotation => _diContainer.InstantiatePrefab(RotationGizmo.SObject),
                 GizmoType.Translation => _diContainer.InstantiatePrefab(TranslationGizmo.SObject),
                 GizmoType.Sphere => _diContainer.InstantiatePrefab(SphereGizmo.SObject),
+                GizmoType.Lane => _diContainer.InstantiatePrefab(LaneGizmo.SObject),
                 _ => throw new ArgumentOutOfRangeException(nameof(gizmoType), gizmoType, null)
             };
             objects.Add(go);
