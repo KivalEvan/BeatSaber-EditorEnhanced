@@ -10,6 +10,7 @@ internal static class CubeGizmo
     {
         if (SObject != null) return SObject;
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = "BaseGizmo";
         go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
@@ -30,9 +31,9 @@ internal static class CubeGizmo
         // var lineRenderController = go.AddComponent<LineRenderController>();
         // lineRenderController.enabled = false;
 
-        go.AddComponent<GizmoNone>();
         go.AddComponent<GizmoHighlighter>();
         go.AddComponent<GizmoHighlighterGroup>();
+        go.AddComponent<GizmoNone>();
 
         return go;
     }

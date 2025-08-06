@@ -15,7 +15,8 @@ internal enum GizmoType
     Rotation,
     Translation,
     Sphere,
-    Lane
+    Lane,
+    Selection
 }
 
 internal class GizmoAssets : IInitializable, IDisposable
@@ -25,11 +26,8 @@ internal class GizmoAssets : IInitializable, IDisposable
     private static readonly int MatColorId = Shader.PropertyToID("_Color");
     private readonly DiContainer _diContainer;
 
-    private readonly List<GameObject> _colorObjects = [];
-    private readonly List<GameObject> _translationObjects = [];
-    private readonly List<GameObject> _rotationObjects = [];
-    private readonly List<GameObject> _fxObjects = [];
-    private readonly List<GameObject> _laneObjects = [];
+    private readonly List<GameObject>[] _gizmoObjects = new List<GameObject>[6];
+    private readonly GameObject[] _gizmoPrefab = new GameObject[6];
 
     private readonly Material[] _sharedMaterials = new Material[ColorAssignment.HueRange];
 
@@ -40,24 +38,26 @@ internal class GizmoAssets : IInitializable, IDisposable
 
     public void Dispose()
     {
-        _colorObjects.ForEach(Object.Destroy);
-        _rotationObjects.ForEach(Object.Destroy);
-        _translationObjects.ForEach(Object.Destroy);
-        _fxObjects.ForEach(Object.Destroy);
-
-        _colorObjects.Clear();
-        _rotationObjects.Clear();
-        _translationObjects.Clear();
-        _fxObjects.Clear();
+        foreach (var gizmos in _gizmoObjects)
+        {
+            gizmos.ForEach(Object.Destroy);
+            gizmos.Clear();
+        }
     }
 
     public void Initialize()
     {
-        CubeGizmo.SObject = CubeGizmo.Create(DefaultMaterial);
-        RotationGizmo.SObject = RotationGizmo.Create(DefaultMaterial);
-        TranslationGizmo.SObject = TranslationGizmo.Create(DefaultMaterial);
-        SphereGizmo.SObject = SphereGizmo.Create(DefaultMaterial);
-        LaneGizmo.SObject = LaneGizmo.Create(DefaultMaterial);
+        _gizmoPrefab[(int)GizmoType.Cube] = CubeGizmo.SObject = CubeGizmo.Create(DefaultMaterial);
+        _gizmoPrefab[(int)GizmoType.Rotation] = RotationGizmo.SObject = RotationGizmo.Create(DefaultMaterial);
+        _gizmoPrefab[(int)GizmoType.Translation] = TranslationGizmo.SObject = TranslationGizmo.Create(DefaultMaterial);
+        _gizmoPrefab[(int)GizmoType.Sphere] = SphereGizmo.SObject = SphereGizmo.Create(DefaultMaterial);
+        _gizmoPrefab[(int)GizmoType.Lane] = LaneGizmo.SObject = LaneGizmo.Create(DefaultMaterial);
+        _gizmoPrefab[(int)GizmoType.Selection] = SelectionGizmo.SObject = SelectionGizmo.Create(DefaultMaterial);
+        
+        for (var i = 0; i < _gizmoObjects.Length; i++)
+        {
+            _gizmoObjects[i] = [];
+        }
     }
 
     private Material GetOrCreateMaterial(int index)
@@ -84,33 +84,21 @@ internal class GizmoAssets : IInitializable, IDisposable
 
     public GameObject GetOrCreate(GizmoType gizmoType, int colorIdx)
     {
-        var objects = gizmoType switch
-        {
-            GizmoType.Cube => _colorObjects,
-            GizmoType.Rotation => _rotationObjects,
-            GizmoType.Translation => _translationObjects,
-            GizmoType.Sphere => _fxObjects,
-            GizmoType.Lane => _laneObjects,
-            _ => throw new ArgumentOutOfRangeException(nameof(gizmoType), gizmoType, null)
-        };
+        var objects = _gizmoObjects[(int)gizmoType];
 
         var go = objects.FirstOrDefault(obj => !obj.activeSelf);
         if (go == null)
         {
-            go = gizmoType switch
-            {
-                GizmoType.Cube => _diContainer.InstantiatePrefab(CubeGizmo.SObject),
-                GizmoType.Rotation => _diContainer.InstantiatePrefab(RotationGizmo.SObject),
-                GizmoType.Translation => _diContainer.InstantiatePrefab(TranslationGizmo.SObject),
-                GizmoType.Sphere => _diContainer.InstantiatePrefab(SphereGizmo.SObject),
-                GizmoType.Lane => _diContainer.InstantiatePrefab(LaneGizmo.SObject),
-                _ => throw new ArgumentOutOfRangeException(nameof(gizmoType), gizmoType, null)
-            };
+            var prefab = _gizmoPrefab[(int)gizmoType];
+            go = _diContainer.InstantiatePrefab(prefab);
             objects.Add(go);
         }
 
+        var renderer = go.GetComponent<Renderer>();
+        if (renderer == null) return go;
+        
         var mat = GetOrCreateMaterial(colorIdx);
-        go.GetComponent<Renderer>().sharedMaterial = mat;
+        renderer.sharedMaterial = mat;
 
         // var lineRenderController = go.GetComponent<LineRenderController>();
         // if (lineRenderController != null)

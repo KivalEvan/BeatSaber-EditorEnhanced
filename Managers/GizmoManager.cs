@@ -24,7 +24,7 @@ internal class GizmoManager : IInitializable, IDisposable
     private readonly GizmoAssets _gizmoAssets;
     private readonly SignalBus _signalBus;
 
-    private readonly List<GameObject> _gizmos = [];
+    private readonly List<GameObject> _activeGizmos = [];
     private LightColorGroupEffectManager _colorManager;
     private FloatFxGroupEffectManager _fxManager;
 
@@ -58,7 +58,7 @@ internal class GizmoManager : IInitializable, IDisposable
         _signalBus.TryUnsubscribe<SortAxisEventBoxGroupSignal>(UpdateGizmo);
         _signalBus.TryUnsubscribe<SortIdEventBoxGroupSignal>(UpdateGizmo);
 
-        _gizmos.Clear();
+        _activeGizmos.Clear();
         _colorManager = null;
         _rotationManager = null;
         _translationManager = null;
@@ -68,8 +68,10 @@ internal class GizmoManager : IInitializable, IDisposable
 
     public void Initialize()
     {
-        var go = new GameObject();
-        go.name = "GizmoDragInputSystem";
+        var go = new GameObject
+        {
+            name = "GizmoDragInputSystem"
+        };
         go.SetActive(false);
         _gizmoDragInputSystem = go.AddComponent<GizmoDragInputSystem>();
 
@@ -117,9 +119,9 @@ internal class GizmoManager : IInitializable, IDisposable
 
     private void RemoveGizmo()
     {
-        foreach (var gizmo in _gizmos)
+        foreach (var gizmo in _activeGizmos)
             gizmo.SetActive(false);
-        _gizmos.Clear();
+        _activeGizmos.Clear();
         _gizmoDragInputSystem.gameObject.SetActive(false);
     }
 
@@ -135,7 +137,7 @@ internal class GizmoManager : IInitializable, IDisposable
         AddGizmo();
     }
 
-    private void DoTheFunny(
+    private void DistributeGizmo(
         IEnumerable<LightTransformData> list,
         EventBoxGroupType groupType,
         LightAxis axis,
@@ -170,7 +172,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 highlighterMap.Add((axis, globalBoxIdx), groupHighlighter);
 
                 laneGizmo.SetActive(true);
-                _gizmos.Add(laneGizmo);
+                _activeGizmos.Add(laneGizmo);
             }
 
             if (transform == null) continue;
@@ -185,7 +187,7 @@ internal class GizmoManager : IInitializable, IDisposable
             var baseGizmo = _gizmoAssets.GetOrCreate(distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
             var baseGroupHighlighter = baseGizmo.GetComponent<GizmoHighlighterGroup>();
             baseGroupHighlighter.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
-            highlighterMap[(axis, globalBoxIdx)].Add(baseGizmo);
+            baseGroupHighlighter.Add(baseGizmo);
             baseGizmo.GetComponent<GizmoNone>().TargetTransform = transform;
 
             var modGizmo = groupType switch
@@ -199,7 +201,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 modGizmo.transform.SetParent(baseGizmo.transform, false);
                 var modGroupHighlighter = modGizmo.GetComponent<GizmoHighlighterGroup>();
                 modGroupHighlighter.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
-                highlighterMap[(axis, globalBoxIdx)].Add(modGizmo);
+                modGroupHighlighter.Add(modGizmo);
 
                 var gizmoDraggable = modGizmo.GetComponent<GizmoDraggable>();
                 gizmoDraggable.EventBoxEditorDataContext = eventBoxContext;
@@ -209,7 +211,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 gizmoDraggable.Mirror = mirror;
 
                 modGizmo.SetActive(true);
-                _gizmos.Add(modGizmo);
+                _activeGizmos.Add(modGizmo);
 
                 // var lineRenderController = baseGizmo.GetComponent<LineRenderController>();
                 // var current = transform;
@@ -232,8 +234,12 @@ internal class GizmoManager : IInitializable, IDisposable
             }
 
             baseGizmo.SetActive(true);
-            _gizmos.Add(baseGizmo);
+            _activeGizmos.Add(baseGizmo);
         }
+
+        var selection = _gizmoAssets.GetOrCreate(GizmoType.Selection, 0);
+        selection.SetActive(true);
+        _activeGizmos.Add(selection);
     }
 
     private void AddColorGizmo()
@@ -286,7 +292,7 @@ internal class GizmoManager : IInitializable, IDisposable
                         break;
                 }
 
-            DoTheFunny(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, max, null);
+            DistributeGizmo(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, max, null);
         }
     }
 
@@ -348,7 +354,7 @@ internal class GizmoManager : IInitializable, IDisposable
                     LightAxis.Z => l.mirrorZ,
                     _ => false
                 };
-                DoTheFunny(list, _ebgs.eventBoxGroupContext.type, axis, mirror, max, l);
+                DistributeGizmo(list, _ebgs.eventBoxGroupContext.type, axis, mirror, max, l);
             }
         }
     }
@@ -411,7 +417,7 @@ internal class GizmoManager : IInitializable, IDisposable
                     LightAxis.Z => l.mirrorZ,
                     _ => false
                 };
-                DoTheFunny(list, _ebgs.eventBoxGroupContext.type, axis, mirror, max, l);
+                DistributeGizmo(list, _ebgs.eventBoxGroupContext.type, axis, mirror, max, l);
             }
         }
     }
@@ -447,7 +453,7 @@ internal class GizmoManager : IInitializable, IDisposable
                     data.Transform = l.targets.Select(t => t.transform).ElementAtOrDefault(item.Key);
                     return data;
                 });
-            DoTheFunny(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, max, l);
+            DistributeGizmo(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, max, l);
         }
     }
 }

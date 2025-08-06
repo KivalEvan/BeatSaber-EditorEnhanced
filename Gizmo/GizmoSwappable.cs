@@ -13,26 +13,22 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
 {
     public EventBoxEditorData EventBoxEditorDataContext;
 
-    private Camera Camera;
-    private GameObject SelectionObject;
-
-    [Inject] private readonly BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;
     [Inject] private readonly EditBeatmapViewController _ebvc;
     [Inject] private readonly BeatmapEventBoxGroupsDataModel _bebgdm;
     [Inject] private readonly EventBoxGroupsState _ebgs;
     [Inject] private readonly SignalBus _signalBus;
+
+    private Camera _camera;
 
     private EventBoxesView _eventBoxesView;
     private int _index;
     private int _startIndex;
     private int _maxIndex;
     private Vector3 _initialPosition;
-
-
+    
     private void Awake()
     {
-        Camera = Camera.main;
-        SelectionObject = transform.Find("Selection").gameObject;
+        _camera = Camera.main;
         _eventBoxesView = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
     }
 
@@ -41,18 +37,6 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
         _index = _bebgdm.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id);
         _maxIndex = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id).Count;
         transform.position = new Vector3((_index - (_maxIndex - 1) / 2f) / 2f, -0.1f, 0f);
-        ToggleSelection();
-        _signalBus.Subscribe<EventBoxSelectedSignal>(ToggleSelection);
-    }
-
-    private void OnDisable()
-    {
-        _signalBus.TryUnsubscribe<EventBoxSelectedSignal>(ToggleSelection);
-    }
-
-    private void ToggleSelection()
-    {
-        SelectionObject.SetActive(_eventBoxesView._activeEventBoxIdx == _index);
     }
 
     public void OnPointerEnter()
@@ -78,13 +62,13 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
     private Vector3 GetScreenPosition()
     {
         return new Vector3(Mouse.current.position.x.value, Mouse.current.position.y.value,
-            Camera.WorldToScreenPoint(transform.position).z);
+            _camera.WorldToScreenPoint(transform.position).z);
     }
 
     public void OnDrag()
     {
         var screenPosition = GetScreenPosition();
-        var worldPosition = Camera.ScreenToWorldPoint(screenPosition);
+        var worldPosition = _camera.ScreenToWorldPoint(screenPosition);
         if (Math.Abs(_initialPosition.x - worldPosition.x) < 0.5f)
         {
             transform.position = _initialPosition;
@@ -101,8 +85,7 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
     public void OnMouseClick()
     {
         _startIndex = _index;
-        _eventBoxesView.DisplayEventBoxes(
-            _beatmapEventBoxGroupsDataModel.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id));
+        _eventBoxesView.DisplayEventBoxes(_bebgdm.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id));
         _initialPosition = transform.position;
     }
 

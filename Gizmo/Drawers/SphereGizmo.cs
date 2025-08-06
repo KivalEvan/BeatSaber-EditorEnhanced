@@ -10,6 +10,7 @@ internal static class SphereGizmo
     {
         if (SObject != null) return SObject;
         var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        go.name = "DistributionGizmo";
         go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
@@ -30,9 +31,9 @@ internal static class SphereGizmo
         // var lineRenderController = go.AddComponent<LineRenderController>();
         // lineRenderController.enabled = false;
 
-        go.AddComponent<GizmoNone>();
         go.AddComponent<GizmoHighlighter>();
         go.AddComponent<GizmoHighlighterGroup>();
+        go.AddComponent<GizmoNone>();
 
         return go;
     }

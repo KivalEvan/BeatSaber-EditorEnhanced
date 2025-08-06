@@ -9,7 +9,7 @@ public class GizmoHighlighter : MonoBehaviour
 
     private void Awake()
     {
-        _highlightObject = gameObject.transform.Find("Highlight").gameObject;
+        _highlightObject = gameObject.transform.GetChild(0).gameObject;
     }
 
     public void AddOutline()
