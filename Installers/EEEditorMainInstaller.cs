@@ -7,15 +7,19 @@ public class EEEditorMainInstaller : Installer
 {
     public override void InstallBindings()
     {
-        Container.BindInterfacesAndSelfTo<EventBoxesViewPatches>().AsSingle();
-        Container.BindInterfacesAndSelfTo<LightEventsPayloadPatches>().AsSingle();
-        Container.BindInterfacesAndSelfTo<ModifyHoveredLightEventDeltaIntensityCommandPatches>().AsSingle();
-        Container.BindInterfacesAndSelfTo<ModifyHoveredLightTranslationDeltaTranslationCommandPatches>().AsSingle();
-        // Container.BindInterfacesAndSelfTo<ModifyHoveredLightRotationDeltaRotationCommandPatches>().AsSingle();
-        Container.BindInterfacesAndSelfTo<PasteEventBoxGroupsCommandPatches>().AsSingle();
-        // Container.BindInterfacesAndSelfTo<ObstacleLoaderSaverPatches>().AsSingle();
-        Container.BindInterfacesAndSelfTo<FloatInputFieldValidatorPatches>().AsSingle();
-        Container.BindInterfacesAndSelfTo<IntInputFieldValidatorPatches>().AsSingle();
-        Container.BindInterfacesAndSelfTo<DebugStatePatches>().AsSingle();
+        // Command Patch
+        Container.BindInterfacesTo<MoveEventBoxPatches>().AsSingle();
+        Container.BindInterfacesTo<LightEventsPayloadPatches>().AsSingle();
+        Container.BindInterfacesTo<ModifyHoveredLightEventDeltaIntensityCommandPatches>().AsSingle();
+        Container.BindInterfacesTo<ModifyHoveredLightTranslationDeltaTranslationCommandPatches>().AsSingle();
+        // Container.BindInterfacesTo<ModifyHoveredLightRotationDeltaRotationCommandPatches>().AsSingle();
+        Container.BindInterfacesTo<PasteEventBoxGroupsCommandPatches>().AsSingle();
+        // Container.BindInterfacesTo<ObstacleLoaderSaverPatches>().AsSingle();
+        
+        // UI Patch
+        Container.BindInterfacesTo<EventBoxesViewPatches>().AsSingle();
+        Container.BindInterfacesTo<FloatInputFieldValidatorPatches>().AsSingle();
+        Container.BindInterfacesTo<IntInputFieldValidatorPatches>().AsSingle();
+        Container.BindInterfacesTo<DebugStatePatches>().AsSingle();
     }
 }

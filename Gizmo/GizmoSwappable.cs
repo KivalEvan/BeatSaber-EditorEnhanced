@@ -1,5 +1,6 @@
 using System;
 using BeatmapEditor3D;
+using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
@@ -92,9 +93,9 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
     public void OnMouseRelease()
     {
         if (_startIndex > _index)
-            _signalBus.Fire(new ReorderEventBoxSignal(EventBoxEditorDataContext, ReorderType.Any, _index));
+            _signalBus.Fire(new MoveEventBoxSignal(_startIndex, _index));
         else if (_startIndex < _index - 1)
-            _signalBus.Fire(new ReorderEventBoxSignal(EventBoxEditorDataContext, ReorderType.Any, _index - 1));
+            _signalBus.Fire(new MoveEventBoxSignal(_startIndex, _index - 1));
         else
         {
             _index = _startIndex;

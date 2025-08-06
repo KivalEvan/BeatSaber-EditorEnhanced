@@ -14,7 +14,6 @@ public class EEEditorCommandInstaller
         InstallCommands<DragGizmoLightTranslationEventBoxSignal, DragGizmoLightTranslationEventBoxCommand>(Container);
         InstallCommands<SortAxisEventBoxGroupSignal, SortAxisEventBoxGroupCommand>(Container);
         InstallCommands<SortIdEventBoxGroupSignal, SortIdEventBoxGroupCommand>(Container);
-        InstallCommands<ReorderEventBoxSignal, ReorderEventBoxCommand>(Container);
         InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>(Container);
         InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container);
         InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>(Container);

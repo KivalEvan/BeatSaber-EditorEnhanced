@@ -9,120 +9,75 @@ using EditorEnhanced.Commands;
 using HMUI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace EditorEnhanced.UI;
 
-public class DraggableEventBoxCell : IInitializable, IDisposable
+public class DraggableEventBoxCell : IInitializable
 {
+    private readonly DiContainer _container;
     private readonly EditBeatmapViewController _ebvc;
-    private readonly SignalBus _signalBus;
-    private EventBoxesView _ebv;
 
-    public DraggableEventBoxCell(SignalBus signalBus, EditBeatmapViewController ebvc)
+    public DraggableEventBoxCell(DiContainer container, SignalBus signalBus, EditBeatmapViewController ebvc)
     {
-        _signalBus = signalBus;
+        _container = container;
         _ebvc = ebvc;
-    }
-
-    public void Dispose()
-    {
-        _signalBus.TryUnsubscribe<BeatmapEditingModeSwitchedSignal>(ApplyActionWithSignal);
-        _signalBus.TryUnsubscribe<EventBoxesUpdatedSignal>(ApplyAction);
-        _signalBus.TryUnsubscribe<ModifyEventBoxSignal>(ApplyAction);
-        _signalBus.TryUnsubscribe<InsertEventBoxSignal>(ApplyAction);
-        _signalBus.TryUnsubscribe<InsertEventBoxesForAllAxesSignal>(ApplyAction);
-        _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsSignal>(ApplyAction);
-        _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsAndAxisSignal>(ApplyAction);
-        _signalBus.TryUnsubscribe<DeleteEventBoxSignal>(ApplyAction);
-        _signalBus.TryUnsubscribe<SortAxisEventBoxGroupSignal>(ApplyAction);
-        _signalBus.TryUnsubscribe<SortIdEventBoxGroupSignal>(ApplyAction);
     }
 
     public void Initialize()
     {
-        _ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0]
+        var ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox).elements[0]
             .GetComponent<EventBoxesView>();
 
-        SegmentedControlCell[] l =
+        SegmentedControlCell[] prefabs =
         [
-            _ebv._eventBoxButtonsTextSegmentedControl._firstCellPrefab,
-            _ebv._eventBoxButtonsTextSegmentedControl._middleCellPrefab,
-            _ebv._eventBoxButtonsTextSegmentedControl._lastCellPrefab,
-            _ebv._eventBoxButtonsTextSegmentedControl._singleCellPrefab
+            ebv._eventBoxButtonsTextSegmentedControl._firstCellPrefab,
+            ebv._eventBoxButtonsTextSegmentedControl._middleCellPrefab,
+            ebv._eventBoxButtonsTextSegmentedControl._lastCellPrefab,
+            ebv._eventBoxButtonsTextSegmentedControl._singleCellPrefab
         ];
 
-        foreach (var cell in l)
+        foreach (var prefab in prefabs)
         {
-            var comp = cell.gameObject.AddComponent<DragSwapSegmentCell>();
-            comp.currentCell = cell;
-            comp.segmentedControl = _ebv._eventBoxButtonsTextSegmentedControl;
+            _container.InstantiateComponent<DragSwapSegmentCell>(prefab.gameObject);
         }
-
-        ApplyAction();
-
-        _signalBus.Subscribe<BeatmapEditingModeSwitchedSignal>(ApplyActionWithSignal);
-        _signalBus.Subscribe<EventBoxesUpdatedSignal>(ApplyAction);
-        _signalBus.Subscribe<ModifyEventBoxSignal>(ApplyAction);
-        _signalBus.Subscribe<InsertEventBoxSignal>(ApplyAction);
-        _signalBus.Subscribe<InsertEventBoxesForAllAxesSignal>(ApplyAction);
-        _signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(ApplyAction);
-        _signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(ApplyAction);
-        _signalBus.Subscribe<DeleteEventBoxSignal>(ApplyAction);
-        _signalBus.Subscribe<SortAxisEventBoxGroupSignal>(ApplyAction);
-        _signalBus.Subscribe<SortIdEventBoxGroupSignal>(ApplyAction);
-    }
-
-    private void ApplyAction()
-    {
-        foreach (var cell in _ebv._eventBoxButtonsTextSegmentedControl.cells)
-        {
-            var component = cell.gameObject.GetComponent<DragSwapSegmentCell>();
-            if (component != null) component.OnSwapAction ??= Reorder;
-        }
-    }
-
-    private void ApplyActionWithSignal(BeatmapEditingModeSwitchedSignal signal)
-    {
-        if (signal.mode != BeatmapEditingMode.EventBoxes) return;
-        ApplyAction();
-    }
-
-    private void Reorder(int index, int moved)
-    {
-        _signalBus.Fire(new ReorderEventBoxSignal(_ebv._eventBoxes[index],
-            ReorderType.Any, index + moved));
     }
 }
 
 public class DragSwapSegmentCell : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public SegmentedControlCell currentCell;
-    public SegmentedControl segmentedControl;
+    [Inject] private readonly SignalBus _signalBus;
+    
+    private SegmentedControlCell _currentCell;
+    private SegmentedControl _segmentedControl;
     private RectTransform _rectTransform;
-    private int _startIndex;
     private Vector2 _startPos;
-    public Action<int, int> OnSwapAction;
 
-    private void Start()
+    private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();
+        _currentCell = GetComponent<SegmentedControlCell>();
+    }
+    
+    private void Start()
+    {
+        _segmentedControl = _currentCell._segmentedControl;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         _startPos = _rectTransform.anchoredPosition;
-        _startIndex = transform.GetSiblingIndex();
-        currentCell.interactable = false;
+        _currentCell.interactable = false;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         transform.position = transform.position with { y = eventData.position.y };
-        foreach (var segmentedControlCell in segmentedControl.cells)
+        foreach (var segmentedControlCell in _segmentedControl.cells)
         {
             if (!segmentedControlCell.gameObject.activeSelf) continue;
-            if (currentCell == segmentedControlCell) continue;
+            if (_currentCell == segmentedControlCell) continue;
             if (!AnchoredPositionWithinEachOther(_rectTransform, segmentedControlCell.GetComponent<RectTransform>()))
                 continue;
             transform.SetSiblingIndex(segmentedControlCell.transform.GetSiblingIndex());
@@ -131,12 +86,13 @@ public class DragSwapSegmentCell : MonoBehaviour, IBeginDragHandler, IDragHandle
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (transform.GetSiblingIndex() != _startIndex)
-            OnSwapAction?.Invoke(currentCell.cellNumber, transform.GetSiblingIndex() - _startIndex);
+        var newIndex = transform.GetSiblingIndex() - 1;
+        if (newIndex != _currentCell.cellNumber)
+            _signalBus.Fire(new MoveEventBoxSignal(_currentCell.cellNumber, newIndex));
         else
             _rectTransform.anchoredPosition = _startPos;
 
-        currentCell.interactable = true;
+        _currentCell.interactable = true;
     }
 
     private static bool AnchoredPositionWithinEachOther(RectTransform current, RectTransform other)

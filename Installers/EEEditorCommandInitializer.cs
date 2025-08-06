@@ -23,8 +23,6 @@ public class EEEditorCommandInitializer : IInitializable
         _signalBinder._commandContainer
             .BindFactory<SortIdEventBoxGroupCommand, PlaceholderFactory<SortIdEventBoxGroupCommand>>();
         _signalBinder._commandContainer
-            .BindFactory<ReorderEventBoxCommand, PlaceholderFactory<ReorderEventBoxCommand>>();
-        _signalBinder._commandContainer
             .BindFactory<CopyEventBoxCommand, PlaceholderFactory<CopyEventBoxCommand>>();
         _signalBinder._commandContainer
             .BindFactory<PasteEventBoxCommand, PlaceholderFactory<PasteEventBoxCommand>>();
