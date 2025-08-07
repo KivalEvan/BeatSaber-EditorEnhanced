@@ -7,6 +7,7 @@ using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
 using BeatmapEditor3D.Types;
 using EditorEnhanced.Commands;
+using EditorEnhanced.Configurations;
 using EditorEnhanced.Gizmo;
 using EditorEnhanced.Helpers;
 using EditorEnhanced.Utils;
@@ -23,6 +24,7 @@ internal class GizmoManager : IInitializable, IDisposable
     private readonly EventBoxGroupsState _ebgs;
     private readonly GizmoAssets _gizmoAssets;
     private readonly SignalBus _signalBus;
+    private readonly PluginConfig _config;
 
     private readonly List<GameObject> _activeGizmos = [];
     private LightColorGroupEffectManager _colorManager;
@@ -31,16 +33,16 @@ internal class GizmoManager : IInitializable, IDisposable
     private GizmoDragInputSystem _gizmoDragInputSystem;
     private LightRotationGroupEffectManager _rotationManager;
     private LightTranslationGroupEffectManager _translationManager;
-
-    private const float GizmoBaseSize = 0.5f;
-
+    
     public GizmoManager(GizmoAssets gizmoAssets,
         SignalBus signalBus,
+        PluginConfig config,
         EventBoxGroupsState ebgs,
         BeatmapEventBoxGroupsDataModel bebgdm)
     {
         _gizmoAssets = gizmoAssets;
         _signalBus = signalBus;
+        _config = config;
         _ebgs = ebgs;
         _bebgdm = bebgdm;
     }
@@ -57,6 +59,7 @@ internal class GizmoManager : IInitializable, IDisposable
         _signalBus.TryUnsubscribe<DeleteEventBoxSignal>(UpdateGizmo);
         _signalBus.TryUnsubscribe<SortAxisEventBoxGroupSignal>(UpdateGizmo);
         _signalBus.TryUnsubscribe<SortIdEventBoxGroupSignal>(UpdateGizmo);
+        _signalBus.TryUnsubscribe<GizmoUpdateSignal>(UpdateGizmo);
 
         _activeGizmos.Clear();
         _colorManager = null;
@@ -93,6 +96,7 @@ internal class GizmoManager : IInitializable, IDisposable
         _signalBus.Subscribe<DeleteEventBoxSignal>(UpdateGizmo);
         _signalBus.Subscribe<SortAxisEventBoxGroupSignal>(UpdateGizmo);
         _signalBus.Subscribe<SortIdEventBoxGroupSignal>(UpdateGizmo);
+        _signalBus.Subscribe<GizmoUpdateSignal>(UpdateGizmo);
     }
 
     private void AddGizmo()
@@ -127,13 +131,14 @@ internal class GizmoManager : IInitializable, IDisposable
 
     private void UpdateGizmoWithSignal(BeatmapEditingModeSwitchedSignal signal)
     {
-        if (signal.mode == BeatmapEditingMode.EventBoxes) AddGizmo();
+        if (_config.GizmoEnabled && signal.mode == BeatmapEditingMode.EventBoxes) AddGizmo();
         else RemoveGizmo();
     }
 
     private void UpdateGizmo()
     {
         RemoveGizmo();
+        if (!_config.GizmoEnabled) return;
         AddGizmo();
     }
 

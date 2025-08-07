@@ -18,6 +18,7 @@ public class EEEditorCommandInstaller
         InstallCommands<LolighterSignal, LolighterCommand>(Container, commandContainer);
 
         Container.DeclareSignal<EventBoxSelectedSignal>().OptionalSubscriber();
+        Container.DeclareSignal<GizmoUpdateSignal>().OptionalSubscriber();
     }
 
     private static void InstallCommands<TSignal, TCommand>(DiContainer container, DiContainer commandContainer)

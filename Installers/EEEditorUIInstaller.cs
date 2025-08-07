@@ -32,6 +32,7 @@ public class EEEditorUIInstaller : Installer
         Container.BindInterfacesAndSelfTo<RandomSeedClipboardManager>().AsSingle();
 
         // Others
+        Container.BindInterfacesTo<ConfigurationViewController>().AsSingle();
         // Container.BindInterfacesTo<DifficultySwitchViewController>().AsSingle();
         // Container.BindInterfacesTo<LolighterViewController>().AsSingle();
         // Container.BindInterfacesTo<MassValueShiftViewController>().AsSingle();

@@ -20,7 +20,7 @@ internal class Plugin
         Log = ipaLogger;
         zenjector.UseLogger(Log);
 
-        var pluginConfig = ipaConfig.Generated<EEConfig>();
+        var pluginConfig = ipaConfig.Generated<PluginConfigModel>();
 
         zenjector.Install<EEAppInstaller>(Location.App, pluginConfig);
 

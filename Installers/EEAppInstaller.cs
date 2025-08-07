@@ -5,15 +5,16 @@ namespace EditorEnhanced.Installers;
 
 internal class EEAppInstaller : Installer
 {
-    private readonly EEConfig _eeConfig;
+    private readonly PluginConfigModel _pluginConfigModel;
 
-    public EEAppInstaller(EEConfig eeConfig)
+    public EEAppInstaller(PluginConfigModel pluginConfigModel)
     {
-        _eeConfig = eeConfig;
+        _pluginConfigModel = pluginConfigModel;
     }
 
     public override void InstallBindings()
     {
-        Container.BindInstance(_eeConfig).AsSingle();
+        Container.BindInstance(_pluginConfigModel).AsSingle();
+        Container.Bind<PluginConfig>().FromInstance(new PluginConfig(_pluginConfigModel)).AsSingle();
     }
 }

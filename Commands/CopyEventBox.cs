@@ -1,6 +1,5 @@
 using BeatmapEditor3D;
 using EditorEnhanced.Managers;
-using Zenject;
 
 namespace EditorEnhanced.Commands;
 
@@ -19,9 +18,7 @@ public class CopyEventBoxCommand : IBeatmapEditorCommand
     private readonly EventBoxClipboardManager _clipboardManager;
     private readonly CopyEventBoxSignal _signal;
 
-    public CopyEventBoxCommand(SignalBus signalBus,
-        CopyEventBoxSignal signal,
-        EventBoxClipboardManager clipboardManager)
+    public CopyEventBoxCommand(CopyEventBoxSignal signal, EventBoxClipboardManager clipboardManager)
     {
         _signal = signal;
         _clipboardManager = clipboardManager;
