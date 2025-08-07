@@ -9,21 +9,21 @@ public class EEEditorCommandInstaller
 {
     public override void InstallBindings()
     {
-        // this is the dumbest way i ever had to deal with DI
-        Container.BindInterfacesAndSelfTo<EEEditorCommandInitializer>().AsSingle();
-        InstallCommands<DragGizmoLightTranslationEventBoxSignal, DragGizmoLightTranslationEventBoxCommand>(Container);
-        InstallCommands<SortAxisEventBoxGroupSignal, SortAxisEventBoxGroupCommand>(Container);
-        InstallCommands<SortIdEventBoxGroupSignal, SortIdEventBoxGroupCommand>(Container);
-        InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>(Container);
-        InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container);
-        InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>(Container);
-        InstallCommands<LolighterSignal, LolighterCommand>(Container);
-        
+        var commandContainer = Container.Resolve<DiContainer>();
+        InstallCommands<SortAxisEventBoxGroupSignal, SortAxisEventBoxGroupCommand>(Container, commandContainer);
+        InstallCommands<SortIdEventBoxGroupSignal, SortIdEventBoxGroupCommand>(Container, commandContainer);
+        InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>(Container, commandContainer);
+        InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>(Container, commandContainer);
+        InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>(Container, commandContainer);
+        InstallCommands<LolighterSignal, LolighterCommand>(Container, commandContainer);
+
         Container.DeclareSignal<EventBoxSelectedSignal>().OptionalSubscriber();
     }
 
-    private static void InstallCommands<TSignal, TCommand>(DiContainer container) where TCommand : IBeatmapEditorCommand
+    private static void InstallCommands<TSignal, TCommand>(DiContainer container, DiContainer commandContainer)
+        where TCommand : IBeatmapEditorCommand
     {
+        commandContainer.BindFactory<TCommand, PlaceholderFactory<TCommand>>();
         container.DeclareSignal<TSignal>().OptionalSubscriber();
         container.BindSignal<TSignal>()
             .ToMethod<BeatmapEditorCommandRunnerSignalBinder>(binder =>
