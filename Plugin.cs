@@ -1,5 +1,5 @@
 ﻿using BeatmapEditor3D;
-using EditorEnhanced.Configurations;
+using EditorEnhanced.Configuration;
 using EditorEnhanced.Installers;
 using IPA;
 using IPA.Config.Stores;
@@ -20,14 +20,17 @@ internal class Plugin
         Log = ipaLogger;
         zenjector.UseLogger(Log);
 
-        var pluginConfig = ipaConfig.Generated<PluginConfigModel>();
+        var pluginConfig = ipaConfig.Generated<PluginConfig>();
 
-        zenjector.Install<EEAppInstaller>(Location.App, pluginConfig);
+        zenjector.Install<AppInstaller>(Location.App, pluginConfig);
 
-        zenjector.Install<EEEditorMainInstaller, BeatmapEditorMainInstaller>();
-        zenjector.Install<EEEditorInstaller, BeatmapLevelEditorInstaller>();
-        zenjector.Install<EEEditorUIInstaller, BeatmapEditorViewControllersInstaller>();
-        zenjector.Install<EEEditorCommandInstaller, CommandInstaller>();
+        // Runs in order, when editor launched
+        zenjector.Install<EEMainInstaller, BeatmapEditorMainInstaller>();
+        zenjector.Install<EEUIInstaller, BeatmapEditorViewControllersInstaller>();
+        zenjector.Install<EECommandInstaller, CommandInstaller>();
+
+        // Runs whenever enters beatmap level edit
+        zenjector.Install<EELevelEditorInstaller, BeatmapLevelEditorInstaller>();
 
         Log.Info($"{pluginMetadata.Name} {pluginMetadata.HVersion} initialized.");
     }

@@ -11,27 +11,27 @@ public static class UITextExtensions
         return self;
     }
 
-    public static T SetTextAlignment<T>(this T self, TextAlignmentOptions alignment) where T : IUIText
+    public static T SetTextAlignment<T>(this T self, TextAlignmentOptions value) where T : IUIText
     {
-        self.TextAlignment = alignment;
+        self.TextAlignment = value;
         return self;
     }
 
-    public static T SetRichText<T>(this T self, bool richText) where T : IUIText
+    public static T SetRichText<T>(this T self, bool value) where T : IUIText
     {
-        self.RichText = richText;
+        self.RichText = value;
         return self;
     }
 
-    public static T SetFontSize<T>(this T self, float size) where T : IUIText
+    public static T SetFontSize<T>(this T self, float value) where T : IUIText
     {
-        self.FontSize = size;
+        self.FontSize = value;
         return self;
     }
 
-    public static T SetFontWeight<T>(this T self, FontWeight weight) where T : IUIText
+    public static T SetFontWeight<T>(this T self, FontWeight value) where T : IUIText
     {
-        self.FontWeight = weight;
+        self.FontWeight = value;
         return self;
     }
 }

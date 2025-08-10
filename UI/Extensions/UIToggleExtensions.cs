@@ -5,7 +5,7 @@ namespace EditorEnhanced.UI.Extensions;
 
 public static class UIToggleExtensions
 {
-    public static T ResetOnValueChange<T>(this T self, Action<bool> fn) where T : IUIToggle
+    public static T ResetOnValueChange<T>(this T self) where T : IUIToggle
     {
         self.OnValueChange.Clear();
         return self;
@@ -20,7 +20,7 @@ public static class UIToggleExtensions
     public static T SetOnValueChange<T>(this T self, Action<bool> fn) where T : IUIToggle
     {
         return self
-            .ResetOnValueChange(fn)
+            .ResetOnValueChange()
             .AddOnValueChange(fn);
     }
 

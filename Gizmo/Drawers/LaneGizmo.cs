@@ -1,3 +1,4 @@
+using EditorEnhanced.Gizmo.Components;
 using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Drawers;
@@ -15,7 +16,7 @@ internal static class LaneGizmo
         go.transform.localScale = new Vector3(0.333f, 0.1f, 0.1f);
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
-        
+
         var highlight = GameObject.CreatePrimitive(PrimitiveType.Cube);
         Object.Destroy(highlight.GetComponent<BoxCollider>());
         highlight.name = "Highlight";
@@ -32,8 +33,8 @@ internal static class LaneGizmo
         // var lineRenderController = go.AddComponent<LineRenderController>();
         // lineRenderController.enabled = false;
 
-        go.AddComponent<GizmoHighlighter>();
-        go.AddComponent<GizmoHighlighterGroup>();
+        go.AddComponent<GizmoHighlight>();
+        go.AddComponent<GizmoHighlightController>();
         go.AddComponent<GizmoSwappable>();
 
         return go;

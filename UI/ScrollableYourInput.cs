@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
-using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
+using EditorEnhanced.UI.Components;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -45,14 +45,14 @@ public class ScrollableYourInput : IInitializable
         }
     };
 
-    private readonly BeatmapState _bs;
+    private readonly DiContainer _container;
     private readonly EditBeatmapViewController _ebvc;
 
     public ScrollableYourInput(EditBeatmapViewController ebvc,
-        BeatmapState bs)
+        DiContainer container)
     {
         _ebvc = ebvc;
-        _bs = bs;
+        _container = container;
     }
 
     public void Initialize()
@@ -299,9 +299,7 @@ public class ScrollableYourInput : IInitializable
     public void ApplyScrollableIntInput(IntInputFieldValidator component, Dictionary<PrecisionType, int> precision)
     {
         Object.Destroy(component.gameObject.GetComponent<IntInputFieldValidatorChangeOnScroll>());
-        var scrollable = component.gameObject.AddComponent<ScrollableInputInt>();
-        scrollable.fieldValidator = component;
-        scrollable.BeatmapState = _bs;
+        var scrollable = _container.InstantiateComponent<ScrollableInputInt>(component.gameObject);
         if (precision != null) scrollable.PrecisionDelta = precision;
     }
 
@@ -309,9 +307,7 @@ public class ScrollableYourInput : IInitializable
         Dictionary<PrecisionType, float> precision)
     {
         Object.Destroy(component.gameObject.GetComponent<FloatInputFieldValidatorChangeOnScroll>());
-        var scrollable = component.gameObject.AddComponent<ScrollableInputFloat>();
-        scrollable.fieldValidator = component;
-        scrollable.BeatmapState = _bs;
+        var scrollable = _container.InstantiateComponent<ScrollableInputFloat>(component.gameObject);
         if (precision != null) scrollable.PrecisionDelta = precision;
     }
 }

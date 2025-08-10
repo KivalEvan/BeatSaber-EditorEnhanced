@@ -36,8 +36,8 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
     private readonly SignalBus _signalBus;
 
     private BeatmapEditorObjectId _eventBoxGroupId;
-    private int _newIdx;
     private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _newEventBoxes;
+    private int _newIdx;
     private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _previousEventBoxes;
 
     public PasteEventBoxCommand(SignalBus signalBus,
@@ -78,9 +78,7 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
 
         if (_signal.RandomSeed &&
             newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
-        {
             newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
-        }
 
         var eventBoxGroupId = _eventBoxGroupsState.eventBoxGroupContext.id;
         var byEventBoxGroupId = _beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);

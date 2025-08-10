@@ -6,81 +6,93 @@ namespace EditorEnhanced.UI.Extensions;
 
 public static class UILayoutExtensions
 {
-    public static T SetSpacing<T>(this T self, float spacing) where T : IUILayout
+    public static T SetSpacing<T>(this T self, float value) where T : IUILayout
     {
-        self.Spacing = spacing;
+        self.Spacing = value;
         return self;
     }
 
-    public static T SetPadding<T>(this T self, RectOffset padding) where T : IUILayout
+    public static T SetPadding<T>(this T self, RectOffset value) where T : IUILayout
     {
-        self.Padding = padding;
+        self.Padding = value;
         return self;
     }
 
-    public static T SetVerticalFit<T>(this T self, ContentSizeFitter.FitMode fitMode) where T : IUILayout
+    public static T SetVerticalFit<T>(this T self, ContentSizeFitter.FitMode value) where T : IUILayout
     {
-        self.VerticalFit = fitMode;
+        self.VerticalFit = value;
         return self;
     }
 
-    public static T SetHorizontalFit<T>(this T self, ContentSizeFitter.FitMode fitMode) where T : IUILayout
+    public static T SetHorizontalFit<T>(this T self, ContentSizeFitter.FitMode value) where T : IUILayout
     {
-        self.HorizontalFit = fitMode;
+        self.HorizontalFit = value;
         return self;
     }
 
-    public static T SetChildAlignment<T>(this T self, TextAnchor anchor) where T : IUILayout
+    public static T SetChildAlignment<T>(this T self, TextAnchor value) where T : IUILayout
     {
-        self.ChildAlignment = anchor;
+        self.ChildAlignment = value;
         return self;
     }
 
-    public static T SetChildControlWidth<T>(this T self, bool toggle) where T : IUILayout
+    public static T SetChildControlWidth<T>(this T self, bool value) where T : IUILayout
     {
-        self.ChildControlWidth = toggle;
+        self.ChildControlWidth = value;
         return self;
     }
 
-    public static T SetChildControlHeight<T>(this T self, bool toggle) where T : IUILayout
+    public static T SetChildControlHeight<T>(this T self, bool value) where T : IUILayout
     {
-        self.ChildControlHeight = toggle;
+        self.ChildControlHeight = value;
         return self;
     }
 
-    public static T SetChildScaleWidth<T>(this T self, bool toggle) where T : IUILayout
+    public static T SetChildScaleWidth<T>(this T self, bool value) where T : IUILayout
     {
-        self.ChildScaleWidth = toggle;
+        self.ChildScaleWidth = value;
         return self;
     }
 
-    public static T SetChildScaleHeight<T>(this T self, bool toggle) where T : IUILayout
+    public static T SetChildScaleHeight<T>(this T self, bool value) where T : IUILayout
     {
-        self.ChildScaleHeight = toggle;
+        self.ChildScaleHeight = value;
         return self;
     }
 
-    public static T SetChildForceExpandWidth<T>(this T self, bool toggle) where T : IUILayout
+    public static T SetChildForceExpandWidth<T>(this T self, bool value) where T : IUILayout
     {
-        self.ChildForceExpandWidth = toggle;
+        self.ChildForceExpandWidth = value;
         return self;
     }
 
-    public static T SetChildForceExpandHeight<T>(this T self, bool toggle) where T : IUILayout
+    public static T SetChildForceExpandHeight<T>(this T self, bool value) where T : IUILayout
     {
-        self.ChildForceExpandHeight = toggle;
+        self.ChildForceExpandHeight = value;
         return self;
     }
 
-    public static T SetFlexibleWidth<T>(this T self, float flexibleWidth) where T : IUILayout
+    public static T SetFlexibleWidth<T>(this T self, float value) where T : IUILayout
     {
-        self.FlexibleWidth = flexibleWidth;
+        self.FlexibleWidth = value;
         return self;
     }
 
-    public static T SetFlexibleHeight<T>(this T self, float flexibleHeight) where T : IUILayout
+    public static T SetFlexibleHeight<T>(this T self, float value) where T : IUILayout
     {
-        self.FlexibleHeight = flexibleHeight;
+        self.FlexibleHeight = value;
+        return self;
+    }
+
+    public static T SetPreferredWidth<T>(this T self, float value) where T : IUILayout
+    {
+        self.PreferredWidth = value;
+        return self;
+    }
+
+    public static T SetPreferredHeight<T>(this T self, float value) where T : IUILayout
+    {
+        self.PreferredHeight = value;
         return self;
     }
 }

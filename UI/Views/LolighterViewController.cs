@@ -2,7 +2,6 @@ using System;
 using BeatmapEditor3D;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
-using EditorEnhanced.UI.Tags;
 using Zenject;
 
 namespace EditorEnhanced.UI.Views;
@@ -10,16 +9,16 @@ namespace EditorEnhanced.UI.Views;
 internal class LolighterViewController : IInitializable, IDisposable
 {
     private readonly EditBeatmapNavigationViewController _ebnvc;
-    private readonly EditorButtonBuilder _editorBtn;
     private readonly SignalBus _signalBus;
+    private readonly UIBuilder _uiBuilder;
 
     public LolighterViewController(SignalBus signalBus,
         EditBeatmapNavigationViewController ebnvc,
-        EditorButtonBuilder editorBtn)
+        UIBuilder uiBuilder)
     {
         _signalBus = signalBus;
         _ebnvc = ebnvc;
-        _editorBtn = editorBtn;
+        _uiBuilder = uiBuilder;
     }
 
     public void Dispose()
@@ -30,10 +29,10 @@ internal class LolighterViewController : IInitializable, IDisposable
     {
         var target = _ebnvc._eventsToolbarView;
 
-        _editorBtn.CreateNew()
+        _uiBuilder.Button.Instantiate()
             .SetFontSize(10)
             .SetText("Commit Crime")
             .SetOnClick(() => _signalBus.Fire(new LolighterSignal()))
-            .CreateObject(target.transform);
+            .Create(target.transform);
     }
 }

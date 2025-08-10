@@ -1,3 +1,4 @@
+using EditorEnhanced.Gizmo.Components;
 using EditorEnhanced.Utils;
 using UnityEngine;
 
@@ -17,8 +18,8 @@ internal static class TranslationGizmo
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
 
-        go.AddComponent<GizmoHighlighter>();
-        go.AddComponent<GizmoHighlighterGroup>();
+        go.AddComponent<GizmoHighlight>();
+        go.AddComponent<GizmoHighlightController>();
         go.AddComponent<GizmoDraggableTranslation>();
 
         return go;

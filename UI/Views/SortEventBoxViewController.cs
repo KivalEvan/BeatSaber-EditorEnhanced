@@ -3,7 +3,6 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
-using EditorEnhanced.UI.Tags;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -14,33 +13,18 @@ internal class SortEventBoxViewController : IInitializable, IDisposable
 {
     private readonly DiContainer _container;
     private readonly EditBeatmapViewController _ebvc;
-    private readonly EditorButtonBuilder _editorBtn;
-    private readonly EditorCheckboxBuilder _editorCheckbox;
-    private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
-    private readonly EditorLayoutStackBuilder _editorLayoutStack;
-    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
-    private readonly EditorTextBuilder _editorText;
     private readonly SignalBus _signalBus;
+    private readonly UIBuilder _uiBuilder;
 
     private EventBoxesView _ebv;
 
     public SortEventBoxViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
-        EditorLayoutStackBuilder editorLayoutStack,
-        EditorLayoutVerticalBuilder editorLayoutVertical,
-        EditorLayoutHorizontalBuilder editorLayoutHorizontal,
-        EditorButtonBuilder editorBtn,
-        EditorCheckboxBuilder editorCheckbox,
-        EditorTextBuilder editorText)
+        UIBuilder uiBuilder)
     {
         _signalBus = signalBus;
         _ebvc = ebvc;
-        _editorLayoutStack = editorLayoutStack;
-        _editorLayoutVertical = editorLayoutVertical;
-        _editorLayoutHorizontal = editorLayoutHorizontal;
-        _editorBtn = editorBtn;
-        _editorCheckbox = editorCheckbox;
-        _editorText = editorText;
+        _uiBuilder = uiBuilder;
     }
 
     public void Dispose()
@@ -71,7 +55,7 @@ internal class SortEventBoxViewController : IInitializable, IDisposable
         var behev = instance.GetComponent<BeatmapEditorHoverExpandView>();
         for (var i = behev._content.childCount - 1; i >= 0; i--) Object.Destroy(behev._content.GetChild(i).gameObject);
 
-        var btnTag = _editorBtn.CreateNew()
+        var btnTag = _uiBuilder.Button.Instantiate()
             .SetSize(new Vector2(40f, 40f))
             .SetPadding(new RectOffset(0, 0, 0, 0))
             .SetChildForceExpandWidth(true)
@@ -81,11 +65,11 @@ internal class SortEventBoxViewController : IInitializable, IDisposable
         btnTag
             .SetText("Sort\nAxis")
             .SetOnClick(SortAxisHandler)
-            .CreateObject(behev._content);
+            .Create(behev._content);
         btnTag
             .SetText("Sort\nID")
             .SetOnClick(SortIdHandler)
-            .CreateObject(behev._content);
+            .Create(behev._content);
     }
 
     private void SortAxisHandler()

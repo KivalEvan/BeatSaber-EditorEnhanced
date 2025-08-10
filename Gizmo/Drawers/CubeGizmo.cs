@@ -1,3 +1,4 @@
+using EditorEnhanced.Gizmo.Components;
 using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Drawers;
@@ -14,7 +15,7 @@ internal static class CubeGizmo
         go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
-        
+
         var highlight = GameObject.CreatePrimitive(PrimitiveType.Cube);
         Object.Destroy(highlight.GetComponent<BoxCollider>());
         highlight.name = "Highlight";
@@ -31,8 +32,8 @@ internal static class CubeGizmo
         // var lineRenderController = go.AddComponent<LineRenderController>();
         // lineRenderController.enabled = false;
 
-        go.AddComponent<GizmoHighlighter>();
-        go.AddComponent<GizmoHighlighterGroup>();
+        go.AddComponent<GizmoHighlight>();
+        go.AddComponent<GizmoHighlightController>();
         go.AddComponent<GizmoNone>();
 
         return go;

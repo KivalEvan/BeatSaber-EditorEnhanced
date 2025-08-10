@@ -5,7 +5,7 @@ namespace EditorEnhanced.UI.Extensions;
 
 public static class UIButtonExtensions
 {
-    public static T ResetOnClick<T>(this T self, Action fn) where T : IUIButton
+    public static T ResetOnClick<T>(this T self) where T : IUIButton
     {
         self.OnClick.Clear();
         return self;
@@ -20,7 +20,7 @@ public static class UIButtonExtensions
     public static T SetOnClick<T>(this T self, Action fn) where T : IUIButton
     {
         return self
-            .ResetOnClick(fn)
+            .ResetOnClick()
             .AddOnClick(fn);
     }
 }

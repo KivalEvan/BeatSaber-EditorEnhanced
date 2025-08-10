@@ -1,3 +1,4 @@
+using EditorEnhanced.Gizmo.Components;
 using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Drawers;
@@ -14,7 +15,7 @@ internal static class SphereGizmo
         go.layer = 22;
         go.SetActive(false);
         go.GetComponent<Renderer>().material = material;
-        
+
         var highlight = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         Object.Destroy(highlight.GetComponent<SphereCollider>());
         highlight.name = "Highlight";
@@ -22,7 +23,7 @@ internal static class SphereGizmo
         highlight.GetComponent<Renderer>().material = GizmoAssets.OutlineMaterial;
         highlight.transform.localScale *= 1.5f;
         highlight.transform.SetParent(go.transform, false);
-        
+
         // var lineRenderer = go.AddComponent<LineRenderer>();
         // lineRenderer.startWidth = 0.1f;
         // lineRenderer.endWidth = 0.1f;
@@ -31,8 +32,8 @@ internal static class SphereGizmo
         // var lineRenderController = go.AddComponent<LineRenderController>();
         // lineRenderController.enabled = false;
 
-        go.AddComponent<GizmoHighlighter>();
-        go.AddComponent<GizmoHighlighterGroup>();
+        go.AddComponent<GizmoHighlight>();
+        go.AddComponent<GizmoHighlightController>();
         go.AddComponent<GizmoNone>();
 
         return go;

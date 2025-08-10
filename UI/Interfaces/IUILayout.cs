@@ -17,6 +17,9 @@ public interface IUILayout
     bool? ChildScaleHeight { get; set; }
     bool? ChildForceExpandWidth { get; set; }
     bool? ChildForceExpandHeight { get; set; }
+
     float? FlexibleWidth { get; set; }
     float? FlexibleHeight { get; set; }
+    float? PreferredWidth { get; set; }
+    float? PreferredHeight { get; set; }
 }

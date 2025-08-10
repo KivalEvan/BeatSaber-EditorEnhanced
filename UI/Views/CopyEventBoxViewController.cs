@@ -1,9 +1,7 @@
-using System;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.UI.Extensions;
-using EditorEnhanced.UI.Tags;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -11,16 +9,11 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CopyEventBoxViewController : IInitializable, IDisposable
+internal class CopyEventBoxViewController : IInitializable
 {
     private readonly EditBeatmapViewController _ebvc;
-    private readonly EditorButtonBuilder _editorBtn;
-    private readonly EditorCheckboxBuilder _editorCheckbox;
-    private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
-    private readonly EditorLayoutStackBuilder _editorLayoutStack;
-    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
-    private readonly EditorTextBuilder _editorText;
     private readonly SignalBus _signalBus;
+    private readonly UIBuilder _uiBuilder;
 
     private bool _copyEvent;
     private EventBoxesView _ebv;
@@ -29,25 +22,11 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
 
     public CopyEventBoxViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
-        EditorLayoutStackBuilder editorLayoutStack,
-        EditorLayoutVerticalBuilder editorLayoutVertical,
-        EditorLayoutHorizontalBuilder editorLayoutHorizontal,
-        EditorButtonBuilder editorBtn,
-        EditorCheckboxBuilder editorCheckbox,
-        EditorTextBuilder editorText)
+        UIBuilder uiBuilder)
     {
         _signalBus = signalBus;
         _ebvc = ebvc;
-        _editorLayoutStack = editorLayoutStack;
-        _editorLayoutVertical = editorLayoutVertical;
-        _editorLayoutHorizontal = editorLayoutHorizontal;
-        _editorBtn = editorBtn;
-        _editorCheckbox = editorCheckbox;
-        _editorText = editorText;
-    }
-
-    public void Dispose()
-    {
+        _uiBuilder = uiBuilder;
     }
 
     public void Initialize()
@@ -57,60 +36,60 @@ internal class CopyEventBoxViewController : IInitializable, IDisposable
         var replacement = target.transform.GetChild(0);
         replacement.gameObject.SetActive(false);
 
-        var stackTag = _editorLayoutStack.CreateNew()
+        var stackTag = _uiBuilder.LayoutStack.Instantiate()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var verticalTag = _editorLayoutVertical.CreateNew()
+        var verticalTag = _uiBuilder.LayoutVertical.Instantiate()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetPadding(new RectOffset(4, 4, 4, 4));
-        var horizontalTag = _editorLayoutHorizontal.CreateNew()
+        var horizontalTag = _uiBuilder.LayoutHorizontal.Instantiate()
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(true)
             .SetSpacing(8)
             .SetPadding(new RectOffset(4, 4, 2, 2));
-        var btnTag = _editorBtn.CreateNew()
+        var btnTag = _uiBuilder.Button.Instantiate()
             .SetFontSize(16);
-        var checkboxTag = _editorCheckbox.CreateNew()
+        var checkboxTag = _uiBuilder.Checkbox.Instantiate()
             .SetSize(28)
             .SetFontSize(16);
 
-        var container = stackTag.CreateObject(target.transform);
+        var container = stackTag.Create(target.transform);
         container.transform.SetAsFirstSibling();
         Object.Instantiate(target.transform.Find("GroupInfoView/Background4px"), container.transform,
             false);
-        container = verticalTag.CreateObject(container.transform);
-        var layout = horizontalTag.CreateObject(container.transform);
+        container = verticalTag.Create(container.transform);
+        var layout = horizontalTag.Create(container.transform);
 
         replacement.GetChild(1).SetParent(layout.transform);
         btnTag
             .SetText("Copy")
             .SetOnClick(CopyEventBox)
-            .CreateObject(layout.transform);
+            .Create(layout.transform);
         btnTag
             .SetText("Paste")
             .SetOnClick(PasteEventBox)
-            .CreateObject(layout.transform);
+            .Create(layout.transform);
         btnTag
             .SetText("Duplicate")
             .SetOnClick(DuplicateEventBox)
-            .CreateObject(layout.transform);
-        layout = horizontalTag.CreateObject(container.transform);
+            .Create(layout.transform);
+        layout = horizontalTag.Create(container.transform);
         checkboxTag
             .SetText("Copy Event")
             .SetBool(_copyEvent)
             .SetOnValueChange(val => _copyEvent = val)
-            .CreateObject(layout.transform);
+            .Create(layout.transform);
         checkboxTag
             .SetText("Random Seed")
             .SetBool(_randomSeed)
             .SetOnValueChange(val => _randomSeed = val)
-            .CreateObject(layout.transform);
+            .Create(layout.transform);
         checkboxTag
             .SetText("Increment ID")
             .SetBool(_increment)
             .SetOnValueChange(val => _increment = val)
-            .CreateObject(layout.transform);
+            .Create(layout.transform);
     }
 
     private void CopyEventBox()

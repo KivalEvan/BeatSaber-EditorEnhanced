@@ -3,7 +3,6 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
 using EditorEnhanced.UI.Extensions;
-using EditorEnhanced.UI.Tags;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -18,35 +17,20 @@ public class DifficultySwitchViewController : IInitializable, IDisposable
     private readonly EditBeatmapLevelNavigationViewController _eblnvc;
     private readonly EditBeatmapLevelViewController _eblvc;
     private readonly EditBeatmapViewController _ebvc;
-    private readonly EditorButtonBuilder _editorBtn;
-    private readonly EditorCheckboxBuilder _editorCheckbox;
-    private readonly EditorLayoutHorizontalBuilder _editorLayoutHorizontal;
-    private readonly EditorLayoutStackBuilder _editorLayoutStack;
-    private readonly EditorLayoutVerticalBuilder _editorLayoutVertical;
-    private readonly EditorTextBuilder _editorText;
     private readonly SignalBus _signalBus;
+    private readonly UIBuilder _uiBuilder;
 
     public DifficultySwitchViewController(SignalBus signalBus,
         EditBeatmapViewController ebvc,
         EditBeatmapLevelViewController eblvc,
         EditBeatmapLevelNavigationViewController eblnvc,
-        EditorLayoutStackBuilder editorLayoutStack,
-        EditorLayoutVerticalBuilder editorLayoutVertical,
-        EditorLayoutHorizontalBuilder editorLayoutHorizontal,
-        EditorButtonBuilder editorBtn,
-        EditorCheckboxBuilder editorCheckbox,
-        EditorTextBuilder editorText)
+        UIBuilder uiBuilder)
     {
         _signalBus = signalBus;
         _ebvc = ebvc;
         _eblvc = eblvc;
         _eblnvc = eblnvc;
-        _editorLayoutStack = editorLayoutStack;
-        _editorLayoutVertical = editorLayoutVertical;
-        _editorLayoutHorizontal = editorLayoutHorizontal;
-        _editorBtn = editorBtn;
-        _editorCheckbox = editorCheckbox;
-        _editorText = editorText;
+        _uiBuilder = uiBuilder;
     }
 
     public void Dispose()
@@ -57,26 +41,26 @@ public class DifficultySwitchViewController : IInitializable, IDisposable
     {
         var target = _ebvc.transform;
 
-        var stackTag = _editorLayoutStack.CreateNew()
+        var stackTag = _uiBuilder.LayoutStack.Instantiate()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-        var verticalTag = _editorLayoutVertical.CreateNew()
+        var verticalTag = _uiBuilder.LayoutVertical.Instantiate()
             .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetPadding(new RectOffset(4, 4, 4, 4));
-        var horizontalTag = _editorLayoutHorizontal.CreateNew()
+        var horizontalTag = _uiBuilder.LayoutHorizontal.Instantiate()
             .SetChildAlignment(TextAnchor.LowerCenter)
             .SetChildControlWidth(true)
             .SetSpacing(8)
             .SetPadding(new RectOffset(4, 4, 2, 4));
-        var btnTag = _editorBtn.CreateNew()
+        var btnTag = _uiBuilder.Button.Instantiate()
             .SetFontSize(16);
-        var checkboxTag = _editorCheckbox.CreateNew()
+        var checkboxTag = _uiBuilder.Checkbox.Instantiate()
             .SetSize(28)
             .SetFontSize(16);
 
-        var container = verticalTag.CreateObject(target.transform);
-        var layout = horizontalTag.CreateObject(container.transform);
+        var container = verticalTag.Create(target.transform);
+        var layout = horizontalTag.Create(container.transform);
 
         btnTag
             .SetText("Switch Difficulty")
@@ -107,6 +91,6 @@ public class DifficultySwitchViewController : IInitializable, IDisposable
                         BeatmapDifficulty.Easy);
                 }
             })
-            .CreateObject(layout.transform);
+            .Create(layout.transform);
     }
 }

@@ -23,7 +23,6 @@ public class GizmoDragInputSystem : MonoBehaviour
     private bool _isDragging;
     private Camera _mainCamera;
     private Vector3 _offset;
-
     private InputAction _pointerPositionAction;
 
     private void Awake()

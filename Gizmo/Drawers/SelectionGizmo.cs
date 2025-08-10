@@ -1,3 +1,4 @@
+using EditorEnhanced.Gizmo.Components;
 using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Drawers;
@@ -22,7 +23,7 @@ internal static class SelectionGizmo
         go.transform.localPosition = Vector3.back * 2.5f;
         go.transform.localRotation = Quaternion.Euler(90f, 45f, 0f);
         go.transform.SetParent(anchor.transform, false);
-        
+
         var highlight = GameObject.CreatePrimitive(PrimitiveType.Quad);
         Object.Destroy(highlight.GetComponent<MeshCollider>());
         highlight.name = "PermanentHighlight";
