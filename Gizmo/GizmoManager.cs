@@ -22,6 +22,7 @@ namespace EditorEnhanced.Gizmo;
 internal class GizmoManager : IInitializable, IDisposable
 {
     private readonly List<GameObject> _activeGizmos = [];
+    private readonly BeatmapState _beatmapState;
     private readonly BeatmapEventBoxGroupsDataModel _bebgdm;
     private readonly PluginConfig _config;
     private readonly EventBoxGroupsState _ebgs;
@@ -37,11 +38,13 @@ internal class GizmoManager : IInitializable, IDisposable
     public GizmoManager(GizmoAssets gizmoAssets,
         SignalBus signalBus,
         PluginConfig config,
+        BeatmapState beatmapState,
         EventBoxGroupsState ebgs,
         BeatmapEventBoxGroupsDataModel bebgdm)
     {
         _gizmoAssets = gizmoAssets;
         _signalBus = signalBus;
+        _beatmapState = beatmapState;
         _config = config;
         _ebgs = ebgs;
         _bebgdm = bebgdm;
@@ -138,7 +141,7 @@ internal class GizmoManager : IInitializable, IDisposable
     private void HandleGizmoSignal()
     {
         RemoveGizmo();
-        if (!_config.Gizmo.Enabled) return;
+        if (!_config.Gizmo.Enabled || _beatmapState.editingMode != BeatmapEditingMode.EventBoxes) return;
         AddGizmo();
     }
 

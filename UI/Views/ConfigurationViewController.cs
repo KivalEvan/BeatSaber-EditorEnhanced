@@ -378,7 +378,7 @@ internal class ConfigurationViewController : IInitializable
 
     private void HandleGizmoGlobalScale(float value)
     {
-        _config.Gizmo.GlobalScale = Mathf.Clamp(Mathf.Round(value * 100f) / 100f, 0.1f, 5f);
+        _config.Gizmo.GlobalScale = Mathf.Clamp(Mathf.Round(value * 100f) / 100f, 0.1f, 10f);
         _globalScaleSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.GlobalScale);
         _globalScaleInput.GetComponent<FloatInputFieldValidator>()
             .SetValueWithoutNotify(_config.Gizmo.GlobalScale, true);
@@ -387,7 +387,7 @@ internal class ConfigurationViewController : IInitializable
 
     private void HandleGizmoSizeBase(float value)
     {
-        _config.Gizmo.SizeBase = Mathf.Clamp(Mathf.Round(value * 100f) / 100f, 0.1f, 5f);
+        _config.Gizmo.SizeBase = Mathf.Clamp(Mathf.Round(value * 100f) / 100f, 0.1f, 10f);
         _sizeBaseSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.SizeBase);
         _sizeBaseInput.GetComponent<FloatInputFieldValidator>()
             .SetValueWithoutNotify(_config.Gizmo.SizeBase, true);
@@ -396,7 +396,7 @@ internal class ConfigurationViewController : IInitializable
 
     private void HandleGizmoSizeRotation(float value)
     {
-        _config.Gizmo.SizeRotation = Mathf.Clamp(Mathf.Round(value * 100f) / 100f, 0.1f, 5f);
+        _config.Gizmo.SizeRotation = Mathf.Clamp(Mathf.Round(value * 100f) / 100f, 0.1f, 10f);
         _sizeRotationSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.SizeRotation);
         _sizeRotationInput.GetComponent<FloatInputFieldValidator>()
             .SetValueWithoutNotify(_config.Gizmo.SizeRotation, true);
@@ -405,7 +405,7 @@ internal class ConfigurationViewController : IInitializable
 
     private void HandleGizmoSizeTranslation(float value)
     {
-        _config.Gizmo.SizeTranslation = Mathf.Clamp(Mathf.Round(value * 100f) / 100f, 0.1f, 5f);
+        _config.Gizmo.SizeTranslation = Mathf.Clamp(Mathf.Round(value * 100f) / 100f, 0.1f, 10f);
         _sizeTranslationSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.SizeTranslation);
         _sizeTranslationInput.GetComponent<FloatInputFieldValidator>()
             .SetValueWithoutNotify(_config.Gizmo.SizeTranslation, true);
