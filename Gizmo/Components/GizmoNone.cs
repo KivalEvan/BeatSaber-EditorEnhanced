@@ -13,10 +13,9 @@ public class GizmoNone : MonoBehaviour
 
     private void OnEnable()
     {
-        transform.SetParent(TargetTransform.parent, false);
+        transform.SetParent(TargetTransform, false);
         transform.position = TargetTransform.position;
         transform.rotation = TargetTransform.parent.rotation;
-        transform.SetParent(TargetTransform, true);
         UpdateSizeValue();
 
         _signalBus.Subscribe<GizmoConfigSizeBaseUpdateSignal>(UpdateSizeValue);
@@ -38,14 +37,10 @@ public class GizmoNone : MonoBehaviour
 
     private void AdjustSize()
     {
-        var localScale = transform.localScale;
-        var lossyScale = transform.lossyScale;
+        transform.localScale = Vector3.one;
         transform.localScale = new Vector3(
-            Mathf.Abs(localScale.x / (lossyScale.x != 0 ? lossyScale.x : 1) * _config.Gizmo.SizeBase *
-                      _config.Gizmo.GlobalScale),
-            Mathf.Abs(localScale.y / (lossyScale.y != 0 ? lossyScale.y : 1) * _config.Gizmo.SizeBase *
-                      _config.Gizmo.GlobalScale),
-            Mathf.Abs(localScale.z / (lossyScale.z != 0 ? lossyScale.z : 1) * _config.Gizmo.SizeBase *
-                      _config.Gizmo.GlobalScale));
+            Mathf.Abs(_config.Gizmo.SizeBase * _config.Gizmo.GlobalScale / transform.lossyScale.x),
+            Mathf.Abs(_config.Gizmo.SizeBase * _config.Gizmo.GlobalScale / transform.lossyScale.y),
+            Mathf.Abs(_config.Gizmo.SizeBase * _config.Gizmo.GlobalScale / transform.lossyScale.z));
     }
 }

@@ -53,12 +53,11 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
 
     protected void AdjustSize()
     {
-        var localScale = transform.localScale;
-        var lossyScale = transform.lossyScale;
+        transform.localScale = Vector3.one;
         transform.localScale = new Vector3(
-            localScale.x / lossyScale.x * GetSize() * _config.Gizmo.GlobalScale,
-            localScale.y / lossyScale.y * GetSize() * _config.Gizmo.GlobalScale,
-            localScale.z / lossyScale.z * GetSize() * _config.Gizmo.GlobalScale);
+            Mathf.Abs(GetSize() * _config.Gizmo.GlobalScale / transform.lossyScale.x),
+            Mathf.Abs(GetSize() * _config.Gizmo.GlobalScale / transform.lossyScale.y),
+            Mathf.Abs(GetSize() * _config.Gizmo.GlobalScale / transform.lossyScale.z));
     }
 
     protected Vector3 GetScreenPosition()
