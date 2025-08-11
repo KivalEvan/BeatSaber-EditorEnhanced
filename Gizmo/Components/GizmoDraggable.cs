@@ -37,6 +37,9 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
         };
     }
 
+    public bool IsDragging { get; set; }
+
+
     public void OnPointerEnter()
     {
     }

@@ -25,11 +25,11 @@ internal class GizmoAssets : IInitializable, IDisposable
 {
     public const float MinSize = 0.1f;
     public const float MaxSize = 10f;
-    
+
     public static readonly Material DefaultMaterial = FetchMaterial("Assets/Shaders/Gizmo.mat");
     public static readonly Material OutlineMaterial = FetchMaterial("Assets/Shaders/Outline.mat");
     private static readonly int MatColorId = Shader.PropertyToID("_Color");
-    
+
     private readonly PluginConfig _config;
     private readonly DiContainer _diContainer;
 

@@ -6,6 +6,7 @@ namespace EditorEnhanced.Gizmo;
 
 internal interface IGizmoInput
 {
+    public bool IsDragging { get; set; }
     public void OnPointerEnter();
     public void OnPointerExit();
     public void OnDrag();

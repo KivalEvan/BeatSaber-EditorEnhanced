@@ -8,16 +8,18 @@ public class GizmoHighlight : MonoBehaviour
 
     private void Awake()
     {
-        _highlightObject = gameObject.transform.GetChild(0).gameObject;
+        _highlightObject = transform.GetChild(0).gameObject;
     }
 
     public void AddOutline()
     {
-        _highlightObject.SetActive(true);
+        if (_highlightObject != null) _highlightObject.SetActive(true);
+        else
+            Plugin.Log.Error($"Highlight is missing {gameObject}");
     }
 
     public void RemoveOutline()
     {
-        _highlightObject.SetActive(false);
+        if (_highlightObject != null) _highlightObject.SetActive(false);
     }
 }

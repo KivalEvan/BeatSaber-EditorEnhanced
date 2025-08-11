@@ -33,11 +33,12 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
 
     private void OnEnable()
     {
-        enabled = _config.Gizmo.Swappable;
         _index = _bebgdm.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id);
         _maxIndex = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id).Count;
         transform.position = new Vector3((_index - (_maxIndex - 1) / 2f) / 2f, -0.1f, 0f);
     }
+
+    public bool IsDragging { get; set; }
 
     public void OnPointerEnter()
     {
@@ -49,7 +50,7 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
 
     public void OnDrag()
     {
-        if (!_config.Gizmo.Swappable) return;
+        if (!_config.Gizmo.Swappable && !IsDragging) return;
         var screenPosition = GetScreenPosition();
         var worldPosition = _camera.ScreenToWorldPoint(screenPosition);
         if (Math.Abs(_initialPosition.x - worldPosition.x) < 0.5f)
@@ -57,8 +58,6 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
             transform.position = _initialPosition;
             return;
         }
-
-        ;
 
         transform.position = new Vector3(
             SnapPosition(worldPosition.x),
@@ -73,11 +72,12 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
         _startIndex = _index;
         _eventBoxesView.DisplayEventBoxes(_bebgdm.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id));
         _initialPosition = transform.position;
+        IsDragging = true;
     }
 
     public void OnMouseRelease()
     {
-        if (!_config.Gizmo.Swappable) return;
+        if (!_config.Gizmo.Swappable && !IsDragging) return;
         if (_startIndex > _index)
         {
             _signalBus.Fire(new MoveEventBoxSignal(_startIndex, _index));
@@ -91,6 +91,8 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
             _index = _startIndex;
             transform.position = _initialPosition;
         }
+
+        IsDragging = false;
     }
 
     private int GetIndex(float v)

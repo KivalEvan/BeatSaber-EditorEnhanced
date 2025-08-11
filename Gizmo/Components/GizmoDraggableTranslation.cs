@@ -34,7 +34,7 @@ public class GizmoDraggableTranslation : GizmoDraggable
 
     public override void OnDrag()
     {
-        if (!_config.Gizmo.Draggable) return;
+        if (!_config.Gizmo.Draggable && !IsDragging) return;
         var screenPosition = GetScreenPosition();
         var worldPosition = Camera.ScreenToWorldPoint(screenPosition);
         transform.parent.position = worldPosition;
@@ -62,11 +62,12 @@ public class GizmoDraggableTranslation : GizmoDraggable
     {
         if (!_config.Gizmo.Draggable) return;
         transform.parent.SetParent(TargetTransform.parent, true);
+        IsDragging = true;
     }
 
     public override void OnMouseRelease()
     {
-        if (!_config.Gizmo.Draggable) return;
+        if (!_config.Gizmo.Draggable && !IsDragging) return;
         if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightTranslationGroup ltg)
         {
             var result = transform.parent.localPosition;
@@ -84,5 +85,6 @@ public class GizmoDraggableTranslation : GizmoDraggable
         // transform.parent.localPosition = Vector3.zero;
         transform.parent.SetParent(TargetTransform, true);
         transform.parent.position = TargetTransform.position;
+        IsDragging = false;
     }
 }

@@ -35,7 +35,7 @@ public class GizmoDraggableRotation : GizmoDraggable
 
     public override void OnDrag()
     {
-        if (!_config.Gizmo.Draggable) return;
+        if (!_config.Gizmo.Draggable && !IsDragging) return;
         var screenPosition = GetScreenPosition();
         var vec3 = screenPosition - InitialScreenPosition;
         var angle = Mathf.Atan2(vec3.y, vec3.x) * Mathf.Rad2Deg;
@@ -56,15 +56,17 @@ public class GizmoDraggableRotation : GizmoDraggable
         transform.parent.SetParent(TargetTransform.parent, true);
         InitialScreenPosition = Camera.WorldToScreenPoint(transform.position);
         _initialEuler = transform.eulerAngles;
+        IsDragging = true;
     }
 
     public override void OnMouseRelease()
     {
-        if (!_config.Gizmo.Draggable) return;
+        if (!_config.Gizmo.Draggable && !IsDragging) return;
         if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightRotationGroup lrg)
             transform.eulerAngles = _initialEuler;
 
         transform.parent.SetParent(TargetTransform, true);
         transform.parent.position = TargetTransform.position;
+        IsDragging = false;
     }
 }
