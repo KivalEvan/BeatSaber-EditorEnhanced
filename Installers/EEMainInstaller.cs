@@ -9,17 +9,19 @@ public class EEMainInstaller : Installer
     public override void InstallBindings()
     {
         Container.BindInterfacesTo<PrecisionConfigPatches>().AsSingle();
+        
+        // Fixes
+        Container.BindInterfacesTo<EditObjectViewPatches>().AsSingle();
+        Container.BindInterfacesTo<ModifyFullLightColorPatches>().AsSingle();
 
-        // Command Patch
+        // Command
         Container.BindInterfacesTo<MoveEventBoxPatches>().AsSingle();
         Container.BindInterfacesTo<LightEventsPayloadPatches>().AsSingle();
         Container.BindInterfacesTo<ModifyHoveredLightEventDeltaIntensityCommandPatches>().AsSingle();
         Container.BindInterfacesTo<ModifyHoveredLightTranslationDeltaTranslationCommandPatches>().AsSingle();
-        // Container.BindInterfacesTo<ModifyHoveredLightRotationDeltaRotationCommandPatches>().AsSingle();
         Container.BindInterfacesTo<PasteEventBoxGroupsCommandPatches>().AsSingle();
-        // Container.BindInterfacesTo<ObstacleLoaderSaverPatches>().AsSingle();
 
-        // UI Patch
+        // UI
         Container.BindInterfacesTo<EventBoxesViewPatches>().AsSingle();
         Container.BindInterfacesTo<FloatInputFieldValidatorPatches>().AsSingle();
         Container.BindInterfacesTo<IntInputFieldValidatorPatches>().AsSingle();

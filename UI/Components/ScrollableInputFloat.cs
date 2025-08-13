@@ -5,15 +5,14 @@ using BeatmapEditor3D.Types;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace EditorEnhanced.UI.Components;
 
 public class ScrollableInputFloat : MonoBehaviour, IScrollHandler
 {
-    [Inject] private readonly BeatmapState _beatmapState;
-    private FloatInputFieldValidator _validator;
-
+    public float multiplier = 1.0f;
     public Dictionary<PrecisionType, float> PrecisionDelta = new()
     {
         {
@@ -30,6 +29,9 @@ public class ScrollableInputFloat : MonoBehaviour, IScrollHandler
         }
     };
 
+    [Inject] private readonly BeatmapState _beatmapState;
+    private FloatInputFieldValidator _validator;
+    
     public void Awake()
     {
         _validator = GetComponent<FloatInputFieldValidator>();
@@ -39,6 +41,6 @@ public class ScrollableInputFloat : MonoBehaviour, IScrollHandler
     {
         if (!Keyboard.current.altKey.isPressed) return;
         _validator.SetValue(_validator.value +
-                            Mathf.Sign(eventData.scrollDelta.y) * PrecisionDelta[_beatmapState.scrollPrecision]);
+                            Mathf.Sign(eventData.scrollDelta.y) * PrecisionDelta[_beatmapState.scrollPrecision] * multiplier);
     }
 }

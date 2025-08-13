@@ -180,10 +180,7 @@ public class ScrollableYourInput : IInitializable
         bedv._intValueInput._validatorType = IntInputFieldValidator.ValidatorType.Max;
         bedv._intValueInput._max = 0;
 
-        var prec = new Dictionary<PrecisionType, float>();
-        foreach (var keyValuePair in LightColorEventHelper._precisions)
-            prec[keyValuePair.Key] = keyValuePair.Value / 100f;
-        ApplyScrollableFloatInput(bedv._floatValueInput, prec);
+        ApplyScrollableFloatInput(bedv._floatValueInput, LightColorEventHelper._precisions, 0.1f);
         bedv._floatValueInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         bedv._floatValueInput._max = 0;
     }
@@ -203,14 +200,11 @@ public class ScrollableYourInput : IInitializable
         lcdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lcdv._beatInputFieldValidator._max = 0;
 
-        var prec = new Dictionary<PrecisionType, float>();
-        foreach (var keyValuePair in LightColorEventHelper._precisions)
-            prec[keyValuePair.Key] = keyValuePair.Value / 100f;
-        ApplyScrollableFloatInput(lcdv._valueInput, null);
+        ApplyScrollableFloatInput(lcdv._valueInput, LightColorEventHelper._precisions, 0.1f);
         lcdv._valueInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lcdv._valueInput._max = 0;
 
-        ApplyScrollableFloatInput(lcdv._strobeBrightnessInput, null);
+        ApplyScrollableFloatInput(lcdv._strobeBrightnessInput, LightColorEventHelper._precisions, 0.1f);
         lcdv._strobeBrightnessInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lcdv._strobeBrightnessInput._max = 0;
 
@@ -296,18 +290,21 @@ public class ScrollableYourInput : IInitializable
             ModifyHoveredFloatFxDeltaValueCommand._precisions);
     }
 
-    public void ApplyScrollableIntInput(IntInputFieldValidator component, Dictionary<PrecisionType, int> precision)
+    public void ApplyScrollableIntInput(IntInputFieldValidator component, Dictionary<PrecisionType, int> precision,
+        float multiplier = 1.0f)
     {
         Object.Destroy(component.gameObject.GetComponent<IntInputFieldValidatorChangeOnScroll>());
         var scrollable = _container.InstantiateComponent<ScrollableInputInt>(component.gameObject);
         if (precision != null) scrollable.PrecisionDelta = precision;
+        scrollable.multiplier = multiplier;
     }
 
     public void ApplyScrollableFloatInput(FloatInputFieldValidator component,
-        Dictionary<PrecisionType, float> precision)
+        Dictionary<PrecisionType, float> precision, float multiplier = 1.0f)
     {
         Object.Destroy(component.gameObject.GetComponent<FloatInputFieldValidatorChangeOnScroll>());
         var scrollable = _container.InstantiateComponent<ScrollableInputFloat>(component.gameObject);
         if (precision != null) scrollable.PrecisionDelta = precision;
+        scrollable.multiplier = multiplier;
     }
 }

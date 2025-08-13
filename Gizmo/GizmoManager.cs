@@ -464,7 +464,7 @@ internal class GizmoManager : IInitializable, IDisposable
     }
 }
 
-internal record struct LightTransformData
+public record struct LightTransformData
 {
     public int AxisBoxIndex;
     public bool Distributed;
