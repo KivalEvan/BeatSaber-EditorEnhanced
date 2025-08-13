@@ -32,7 +32,7 @@ public class EditorButtonWithIconBuilder : IEditorBuilder<EditorButtonWithIconTa
     }
 }
 
-public class EditorButtonWithIconTag : IEditorTag, IUIButton, IUIText
+public class EditorButtonWithIconTag : IEditorTag, IUIButton
 {
     private readonly EditBeatmapViewController _ebvc;
     private readonly TimeTweeningManager _twm;

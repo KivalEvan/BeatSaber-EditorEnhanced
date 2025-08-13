@@ -11,6 +11,8 @@ using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo.Commands;
 using EditorEnhanced.Gizmo.Components;
 using EditorEnhanced.Helpers;
+using EditorEnhanced.UI;
+using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.Utils;
 using UnityEngine;
 using Zenject;
@@ -28,9 +30,12 @@ internal class GizmoManager : IInitializable, IDisposable
     private readonly EventBoxGroupsState _ebgs;
     private readonly GizmoAssets _gizmoAssets;
     private readonly SignalBus _signalBus;
+    private readonly EditBeatmapViewController _ebvc;
+    private readonly UIBuilder _uiBuilder;
     private LightColorGroupEffectManager _colorManager;
     private FloatFxGroupEffectManager _fxManager;
 
+    private GizmoInfo _gizmoInfo;
     private GizmoDragInputSystem _gizmoDragInputSystem;
     private LightRotationGroupEffectManager _rotationManager;
     private LightTranslationGroupEffectManager _translationManager;
@@ -40,7 +45,9 @@ internal class GizmoManager : IInitializable, IDisposable
         PluginConfig config,
         BeatmapState beatmapState,
         EventBoxGroupsState ebgs,
-        BeatmapEventBoxGroupsDataModel bebgdm)
+        BeatmapEventBoxGroupsDataModel bebgdm,
+        UIBuilder uiBuilder,
+        EditBeatmapViewController ebvc)
     {
         _gizmoAssets = gizmoAssets;
         _signalBus = signalBus;
@@ -48,6 +55,8 @@ internal class GizmoManager : IInitializable, IDisposable
         _config = config;
         _ebgs = ebgs;
         _bebgdm = bebgdm;
+        _uiBuilder = uiBuilder;
+        _ebvc = ebvc;
     }
 
     public void Dispose()
@@ -80,6 +89,15 @@ internal class GizmoManager : IInitializable, IDisposable
         };
         go.SetActive(false);
         _gizmoDragInputSystem = go.AddComponent<GizmoDragInputSystem>();
+
+        go = _uiBuilder.Text.Instantiate()
+            .SetName("GizmoInfo")
+            .SetColor(Color.white)
+            .SetAnchorMin(new Vector2(0.03f, 0.95f))
+            .SetAnchorMax(new Vector2(0.03f, 0.95f))
+            .Create(_ebvc.transform);
+        go.SetActive(false);
+        _gizmoInfo = go.AddComponent<GizmoInfo>();
 
         _colorManager = Object.FindAnyObjectByType<LightColorGroupEffectManager>();
         _rotationManager =
@@ -127,6 +145,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 break;
             case EventBoxGroupType.Translation:
                 AddTranslationGizmo();
+                _gizmoInfo.gameObject.SetActive(true);
                 break;
             case EventBoxGroupType.FloatFx:
                 AddFxGizmo();
@@ -142,18 +161,20 @@ internal class GizmoManager : IInitializable, IDisposable
         foreach (var gizmo in _activeGizmos)
             gizmo.SetActive(false);
         _activeGizmos.Clear();
+        _gizmoInfo.Clear();
+        _gizmoInfo.gameObject.SetActive(false);
         _gizmoDragInputSystem.gameObject.SetActive(false);
     }
 
     private void DistributeGizmo(
-        IEnumerable<LightTransformData> list,
+        List<LightTransformData> list,
         EventBoxGroupType groupType,
         LightAxis axis,
         bool mirror, LightGroupSubsystem subsystemContext)
     {
         var onlyUnique = list.Select(d => d.AxisBoxIndex).ToHashSet().Count == 1;
 
-        var highlighterMap = new Dictionary<(LightAxis, int), GizmoHighlightController>();
+        var highlighterMap = new Dictionary<int, GizmoHighlightController>();
         foreach (var data in list)
         {
             var idx = data.Index;
@@ -168,7 +189,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 ? ColorAssignment.GetColorIndexEventBox(axisBoxIdx, idx, distributed)
                 : ColorAssignment.GetColorIndexEventBox(0);
 
-            if (!highlighterMap.ContainsKey((axis, globalBoxIdx)))
+            if (!highlighterMap.ContainsKey(globalBoxIdx))
             {
                 var laneGizmo = _gizmoAssets.GetOrCreate(GizmoType.Lane, colorIdx);
                 laneGizmo.transform.SetParent(_colorManager.transform.root, false);
@@ -177,13 +198,14 @@ internal class GizmoManager : IInitializable, IDisposable
                 var groupHighlightController = laneGizmo.GetComponent<GizmoHighlightController>();
                 groupHighlightController.Init();
                 groupHighlightController.Add(laneGizmo);
-                highlighterMap.Add((axis, globalBoxIdx), groupHighlightController);
+                highlighterMap.Add(globalBoxIdx, groupHighlightController);
 
                 laneGizmo.SetActive(true);
                 _activeGizmos.Add(laneGizmo);
             }
 
             if (transform == null) continue;
+            _gizmoInfo.AddLightTransform(data);
             var axisIdx = axis switch
             {
                 LightAxis.X => ColorAssignment.RedIndex,
@@ -196,7 +218,7 @@ internal class GizmoManager : IInitializable, IDisposable
                 _gizmoAssets.GetOrCreate(
                     _config.Gizmo.DistributeShape && distributed ? GizmoType.Sphere : GizmoType.Cube, colorIdx);
             var baseHighlightController = baseGizmo.GetComponent<GizmoHighlightController>();
-            baseHighlightController.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
+            baseHighlightController.SharedWith(highlighterMap[globalBoxIdx]);
             baseHighlightController.Add(baseGizmo);
             baseGizmo.GetComponent<GizmoNone>().TargetTransform = transform;
 
@@ -210,7 +232,7 @@ internal class GizmoManager : IInitializable, IDisposable
             {
                 modGizmo.transform.SetParent(baseGizmo.transform, false);
                 var modHighlightController = modGizmo.GetComponent<GizmoHighlightController>();
-                modHighlightController.SharedWith(highlighterMap[(axis, globalBoxIdx)]);
+                modHighlightController.SharedWith(highlighterMap[globalBoxIdx]);
                 modHighlightController.Add(modGizmo);
 
                 var gizmoDraggable = modGizmo.GetComponent<GizmoDraggable>();
@@ -353,7 +375,7 @@ internal class GizmoManager : IInitializable, IDisposable
                         data.Index = item.Key;
                         data.Transform = transforms.ElementAtOrDefault(item.Key);
                         return data;
-                    });
+                    }).ToList();
 
                 var mirror = axis switch
                 {
@@ -415,7 +437,7 @@ internal class GizmoManager : IInitializable, IDisposable
                         data.Index = item.Key;
                         data.Transform = transforms.ElementAtOrDefault(item.Key);
                         return data;
-                    });
+                    }).ToList();
 
                 var mirror = axis switch
                 {
@@ -458,7 +480,7 @@ internal class GizmoManager : IInitializable, IDisposable
                     data.Index = item.Key;
                     data.Transform = l.targets.Select(t => t.transform).ElementAtOrDefault(item.Key);
                     return data;
-                });
+                }).ToList();
             DistributeGizmo(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, l);
         }
     }

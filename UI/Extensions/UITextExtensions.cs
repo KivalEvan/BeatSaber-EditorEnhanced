@@ -1,13 +1,20 @@
 using EditorEnhanced.UI.Interfaces;
 using TMPro;
+using UnityEngine;
 
 namespace EditorEnhanced.UI.Extensions;
 
 public static class UITextExtensions
 {
-    public static T SetText<T>(this T self, string text) where T : IUIText
+    public static T SetText<T>(this T self, string value) where T : IUIText
     {
-        self.Text = text;
+        self.Text = value;
+        return self;
+    }
+
+    public static T SetColor<T>(this T self, Color color) where T : IUIText
+    {
+        self.Color = color;
         return self;
     }
 

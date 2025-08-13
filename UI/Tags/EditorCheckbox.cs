@@ -76,6 +76,7 @@ public class EditorCheckboxTag : IEditorTag, IUIToggle, IUIText
         var tmp = labelObject.GetComponent<TextMeshProUGUI>();
         tmp.alignment = TextAlignment ?? TextAlignmentOptions.Left;
         tmp.text = Text ?? "Default Text";
+        tmp.color = Color ?? tmp.color;
         tmp.fontSize = FontSize ?? 12f;
         tmp.fontWeight = FontWeight ?? tmp.fontWeight;
         tmp.richText = true;
@@ -96,6 +97,7 @@ public class EditorCheckboxTag : IEditorTag, IUIToggle, IUIText
     }
 
     public string Text { get; set; }
+    public Color? Color { get; set; }
     public TextAlignmentOptions? TextAlignment { get; set; }
     public bool? RichText { get; set; }
     public float? FontSize { get; set; }

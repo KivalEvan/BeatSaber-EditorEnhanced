@@ -88,6 +88,7 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUILayout
         var tmp = labelObject.GetComponent<TextMeshProUGUI>();
         tmp.alignment = TextAlignment ?? TextAlignmentOptions.Center;
         tmp.text = Text ?? "Default Text";
+        tmp.color = Color ?? tmp.color;
         tmp.fontSize = FontSize ?? 12;
         tmp.fontWeight = FontWeight ?? tmp.fontWeight;
         tmp.richText = true;
@@ -117,6 +118,7 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUILayout
     public float? PreferredWidth { get; set; }
     public float? PreferredHeight { get; set; }
     [CanBeNull] public string Text { get; set; }
+    public Color? Color { get; set; }
     public TextAlignmentOptions? TextAlignment { get; set; }
     public bool? RichText { get; set; }
     public float? FontSize { get; set; }

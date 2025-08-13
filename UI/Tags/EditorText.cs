@@ -22,7 +22,7 @@ public class EditorTextBuilder : IEditorBuilder<EditorTextTag>
     }
 }
 
-public class EditorTextTag : IEditorTag, IUIText
+public class EditorTextTag : IEditorTag, IUIText, IUIRect
 {
     private readonly EditBeatmapViewController _ebvc;
 
@@ -49,7 +49,7 @@ public class EditorTextTag : IEditorTag, IUIText
         var prefabCtmp = PrefabText.GetComponent<CurvedTextMeshPro>();
         ctmp.font = prefabCtmp.font;
         ctmp.fontSharedMaterial = prefabCtmp.fontSharedMaterial;
-        ctmp.color = prefabCtmp.color;
+        ctmp.color = Color ?? prefabCtmp.color;
         ctmp.fontSize = FontSize ?? 12f;
         ctmp.fontSizeMin = 18f;
         ctmp.fontSizeMax = 72f;
@@ -57,16 +57,25 @@ public class EditorTextTag : IEditorTag, IUIText
         ctmp.fontWeight = FontWeight ?? ctmp.fontWeight;
         ctmp.alignment = TextAlignment ?? ctmp.alignment;
 
-        ctmp.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        ctmp.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        ctmp.rectTransform.anchorMin = AnchorMin ?? new Vector2(0.5f, 0.5f);
+        ctmp.rectTransform.anchorMax = AnchorMax ?? new Vector2(0.5f, 0.5f);
+        ctmp.rectTransform.offsetMin = OffsetMin ?? ctmp.rectTransform.offsetMin;
+        ctmp.rectTransform.offsetMax = OffsetMax ?? ctmp.rectTransform.offsetMax;
 
         go.SetActive(true);
         return go;
     }
 
     [CanBeNull] public string Text { get; set; }
+    public Color? Color { get; set; }
     public TextAlignmentOptions? TextAlignment { get; set; }
     public bool? RichText { get; set; }
     public float? FontSize { get; set; }
     public FontWeight? FontWeight { get; set; }
+    public Vector2? AnchorMin { get; set; }
+    public Vector2? AnchorMax { get; set; }
+    public Vector2? OffsetMin { get; set; }
+    public Vector2? OffsetMax { get; set; }
+    public Vector2? SizeDelta { get; set; }
+    public Rect? Rect { get; set; }
 }
