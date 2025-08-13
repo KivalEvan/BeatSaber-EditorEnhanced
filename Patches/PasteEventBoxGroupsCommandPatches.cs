@@ -9,22 +9,23 @@ namespace EditorEnhanced.Patches;
 
 public class PasteEventBoxGroupsCommandPatches : IAffinity
 {
-    private readonly RandomSeedClipboardManager _rscm;
+   private readonly RandomSeedClipboardManager _rscm;
 
-    public PasteEventBoxGroupsCommandPatches(RandomSeedClipboardManager rscm)
-    {
-        _rscm = rscm;
-    }
+   public PasteEventBoxGroupsCommandPatches(RandomSeedClipboardManager rscm)
+   {
+      _rscm = rscm;
+   }
 
-    [AffinityPrefix]
-    [AffinityPatch(typeof(PasteEventBoxGroupsCommand), nameof(PasteEventBoxGroupsCommand.Redo))]
-    private void RandomizeSeedOnPaste(PasteEventBoxGroupsCommand __instance)
-    {
-        if (!_rscm.RandomOnPaste) return;
+   [AffinityPrefix]
+   [AffinityPatch(typeof(PasteEventBoxGroupsCommand), nameof(PasteEventBoxGroupsCommand.Redo))]
+   private void RandomizeSeedOnPaste(PasteEventBoxGroupsCommand __instance)
+   {
+      if (!_rscm.RandomOnPaste) return;
 
-        foreach (var boxEditorData in __instance._newEventBoxes.Values.SelectMany(eventBoxEditorData =>
-                     eventBoxEditorData))
-            boxEditorData.indexFilter.SetField("seed",
-                _rscm.UseClipboard ? _rscm.Seed : Random.Range(int.MinValue, int.MaxValue));
-    }
+      foreach (var boxEditorData in __instance._newEventBoxes.Values.SelectMany(eventBoxEditorData =>
+                  eventBoxEditorData))
+         boxEditorData.indexFilter.SetField(
+            "seed",
+            _rscm.UseClipboard ? _rscm.Seed : Random.Range(int.MinValue, int.MaxValue));
+   }
 }

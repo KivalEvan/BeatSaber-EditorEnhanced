@@ -10,29 +10,30 @@ namespace EditorEnhanced.UI;
 
 public class DraggableEventBoxCell : IInitializable
 {
-    private readonly DiContainer _container;
-    private readonly EditBeatmapViewController _ebvc;
+   private readonly DiContainer _container;
+   private readonly EditBeatmapViewController _ebvc;
 
-    public DraggableEventBoxCell(DiContainer container, SignalBus signalBus, EditBeatmapViewController ebvc)
-    {
-        _container = container;
-        _ebvc = ebvc;
-    }
+   public DraggableEventBoxCell(DiContainer container, SignalBus signalBus, EditBeatmapViewController ebvc)
+   {
+      _container = container;
+      _ebvc = ebvc;
+   }
 
-    public void Initialize()
-    {
-        var ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox)
-            .elements[0]
-            .GetComponent<EventBoxesView>();
+   public void Initialize()
+   {
+      var ebv = _ebvc
+         ._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox)
+         .elements[0]
+         .GetComponent<EventBoxesView>();
 
-        SegmentedControlCell[] prefabs =
-        [
-            ebv._eventBoxButtonsTextSegmentedControl._firstCellPrefab,
-            ebv._eventBoxButtonsTextSegmentedControl._middleCellPrefab,
-            ebv._eventBoxButtonsTextSegmentedControl._lastCellPrefab,
-            ebv._eventBoxButtonsTextSegmentedControl._singleCellPrefab
-        ];
+      SegmentedControlCell[] prefabs =
+      [
+         ebv._eventBoxButtonsTextSegmentedControl._firstCellPrefab,
+         ebv._eventBoxButtonsTextSegmentedControl._middleCellPrefab,
+         ebv._eventBoxButtonsTextSegmentedControl._lastCellPrefab,
+         ebv._eventBoxButtonsTextSegmentedControl._singleCellPrefab
+      ];
 
-        foreach (var prefab in prefabs) _container.InstantiateComponent<DragSwapSegmentCell>(prefab.gameObject);
-    }
+      foreach (var prefab in prefabs) _container.InstantiateComponent<DragSwapSegmentCell>(prefab.gameObject);
+   }
 }

@@ -5,15 +5,15 @@ namespace EditorEnhanced.Installers;
 
 internal class AppInstaller : Installer
 {
-    private readonly PluginConfig _pluginConfig;
+   private readonly PluginConfig _pluginConfig;
 
-    public AppInstaller(PluginConfig pluginConfig)
-    {
-        _pluginConfig = pluginConfig;
-    }
+   public AppInstaller(PluginConfig pluginConfig)
+   {
+      _pluginConfig = pluginConfig;
+   }
 
-    public override void InstallBindings()
-    {
-        Container.BindInstance(_pluginConfig).AsSingle();
-    }
+   public override void InstallBindings()
+   {
+      Container.BindInstance(_pluginConfig).AsSingle();
+   }
 }

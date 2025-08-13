@@ -2,53 +2,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HMUI;
-using TMPro;
 using UnityEngine;
 
 namespace EditorEnhanced.Gizmo;
 
 public class GizmoInfo : MonoBehaviour
 {
-    private List<LightTransformData> data = [];
-    private CurvedTextMeshPro textMeshPro;
+   private List<LightTransformData> data = [];
+   private CurvedTextMeshPro textMeshPro;
 
-    private void Awake()
-    {
-        textMeshPro = GetComponent<CurvedTextMeshPro>();
-    }
+   private void Awake()
+   {
+      textMeshPro = GetComponent<CurvedTextMeshPro>();
+   }
 
-    private void OnEnable()
-    {
-        data = data
-            .OrderBy(a => a.Index)
-            .ThenBy(a => a.GlobalBoxIndex)
-            .ToList();
-        InvokeRepeating(nameof(UpdateInfo), .1f, .1f);
-    }
+   private void OnEnable()
+   {
+      data = data
+         .OrderBy(a => a.Index)
+         .ThenBy(a => a.GlobalBoxIndex)
+         .ToList();
+      InvokeRepeating(nameof(UpdateInfo), .1f, .1f);
+   }
 
-    private void OnDisable()
-    {
-        CancelInvoke(nameof(UpdateInfo));
-    }
+   private void OnDisable()
+   {
+      CancelInvoke(nameof(UpdateInfo));
+   }
 
-    private void UpdateInfo()
-    {
-        var sb = new StringBuilder();
-        for (var i = 0; i < data.Count; i++)
-        {
-            sb.AppendLine($"[{data[i].GlobalBoxIndex}::{data[i].Index}] {data[i].Transform.position}");
-        }
+   private void UpdateInfo()
+   {
+      var sb = new StringBuilder();
+      for (var i = 0; i < data.Count; i++)
+         sb.AppendLine($"[{data[i].GlobalBoxIndex}::{data[i].Index}] {data[i].Transform.position}");
 
-        textMeshPro.SetText(sb.ToString());
-    }
+      textMeshPro.SetText(sb.ToString());
+   }
 
-    public void Clear()
-    {
-        data.Clear();
-    }
+   public void Clear()
+   {
+      data.Clear();
+   }
 
-    public void AddLightTransform(LightTransformData lightTransformData)
-    {
-        data.Add(lightTransformData);
-    }
+   public void AddLightTransform(LightTransformData lightTransformData)
+   {
+      data.Add(lightTransformData);
+   }
 }

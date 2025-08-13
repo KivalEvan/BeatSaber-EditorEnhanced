@@ -11,50 +11,54 @@ namespace EditorEnhanced.UI.Views;
 
 public class OffsetDurationDistributionViewController : IInitializable, IDisposable
 {
-    private readonly EditBeatmapViewController _ebvc;
-    private readonly UIBuilder _uiBuilder;
+   private readonly EditBeatmapViewController _ebvc;
+   private readonly UIBuilder _uiBuilder;
 
-    private EventBoxView _ebv;
+   private EventBoxView _ebv;
 
-    public OffsetDurationDistributionViewController(
-        EditBeatmapViewController ebvc,
-        UIBuilder uiBuilder)
-    {
-        _ebvc = ebvc;
-        _uiBuilder = uiBuilder;
-    }
+   public OffsetDurationDistributionViewController(
+      EditBeatmapViewController ebvc,
+      UIBuilder uiBuilder)
+   {
+      _ebvc = ebvc;
+      _uiBuilder = uiBuilder;
+   }
 
-    public void Dispose()
-    {
-    }
+   public void Dispose()
+   {
+   }
 
-    public void Initialize()
-    {
-        _ebv = _ebvc._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox)
-            .elements[0].GetComponent<EventBoxesView>()._eventBoxView;
+   public void Initialize()
+   {
+      _ebv = _ebvc
+         ._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox)
+         .elements[0]
+         .GetComponent<EventBoxesView>()
+         ._eventBoxView;
 
-        var buttonTag = _uiBuilder.Button.Instantiate()
-            .SetFontSize(16);
+      var buttonTag = _uiBuilder
+         .Button.Instantiate()
+         .SetFontSize(16);
 
-        buttonTag
-            .SetText("-0.001")
-            .SetOnClick(OffsetNegative)
-            .Create(_ebv._beatDistributionInput.transform.parent)
-            .transform.localPosition = new Vector3(160f, 25f, 0f);
-        buttonTag
-            .SetText("+0.001")
-            .SetOnClick(OffsetPositive)
-            .Create(_ebv._beatDistributionInput.transform.parent)
-            .transform.localPosition = new Vector3(240f, 25f, 0f);
-    }
+      buttonTag
+         .SetText("-0.001")
+         .SetOnClick(OffsetNegative)
+         .Create(_ebv._beatDistributionInput.transform.parent)
+         .transform.localPosition = new Vector3(160f, 25f, 0f);
+      buttonTag
+         .SetText("+0.001")
+         .SetOnClick(OffsetPositive)
+         .Create(_ebv._beatDistributionInput.transform.parent)
+         .transform.localPosition = new Vector3(240f, 25f, 0f);
+   }
 
-    private void OffsetNegative()
-    {
-        _ebv._beatDistributionInput.SetValue(_ebv._eventBox.beatDistributionParam - 0.001f);
-    }
+   private void OffsetNegative()
+   {
+      _ebv._beatDistributionInput.SetValue(_ebv._eventBox.beatDistributionParam - 0.001f);
+   }
 
-    private void OffsetPositive()
-    {
-        _ebv._beatDistributionInput.SetValue(_ebv._eventBox.beatDistributionParam + 0.001f);
-    }
+   private void OffsetPositive()
+   {
+      _ebv._beatDistributionInput.SetValue(_ebv._eventBox.beatDistributionParam + 0.001f);
+   }
 }

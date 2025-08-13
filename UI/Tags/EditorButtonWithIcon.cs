@@ -17,92 +17,92 @@ namespace EditorEnhanced.UI.Tags;
 
 public class EditorButtonWithIconBuilder : IEditorBuilder<EditorButtonWithIconTag>
 {
-    private readonly EditBeatmapViewController _ebvc;
-    private readonly TimeTweeningManager _twm;
+   private readonly EditBeatmapViewController _ebvc;
+   private readonly TimeTweeningManager _twm;
 
-    public EditorButtonWithIconBuilder(EditBeatmapViewController ebvc, TimeTweeningManager twm)
-    {
-        _ebvc = ebvc;
-        _twm = twm;
-    }
+   public EditorButtonWithIconBuilder(EditBeatmapViewController ebvc, TimeTweeningManager twm)
+   {
+      _ebvc = ebvc;
+      _twm = twm;
+   }
 
-    public EditorButtonWithIconTag Instantiate()
-    {
-        return new EditorButtonWithIconTag(_ebvc, _twm);
-    }
+   public EditorButtonWithIconTag Instantiate()
+   {
+      return new EditorButtonWithIconTag(_ebvc, _twm);
+   }
 }
 
 public class EditorButtonWithIconTag : IEditorTag, IUIButton
 {
-    private readonly EditBeatmapViewController _ebvc;
-    private readonly TimeTweeningManager _twm;
-    public string ImagePath;
+   private readonly EditBeatmapViewController _ebvc;
+   private readonly TimeTweeningManager _twm;
+   public string ImagePath;
 
-    public EditorButtonWithIconTag(EditBeatmapViewController ebvc, TimeTweeningManager twm)
-    {
-        _ebvc = ebvc;
-        _twm = twm;
-    }
+   public EditorButtonWithIconTag(EditBeatmapViewController ebvc, TimeTweeningManager twm)
+   {
+      _ebvc = ebvc;
+      _twm = twm;
+   }
 
-    private Button PrefabButton =>
-        _ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
+   private Button PrefabButton => _ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
 
-    public string Name { get; set; } = "EEEditorButtonWithIcon";
+   [CanBeNull] public string Text { get; set; }
+   public TextAlignmentOptions? TextAlignment { get; set; }
+   public bool? RichText { get; set; }
+   public float? FontSize { get; set; }
+   public FontWeight? FontWeight { get; set; }
 
-    public GameObject Create(Transform parent)
-    {
-        var button = (NoTransitionsButton)Object.Instantiate(PrefabButton, parent, false);
-        button.name = Name;
-        button.interactable = true;
-        OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
+   public string Name { get; set; } = "EEEditorButtonWithIcon";
 
-        var comp = button.GetComponent<NoTransitionButtonSelectableStateController>();
-        ((SelectableStateController)comp).SetField("_tweeningManager", _twm);
+   public GameObject Create(Transform parent)
+   {
+      var button = (NoTransitionsButton)Object.Instantiate(PrefabButton, parent, false);
+      button.name = Name;
+      button.interactable = true;
+      OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
 
-        Object.Destroy(button.transform.Find("BeatmapEditorLabel").gameObject);
+      var comp = button.GetComponent<NoTransitionButtonSelectableStateController>();
+      ((SelectableStateController)comp).SetField("_tweeningManager", _twm);
 
-        var btnObject = button.gameObject;
-        btnObject.SetActive(false);
-        var stackLayoutGroup = btnObject.AddComponent<StackLayoutGroup>();
-        var layoutElement = btnObject.AddComponent<LayoutElement>();
-        layoutElement.flexibleWidth = 1f;
+      Object.Destroy(button.transform.Find("BeatmapEditorLabel").gameObject);
 
-        var contentWrapper = new GameObject("ContentWrapper");
-        contentWrapper.transform.SetParent(btnObject.transform, false);
-        stackLayoutGroup = contentWrapper.AddComponent<StackLayoutGroup>();
-        stackLayoutGroup.padding = new RectOffset(12, 12, 6, 6);
+      var btnObject = button.gameObject;
+      btnObject.SetActive(false);
+      var stackLayoutGroup = btnObject.AddComponent<StackLayoutGroup>();
+      var layoutElement = btnObject.AddComponent<LayoutElement>();
+      layoutElement.flexibleWidth = 1f;
 
-        var image = (Image)new GameObject("Icon").AddComponent<ImageView>();
-        // image.material = Utilities.ImageResources.NoGlowMat;
-        image.rectTransform.SetParent(contentWrapper.transform, false);
-        // image.sprite = Utilities.ImageResources.BlankSprite;
-        image.preserveAspect = true;
-        image.sprite = TextureLoader.LoadSpriteRaw(
-            AssetLoader.GetResource(Assembly.GetExecutingAssembly(), ImagePath));
-        image.sprite.texture.wrapMode = TextureWrapMode.Clamp;
-        btnObject.transform.localScale = new Vector2(64f / 100f, 64f / 100f);
+      var contentWrapper = new GameObject("ContentWrapper");
+      contentWrapper.transform.SetParent(btnObject.transform, false);
+      stackLayoutGroup = contentWrapper.AddComponent<StackLayoutGroup>();
+      stackLayoutGroup.padding = new RectOffset(12, 12, 6, 6);
 
-        // var buttonIconImage = go.AddComponent<ButtonIconImage>();
-        // buttonIconImage.Image = image;
+      var image = (Image)new GameObject("Icon").AddComponent<ImageView>();
+      // image.material = Utilities.ImageResources.NoGlowMat;
+      image.rectTransform.SetParent(contentWrapper.transform, false);
+      // image.sprite = Utilities.ImageResources.BlankSprite;
+      image.preserveAspect = true;
+      image.sprite = TextureLoader.LoadSpriteRaw(
+         AssetLoader.GetResource(Assembly.GetExecutingAssembly(), ImagePath));
+      image.sprite.texture.wrapMode = TextureWrapMode.Clamp;
+      btnObject.transform.localScale = new Vector2(64f / 100f, 64f / 100f);
 
-        var contentSizeFitter = btnObject.AddComponent<ContentSizeFitter>();
-        contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+      // var buttonIconImage = go.AddComponent<ButtonIconImage>();
+      // buttonIconImage.Image = image;
 
-        btnObject.SetActive(true);
-        return btnObject;
-    }
+      var contentSizeFitter = btnObject.AddComponent<ContentSizeFitter>();
+      contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+      contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-    public List<Action> OnClick { get; set; } = [];
-    [CanBeNull] public string Text { get; set; }
-    public TextAlignmentOptions? TextAlignment { get; set; }
-    public bool? RichText { get; set; }
-    public float? FontSize { get; set; }
-    public FontWeight? FontWeight { get; set; }
+      btnObject.SetActive(true);
+      return btnObject;
+   }
 
-    public EditorButtonWithIconTag SetImage(string path)
-    {
-        ImagePath = path;
-        return this;
-    }
+   public List<Action> OnClick { get; set; } = [];
+
+   public EditorButtonWithIconTag SetImage(string path)
+   {
+      ImagePath = path;
+      return this;
+   }
 }

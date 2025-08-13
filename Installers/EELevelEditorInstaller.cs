@@ -5,9 +5,9 @@ namespace EditorEnhanced.Installers;
 
 public class EELevelEditorInstaller : Installer
 {
-    public override void InstallBindings()
-    {
-        Container.BindInterfacesAndSelfTo<GizmoAssets>().AsSingle();
-        Container.BindInterfacesTo<GizmoManager>().AsSingle();
-    }
+   public override void InstallBindings()
+   {
+      Container.BindInterfacesAndSelfTo<GizmoAssets>().AsSingle();
+      Container.BindInterfacesTo<GizmoManager>().AsSingle();
+   }
 }

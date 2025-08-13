@@ -5,18 +5,18 @@ namespace EditorEnhanced.Gizmo.Patches;
 
 public class DebugStatePatches : IAffinity
 {
-    private readonly DebugState _debugState;
+   private readonly DebugState _debugState;
 
-    public DebugStatePatches(DebugState debugState)
-    {
-        _debugState = debugState;
-        _debugState.lightGroupGizmoType = LightGroupGizmoType.None;
-    }
+   public DebugStatePatches(DebugState debugState)
+   {
+      _debugState = debugState;
+      _debugState.lightGroupGizmoType = LightGroupGizmoType.None;
+   }
 
-    [AffinityPostfix]
-    [AffinityPatch(typeof(DebugState), nameof(DebugState.ResetOnBeatmapExit))]
-    public void NoGizmoDefault(DebugState __instance)
-    {
-        __instance.lightGroupGizmoType = LightGroupGizmoType.None;
-    }
+   [AffinityPostfix]
+   [AffinityPatch(typeof(DebugState), nameof(DebugState.ResetOnBeatmapExit))]
+   public void NoGizmoDefault(DebugState __instance)
+   {
+      __instance.lightGroupGizmoType = LightGroupGizmoType.None;
+   }
 }

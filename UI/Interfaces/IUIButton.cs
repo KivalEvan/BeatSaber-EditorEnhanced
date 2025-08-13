@@ -5,5 +5,5 @@ namespace EditorEnhanced.UI.Interfaces;
 
 public interface IUIButton
 {
-    List<Action> OnClick { get; set; }
+   List<Action> OnClick { get; set; }
 }
