@@ -200,11 +200,11 @@ public class ScrollableYourInput : IInitializable
         lcdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lcdv._beatInputFieldValidator._max = 0;
 
-        ApplyScrollableFloatInput(lcdv._valueInput, LightColorEventHelper._precisions, 0.1f);
+        ApplyScrollableFloatInput(lcdv._valueInput, LightColorEventHelper._precisions);
         lcdv._valueInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lcdv._valueInput._max = 0;
 
-        ApplyScrollableFloatInput(lcdv._strobeBrightnessInput, LightColorEventHelper._precisions, 0.1f);
+        ApplyScrollableFloatInput(lcdv._strobeBrightnessInput, LightColorEventHelper._precisions);
         lcdv._strobeBrightnessInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
         lcdv._strobeBrightnessInput._max = 0;
 

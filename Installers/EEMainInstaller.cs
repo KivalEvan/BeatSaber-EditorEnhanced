@@ -12,7 +12,7 @@ public class EEMainInstaller : Installer
         
         // Fixes
         Container.BindInterfacesTo<EditObjectViewPatches>().AsSingle();
-        Container.BindInterfacesTo<ModifyFullLightColorPatches>().AsSingle();
+        Container.BindInterfacesTo<LightColorDataViewPatches>().AsSingle();
 
         // Command
         Container.BindInterfacesTo<MoveEventBoxPatches>().AsSingle();
