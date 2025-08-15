@@ -20,6 +20,7 @@ public class GizmoConfig
    public virtual bool ShowBase { get; set; } = true;
    public virtual bool ShowModifier { get; set; } = true;
    public virtual bool ShowLane { get; set; } = true;
+   public virtual bool ShowInfo { get; set; } = true;
 
    public virtual float GlobalScale { get; set; } = 1f;
    public virtual float SizeBase { get; set; } = 0.5f;

@@ -14,7 +14,9 @@ using EditorEnhanced.Helpers;
 using EditorEnhanced.UI;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.Utils;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupType;
 using Object = UnityEngine.Object;
@@ -74,12 +76,13 @@ internal class GizmoManager : IInitializable, IDisposable
       _signalBus.TryUnsubscribe<SortIdEventBoxGroupSignal>(HandleGizmoSignal);
       _signalBus.TryUnsubscribe<GizmoRefreshSignal>(HandleGizmoSignal);
 
+      Object.Destroy(_gizmoInfo);
+      Object.Destroy(_gizmoDragInputSystem);
       _activeGizmos.Clear();
       _colorManager = null;
       _rotationManager = null;
       _translationManager = null;
       _fxManager = null;
-      _gizmoDragInputSystem = null;
    }
 
    public void Initialize()
@@ -92,14 +95,21 @@ internal class GizmoManager : IInitializable, IDisposable
       _gizmoDragInputSystem = go.AddComponent<GizmoDragInputSystem>();
 
       go = _uiBuilder
-         .Text.Instantiate()
+         .LayoutStack.Instantiate()
          .SetName("GizmoInfo")
-         .SetColor(Color.white)
-         .SetAnchorMin(new Vector2(0.03f, 0.95f))
-         .SetAnchorMax(new Vector2(0.03f, 0.95f))
+         .SetPreferredWidth(0)
+         .SetPreferredHeight(0)
+         .SetAnchorMin(new Vector2(0f, 1f))
+         .SetAnchorMax(new Vector2(0f, 1f))
          .Create(_ebvc.transform);
       go.SetActive(false);
       _gizmoInfo = go.AddComponent<GizmoInfo>();
+      _uiBuilder
+         .Text.Instantiate()
+         .SetColor(Color.white)
+         .SetTextAlignment(TextAlignmentOptions.TopLeft)
+         .SetFontSize(12f)
+         .Create(go.transform);
 
       _colorManager = Object.FindAnyObjectByType<LightColorGroupEffectManager>();
       _rotationManager =
@@ -149,7 +159,7 @@ internal class GizmoManager : IInitializable, IDisposable
             break;
          case EventBoxGroupType.Translation:
             AddTranslationGizmo();
-            _gizmoInfo.gameObject.SetActive(true);
+            if (_config.Gizmo.ShowInfo) _gizmoInfo.gameObject.SetActive(true);
             break;
          case EventBoxGroupType.FloatFx:
             AddFxGizmo();
@@ -205,7 +215,7 @@ internal class GizmoManager : IInitializable, IDisposable
             groupHighlightController.Add(laneGizmo);
             highlighterMap.Add(globalBoxIdx, groupHighlightController);
 
-            laneGizmo.SetActive(true);
+            laneGizmo.SetActive(_config.Gizmo.ShowLane);
             _activeGizmos.Add(laneGizmo);
          }
 
@@ -218,6 +228,8 @@ internal class GizmoManager : IInitializable, IDisposable
             LightAxis.Z => ColorAssignment.BlueIndex,
             _ => ColorAssignment.WhiteIndex
          };
+
+         if (!_config.Gizmo.ShowBase) continue;
 
          var baseGizmo =
             _gizmoAssets.GetOrCreate(
@@ -234,7 +246,7 @@ internal class GizmoManager : IInitializable, IDisposable
             EventBoxGroupType.Translation => _gizmoAssets.GetOrCreate(GizmoType.Translation, axisIdx),
             _ => null
          };
-         if (modGizmo != null)
+         if (_config.Gizmo.ShowModifier && modGizmo != null)
          {
             modGizmo.transform.SetParent(baseGizmo.transform, false);
             var modHighlightController = modGizmo.GetComponent<GizmoHighlightController>();
@@ -276,7 +288,7 @@ internal class GizmoManager : IInitializable, IDisposable
       }
 
       var selection = _gizmoAssets.GetOrCreate(GizmoType.Selection, 0);
-      selection.SetActive(true);
+      selection.SetActive(_config.Gizmo.ShowLane);
       _activeGizmos.Add(selection);
    }
 

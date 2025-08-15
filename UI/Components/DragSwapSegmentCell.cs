@@ -13,6 +13,7 @@ public class DragSwapSegmentCell : MonoBehaviour, IBeginDragHandler, IDragHandle
    private RectTransform _rectTransform;
    private SegmentedControl _segmentedControl;
    private Vector2 _startPos;
+   private int _newIndex;
 
    private void Awake()
    {
@@ -34,6 +35,7 @@ public class DragSwapSegmentCell : MonoBehaviour, IBeginDragHandler, IDragHandle
    public void OnDrag(PointerEventData eventData)
    {
       transform.position = transform.position with { y = eventData.position.y };
+
       foreach (var segmentedControlCell in _segmentedControl.cells)
       {
          if (!segmentedControlCell.gameObject.activeSelf) continue;
@@ -41,14 +43,14 @@ public class DragSwapSegmentCell : MonoBehaviour, IBeginDragHandler, IDragHandle
          if (!AnchoredPositionWithinEachOther(_rectTransform, segmentedControlCell.GetComponent<RectTransform>()))
             continue;
          transform.SetSiblingIndex(segmentedControlCell.transform.GetSiblingIndex());
+         _newIndex = segmentedControlCell.cellNumber;
       }
    }
 
    public void OnEndDrag(PointerEventData eventData)
    {
-      var newIndex = transform.GetSiblingIndex() - 1;
-      if (newIndex != _currentCell.cellNumber)
-         _signalBus.Fire(new MoveEventBoxSignal(_currentCell.cellNumber, newIndex));
+      if (_newIndex != _currentCell.cellNumber)
+         _signalBus.Fire(new MoveEventBoxSignal(_currentCell.cellNumber, _newIndex));
       else
          _rectTransform.anchoredPosition = _startPos;
 

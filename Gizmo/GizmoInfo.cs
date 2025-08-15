@@ -9,11 +9,11 @@ namespace EditorEnhanced.Gizmo;
 public class GizmoInfo : MonoBehaviour
 {
    private List<LightTransformData> data = [];
-   private CurvedTextMeshPro textMeshPro;
+   private CurvedTextMeshPro tmp;
 
    private void Awake()
    {
-      textMeshPro = GetComponent<CurvedTextMeshPro>();
+      tmp = GetComponentInChildren<CurvedTextMeshPro>();
    }
 
    private void OnEnable()
@@ -36,7 +36,7 @@ public class GizmoInfo : MonoBehaviour
       for (var i = 0; i < data.Count; i++)
          sb.AppendLine($"[{data[i].GlobalBoxIndex}::{data[i].Index}] {data[i].Transform.position}");
 
-      textMeshPro.SetText(sb.ToString());
+      tmp.SetText(sb.ToString());
    }
 
    public void Clear()

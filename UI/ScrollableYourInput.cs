@@ -260,10 +260,22 @@ public class ScrollableYourInput : IInitializable
       ebv._beatDistributionInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
 
       ApplyScrollableIntInput(ebv._indexFilterView._groupingValidator, NoPrecisionInt);
+
+      // temporary fix
+      Object.Destroy(
+         ebv
+            ._indexFilterView._param0Input
+            .GetComponents<IntInputFieldValidator>()
+            .First(comp => comp != ebv._indexFilterView._param0Input));
       ApplyScrollableIntInput(ebv._indexFilterView._param0Input, NoPrecisionInt);
       ebv._indexFilterView._param0Input._validatorType = IntInputFieldValidator.ValidatorType.Max;
       ebv._indexFilterView._param0Input._max = 1;
 
+      // temporary fix
+      Object.Destroy(
+         ebv
+            ._indexFilterView._param1Input.GetComponents<IntInputFieldValidator>()
+            .First(comp => comp != ebv._indexFilterView._param1Input));
       ApplyScrollableIntInput(ebv._indexFilterView._param1Input, NoPrecisionInt);
       ebv._indexFilterView._param1Input._validatorType = IntInputFieldValidator.ValidatorType.Max;
       ApplyScrollableIntInput(ebv._indexFilterView._randomSeedValidator, NoPrecisionInt);

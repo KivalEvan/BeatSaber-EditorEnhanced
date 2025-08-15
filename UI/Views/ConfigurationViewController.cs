@@ -161,6 +161,31 @@ internal class ConfigurationViewController : IInitializable
 
       layout = horizontalTag.Create(container.transform);
       textTag
+         .SetText("Show")
+         .Create(layout.transform);
+      checkboxTag
+         .SetText("Base")
+         .SetBool(_config.Gizmo.ShowBase)
+         .SetOnValueChange(HandleGizmoShowBase)
+         .Create(layout.transform);
+      checkboxTag
+         .SetText("Modifier")
+         .SetBool(_config.Gizmo.ShowModifier)
+         .SetOnValueChange(HandleGizmoShowModifier)
+         .Create(layout.transform);
+      checkboxTag
+         .SetText("Lane")
+         .SetBool(_config.Gizmo.ShowLane)
+         .SetOnValueChange(HandleGizmoShowLane)
+         .Create(layout.transform);
+      checkboxTag
+         .SetText("Info")
+         .SetBool(_config.Gizmo.ShowInfo)
+         .SetOnValueChange(HandleGizmoShowInfo)
+         .Create(layout.transform);
+
+      layout = horizontalTag.Create(container.transform);
+      textTag
          .SetText("Interaction")
          .Create(layout.transform);
       checkboxTag
@@ -369,6 +394,30 @@ internal class ConfigurationViewController : IInitializable
    {
       _config.Gizmo.RaycastLane = value;
       _signalBus.Fire<GizmoConfigRaycastLaneUpdateSignal>();
+   }
+
+   private void HandleGizmoShowBase(bool value)
+   {
+      _config.Gizmo.ShowBase = value;
+      _signalBus.Fire<GizmoRefreshSignal>();
+   }
+
+   private void HandleGizmoShowModifier(bool value)
+   {
+      _config.Gizmo.ShowModifier = value;
+      _signalBus.Fire<GizmoRefreshSignal>();
+   }
+
+   private void HandleGizmoShowLane(bool value)
+   {
+      _config.Gizmo.ShowLane = value;
+      _signalBus.Fire<GizmoRefreshSignal>();
+   }
+
+   private void HandleGizmoShowInfo(bool value)
+   {
+      _config.Gizmo.ShowInfo = value;
+      _signalBus.Fire<GizmoRefreshSignal>();
    }
 
    private void HandleGizmoHighlight(bool value)

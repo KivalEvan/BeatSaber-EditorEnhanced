@@ -28,6 +28,8 @@ public class EditorLayoutHorizontalTag : IEditorTag, IUIRect, IUILayout
       var le = go.AddComponent<LayoutElement>();
       le.flexibleWidth = FlexibleWidth ?? le.flexibleWidth;
       le.flexibleHeight = FlexibleHeight ?? le.flexibleHeight;
+      le.preferredWidth = PreferredWidth ?? le.preferredWidth;
+      le.preferredHeight = PreferredHeight ?? le.preferredHeight;
 
       var hlg = go.AddComponent<HorizontalLayoutGroup>();
       hlg.spacing = Spacing ?? hlg.spacing;

@@ -28,6 +28,8 @@ public class EditorLayoutVerticalTag : IEditorTag, IUIRect, IUILayout
       var le = go.AddComponent<LayoutElement>();
       le.flexibleWidth = FlexibleWidth ?? le.flexibleWidth;
       le.flexibleHeight = FlexibleHeight ?? le.flexibleHeight;
+      le.preferredWidth = PreferredWidth ?? le.preferredWidth;
+      le.preferredHeight = PreferredHeight ?? le.preferredHeight;
 
       var vlg = go.AddComponent<VerticalLayoutGroup>();
       vlg.spacing = Spacing ?? vlg.spacing;
