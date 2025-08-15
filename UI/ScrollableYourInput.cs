@@ -4,6 +4,7 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
+using EditorEnhanced.Misc;
 using EditorEnhanced.UI.Components;
 using UnityEngine;
 using Zenject;
@@ -13,38 +14,6 @@ namespace EditorEnhanced.UI;
 
 public class ScrollableYourInput : IInitializable
 {
-   private static readonly Dictionary<PrecisionType, float> NoPrecisionFloat = new()
-   {
-      {
-         PrecisionType.Ultra, 1f
-      },
-      {
-         PrecisionType.High, 1f
-      },
-      {
-         PrecisionType.Standard, 1f
-      },
-      {
-         PrecisionType.Low, 1f
-      }
-   };
-
-   private static readonly Dictionary<PrecisionType, int> NoPrecisionInt = new()
-   {
-      {
-         PrecisionType.Ultra, 1
-      },
-      {
-         PrecisionType.High, 1
-      },
-      {
-         PrecisionType.Standard, 1
-      },
-      {
-         PrecisionType.Low, 1
-      }
-   };
-
    private readonly DiContainer _container;
    private readonly EditBeatmapViewController _ebvc;
 
@@ -76,16 +45,16 @@ public class ScrollableYourInput : IInitializable
 
    private void ApplyToBaseBeatmapObjectView(BaseBeatmapObjectView bbov)
    {
-      ApplyScrollableFloatInput(bbov._beatInputFieldValidator, null);
+      ApplyScrollableFloatInput(bbov._beatInputFieldValidator, CustomPrecisions.TimePrecisionFloat);
       bbov._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       bbov._beatInputFieldValidator._max = 0;
 
-      ApplyScrollableIntInput(bbov._columnInputFieldValidator, NoPrecisionInt);
+      ApplyScrollableIntInput(bbov._columnInputFieldValidator, CustomPrecisions.NoPrecisionInt);
       bbov._columnInputFieldValidator._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
       bbov._columnInputFieldValidator._min = 0;
       bbov._columnInputFieldValidator._max = 3;
 
-      ApplyScrollableIntInput(bbov._rowInputFieldValidator, NoPrecisionInt);
+      ApplyScrollableIntInput(bbov._rowInputFieldValidator, CustomPrecisions.NoPrecisionInt);
       bbov._rowInputFieldValidator._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
       bbov._rowInputFieldValidator._min = 0;
       bbov._rowInputFieldValidator._max = 2;
@@ -108,14 +77,14 @@ public class ScrollableYourInput : IInitializable
       var odv = _ebvc._editBeatmapRightPanelView._editObjectView._obstacleDataView;
       ApplyToBaseBeatmapObjectView(odv);
 
-      ApplyScrollableFloatInput(odv._durationInputField, null);
+      ApplyScrollableFloatInput(odv._durationInputField, CustomPrecisions.TimePrecisionFloat);
 
-      ApplyScrollableIntInput(odv._widthInputField, NoPrecisionInt);
+      ApplyScrollableIntInput(odv._widthInputField, CustomPrecisions.NoPrecisionInt);
       odv._widthInputField._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
       odv._widthInputField._min = 1;
       odv._widthInputField._max = 4;
 
-      ApplyScrollableIntInput(odv._heightInputField, NoPrecisionInt);
+      ApplyScrollableIntInput(odv._heightInputField, CustomPrecisions.NoPrecisionInt);
       odv._heightInputField._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
       odv._heightInputField._min = 1;
       odv._heightInputField._max = 5;
@@ -126,20 +95,20 @@ public class ScrollableYourInput : IInitializable
       var adv = _ebvc._editBeatmapRightPanelView._editObjectView._arcDataView;
       ApplyToBaseBeatmapObjectView(adv);
 
-      ApplyScrollableFloatInput(adv._tailBeatInputField, null);
+      ApplyScrollableFloatInput(adv._tailBeatInputField, CustomPrecisions.TimePrecisionFloat);
 
-      ApplyScrollableIntInput(adv._tailColumnInputField, NoPrecisionInt);
+      ApplyScrollableIntInput(adv._tailColumnInputField, CustomPrecisions.NoPrecisionInt);
       adv._tailColumnInputField._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
       adv._tailColumnInputField._min = 0;
       adv._tailColumnInputField._max = 3;
 
-      ApplyScrollableIntInput(adv._tailRowInputField, NoPrecisionInt);
+      ApplyScrollableIntInput(adv._tailRowInputField, CustomPrecisions.NoPrecisionInt);
       adv._tailRowInputField._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
       adv._tailRowInputField._min = 0;
       adv._tailRowInputField._max = 2;
 
-      ApplyScrollableFloatInput(adv._controlPointInputField, null);
-      ApplyScrollableFloatInput(adv._tailControlPointInputField, null);
+      ApplyScrollableFloatInput(adv._controlPointInputField, CustomPrecisions.PercentPrecisionFloat, 0.01f);
+      ApplyScrollableFloatInput(adv._tailControlPointInputField, CustomPrecisions.PercentPrecisionFloat, 0.01f);
    }
 
    private void ApplyToChainDataView()
@@ -147,25 +116,25 @@ public class ScrollableYourInput : IInitializable
       var cdv = _ebvc._editBeatmapRightPanelView._editObjectView._chainDataView;
       ApplyToBaseBeatmapObjectView(cdv);
 
-      ApplyScrollableFloatInput(cdv._tailBeatInputField, null);
+      ApplyScrollableFloatInput(cdv._tailBeatInputField, CustomPrecisions.TimePrecisionFloat);
       cdv._tailBeatInputField._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       cdv._tailBeatInputField._max = 0;
 
-      ApplyScrollableIntInput(cdv._tailColumnInputField, NoPrecisionInt);
+      ApplyScrollableIntInput(cdv._tailColumnInputField, CustomPrecisions.NoPrecisionInt);
       cdv._tailColumnInputField._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
       cdv._tailColumnInputField._min = 0;
       cdv._tailColumnInputField._max = 3;
 
-      ApplyScrollableIntInput(cdv._tailRowInputField, NoPrecisionInt);
+      ApplyScrollableIntInput(cdv._tailRowInputField, CustomPrecisions.NoPrecisionInt);
       cdv._tailRowInputField._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
       cdv._tailRowInputField._min = 0;
       cdv._tailRowInputField._max = 2;
 
-      ApplyScrollableFloatInput(cdv._squishInputField, null);
+      ApplyScrollableFloatInput(cdv._squishInputField, CustomPrecisions.PercentPrecisionFloat, 0.01f);
       cdv._squishInputField._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       cdv._squishInputField._max = Mathf.Epsilon;
 
-      ApplyScrollableIntInput(cdv._slicesInputField, NoPrecisionInt);
+      ApplyScrollableIntInput(cdv._slicesInputField, CustomPrecisions.NoPrecisionInt);
       cdv._slicesInputField._validatorType = IntInputFieldValidator.ValidatorType.Max;
       cdv._slicesInputField._max = 1;
    }
@@ -173,11 +142,11 @@ public class ScrollableYourInput : IInitializable
    private void ApplyToBasicEventDataView()
    {
       var bedv = _ebvc._editBeatmapRightPanelView._editObjectView._basicEventDataView;
-      ApplyScrollableFloatInput(bedv._beatInputFieldValidator, null);
+      ApplyScrollableFloatInput(bedv._beatInputFieldValidator, CustomPrecisions.TimePrecisionFloat);
       bedv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       bedv._beatInputFieldValidator._max = 0;
 
-      ApplyScrollableIntInput(bedv._intValueInput, NoPrecisionInt);
+      ApplyScrollableIntInput(bedv._intValueInput, CustomPrecisions.NoPrecisionInt);
       bedv._intValueInput._validatorType = IntInputFieldValidator.ValidatorType.Max;
       bedv._intValueInput._max = 0;
 
@@ -189,7 +158,7 @@ public class ScrollableYourInput : IInitializable
    private void ApplyToEventBoxGroupDataView()
    {
       var ebgdv = _ebvc._editBeatmapRightPanelView._editObjectView._eventBoxGroupDataView;
-      ApplyScrollableFloatInput(ebgdv._beatInputFieldValidator, null);
+      ApplyScrollableFloatInput(ebgdv._beatInputFieldValidator, CustomPrecisions.TimePrecisionFloat);
       ebgdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       ebgdv._beatInputFieldValidator._max = 0;
    }
@@ -197,7 +166,7 @@ public class ScrollableYourInput : IInitializable
    private void ApplyToLightColorDataView()
    {
       var lcdv = _ebvc._editBeatmapRightPanelView._editObjectView._lightColorDataView;
-      ApplyScrollableFloatInput(lcdv._beatInputFieldValidator, null);
+      ApplyScrollableFloatInput(lcdv._beatInputFieldValidator, CustomPrecisions.TimePrecisionFloat);
       lcdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       lcdv._beatInputFieldValidator._max = 0;
 
@@ -209,7 +178,7 @@ public class ScrollableYourInput : IInitializable
       lcdv._strobeBrightnessInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       lcdv._strobeBrightnessInput._max = 0;
 
-      ApplyScrollableIntInput(lcdv._strobeFrequencyInput, NoPrecisionInt);
+      ApplyScrollableIntInput(lcdv._strobeFrequencyInput, CustomPrecisions.NoPrecisionInt);
       lcdv._strobeFrequencyInput._validatorType = IntInputFieldValidator.ValidatorType.Max;
       lcdv._strobeFrequencyInput._max = 0;
    }
@@ -217,13 +186,13 @@ public class ScrollableYourInput : IInitializable
    private void ApplyToLightRotationDataView()
    {
       var lrdv = _ebvc._editBeatmapRightPanelView._editObjectView._lightRotationDataView;
-      ApplyScrollableFloatInput(lrdv._beatInputFieldValidator, null);
+      ApplyScrollableFloatInput(lrdv._beatInputFieldValidator, CustomPrecisions.TimePrecisionFloat);
       lrdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       lrdv._beatInputFieldValidator._max = 0;
 
       ApplyScrollableFloatInput(lrdv._valueInput, ModifyHoveredLightRotationDeltaRotationCommand._precisions);
 
-      ApplyScrollableIntInput(lrdv._loopsInput, NoPrecisionInt);
+      ApplyScrollableIntInput(lrdv._loopsInput, CustomPrecisions.NoPrecisionInt);
       lrdv._loopsInput._validatorType = IntInputFieldValidator.ValidatorType.Max;
       lrdv._loopsInput._max = 0;
    }
@@ -231,7 +200,7 @@ public class ScrollableYourInput : IInitializable
    private void ApplyToLightTranslationDataView()
    {
       var ltdv = _ebvc._editBeatmapRightPanelView._editObjectView._lightTranslationDataView;
-      ApplyScrollableFloatInput(ltdv._beatInputFieldValidator, null);
+      ApplyScrollableFloatInput(ltdv._beatInputFieldValidator, CustomPrecisions.TimePrecisionFloat);
       ltdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       ltdv._beatInputFieldValidator._max = 0;
 
@@ -241,7 +210,7 @@ public class ScrollableYourInput : IInitializable
    private void ApplyToFloatFxDataView()
    {
       var ffdv = _ebvc._editBeatmapRightPanelView._editObjectView._floatFxDataView;
-      ApplyScrollableFloatInput(ffdv._beatInputFieldValidator, null);
+      ApplyScrollableFloatInput(ffdv._beatInputFieldValidator, CustomPrecisions.TimePrecisionFloat);
       ffdv._beatInputFieldValidator._validatorType = FloatInputFieldValidator.ValidatorType.Max;
       ffdv._beatInputFieldValidator._max = 0;
 
@@ -256,10 +225,10 @@ public class ScrollableYourInput : IInitializable
          .GetComponent<EventBoxesView>()
          ._eventBoxView;
 
-      ApplyScrollableFloatInput(ebv._beatDistributionInput, null);
+      ApplyScrollableFloatInput(ebv._beatDistributionInput, CustomPrecisions.TimePrecisionFloat);
       ebv._beatDistributionInput._validatorType = FloatInputFieldValidator.ValidatorType.Max;
 
-      ApplyScrollableIntInput(ebv._indexFilterView._groupingValidator, NoPrecisionInt);
+      ApplyScrollableIntInput(ebv._indexFilterView._groupingValidator, CustomPrecisions.NoPrecisionInt);
 
       // temporary fix
       Object.Destroy(
@@ -267,7 +236,7 @@ public class ScrollableYourInput : IInitializable
             ._indexFilterView._param0Input
             .GetComponents<IntInputFieldValidator>()
             .First(comp => comp != ebv._indexFilterView._param0Input));
-      ApplyScrollableIntInput(ebv._indexFilterView._param0Input, NoPrecisionInt);
+      ApplyScrollableIntInput(ebv._indexFilterView._param0Input, CustomPrecisions.NoPrecisionInt);
       ebv._indexFilterView._param0Input._validatorType = IntInputFieldValidator.ValidatorType.Max;
       ebv._indexFilterView._param0Input._max = 1;
 
@@ -276,11 +245,11 @@ public class ScrollableYourInput : IInitializable
          ebv
             ._indexFilterView._param1Input.GetComponents<IntInputFieldValidator>()
             .First(comp => comp != ebv._indexFilterView._param1Input));
-      ApplyScrollableIntInput(ebv._indexFilterView._param1Input, NoPrecisionInt);
+      ApplyScrollableIntInput(ebv._indexFilterView._param1Input, CustomPrecisions.NoPrecisionInt);
       ebv._indexFilterView._param1Input._validatorType = IntInputFieldValidator.ValidatorType.Max;
-      ApplyScrollableIntInput(ebv._indexFilterView._randomSeedValidator, NoPrecisionInt);
+      ApplyScrollableIntInput(ebv._indexFilterView._randomSeedValidator, CustomPrecisions.NoPrecisionInt);
 
-      ApplyScrollableIntInput(ebv._indexFilterView._limitValidator, null);
+      ApplyScrollableIntInput(ebv._indexFilterView._limitValidator, CustomPrecisions.PercentPrecisionInt);
       ebv._indexFilterView._limitValidator._validatorType = IntInputFieldValidator.ValidatorType.Clamp;
       ebv._indexFilterView._limitValidator._min = 0;
       ebv._indexFilterView._limitValidator._max = 100;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
+using EditorEnhanced.Misc;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -15,21 +16,7 @@ public class ScrollableInputInt : MonoBehaviour, IScrollHandler
    [Inject] private readonly BeatmapState _beatmapState;
    private IntInputFieldValidator _validator;
 
-   public Dictionary<PrecisionType, int> PrecisionDelta = new()
-   {
-      {
-         PrecisionType.Ultra, 1
-      },
-      {
-         PrecisionType.High, 2
-      },
-      {
-         PrecisionType.Standard, 5
-      },
-      {
-         PrecisionType.Low, 10
-      }
-   };
+   public Dictionary<PrecisionType, int> PrecisionDelta = CustomPrecisions.NoPrecisionInt;
 
    public void Awake()
    {

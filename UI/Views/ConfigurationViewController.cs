@@ -7,6 +7,7 @@ using BeatmapEditor3D.Views;
 using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo;
 using EditorEnhanced.Gizmo.Commands;
+using EditorEnhanced.Misc;
 using EditorEnhanced.UI.Extensions;
 using HarmonyLib;
 using TMPro;
@@ -348,6 +349,37 @@ internal class ConfigurationViewController : IInitializable
             {
                ModifyHoveredFloatFxDeltaValueCommand._precisions[precisionsKey] = val;
                _config.Precision.Fx[(int)precisionsKey] = val;
+            })
+            .Create(layout.transform);
+
+      layout = horizontalTag
+         .Create(container.transform);
+      textTag
+         .SetText("Time")
+         .Create(layout.transform);
+      foreach (var precisionsKey in CustomPrecisions.TimePrecisionFloat.Keys)
+         inputFloatTag
+            .SetValue(CustomPrecisions.TimePrecisionFloat[precisionsKey])
+            .SetOnValueChange(val =>
+            {
+               CustomPrecisions.TimePrecisionFloat[precisionsKey] = val;
+               _config.Precision.Time[(int)precisionsKey] = val;
+            })
+            .Create(layout.transform);
+
+      layout = horizontalTag
+         .Create(container.transform);
+      textTag
+         .SetText("Percent")
+         .Create(layout.transform);
+      foreach (var precisionsKey in CustomPrecisions.PercentPrecisionFloat.Keys)
+         inputFloatTag
+            .SetValue(CustomPrecisions.PercentPrecisionFloat[precisionsKey])
+            .SetOnValueChange(val =>
+            {
+               CustomPrecisions.PercentPrecisionFloat[precisionsKey] = val;
+               CustomPrecisions.PercentPrecisionInt[precisionsKey] = (int)Math.Round(val);
+               _config.Precision.Percent[(int)precisionsKey] = val;
             })
             .Create(layout.transform);
 
