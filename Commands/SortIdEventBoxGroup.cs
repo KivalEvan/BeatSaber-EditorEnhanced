@@ -49,10 +49,14 @@ public class SortIdEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
       }
 
       newEventBoxes = newEventBoxes
-         .OrderBy(eventBoxes =>
-                     eventBoxes.Item1.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division
-                        ? eventBoxes.Item1.indexFilter.param1
-                        : eventBoxes.Item1.indexFilter.param0)
+         .OrderByDescending(eventBox =>
+            eventBox.Item1.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division
+               ? eventBox.Item1.indexFilter.param0
+               : eventBox.Item1.indexFilter.param1)
+         .ThenBy(eventBox =>
+            eventBox.Item1.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division
+               ? eventBox.Item1.indexFilter.param1
+               : eventBox.Item1.indexFilter.param0)
          .ToList();
 
       _eventBoxGroupId = eventBoxGroupId;
