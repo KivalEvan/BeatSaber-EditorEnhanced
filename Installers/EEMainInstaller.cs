@@ -13,6 +13,7 @@ public class EEMainInstaller : Installer
       // Fixes
       Container.BindInterfacesTo<EditObjectViewPatches>().AsSingle();
       Container.BindInterfacesTo<LightColorDataViewPatches>().AsSingle();
+      Container.BindInterfacesTo<FxEventBoxEditorDataPatches>().AsSingle();
 
       // Command
       Container.BindInterfacesTo<MoveEventBoxPatches>().AsSingle();

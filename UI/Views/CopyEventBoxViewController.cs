@@ -113,6 +113,6 @@ internal class CopyEventBoxViewController : IInitializable
    private void DuplicateEventBox()
    {
       _signalBus.Fire(
-         new DuplicateEventBoxSignal(_ebv._eventBoxView._eventBox, _copyEvent, _randomSeed, _increment));
+         new DuplicateEventBoxSignal(_ebv._eventBoxView._eventBox.id, _copyEvent, _randomSeed, _increment));
    }
 }
