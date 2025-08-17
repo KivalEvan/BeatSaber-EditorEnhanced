@@ -17,13 +17,20 @@ public class PasteEventBoxSignal
    public readonly EventBoxEditorData EventBoxEditorData;
    public readonly bool Increment;
    public readonly bool RandomSeed;
+   public readonly float Value;
 
-   public PasteEventBoxSignal(EventBoxEditorData eventBoxEditorData, bool copyEvent, bool randomSeed, bool increment)
+   public PasteEventBoxSignal(
+      EventBoxEditorData eventBoxEditorData,
+      bool copyEvent,
+      bool randomSeed,
+      bool increment,
+      float value)
    {
       EventBoxEditorData = eventBoxEditorData;
       CopyEvent = copyEvent;
       RandomSeed = randomSeed;
       Increment = increment;
+      Value = value;
    }
 }
 
@@ -67,7 +74,27 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
          _signal.CopyEvent
             ? newItem
                .Value.events
-               .Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d))
+               .Select(d =>
+               {
+                  var data = EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d);
+                  switch (data)
+                  {
+                     case LightColorBaseEditorData color:
+                        color.SetField("brightness", color.brightness + _signal.Value / 100f);
+                        break;
+                     case LightRotationBaseEditorData rotation:
+                        rotation.SetField("rotation", rotation.rotation + _signal.Value);
+                        break;
+                     case LightTranslationBaseEditorData translation:
+                        translation.SetField("translation", translation.translation + _signal.Value / 100f);
+                        break;
+                     case FloatFxBaseEditorData fx:
+                        fx.SetField("value", fx.value + _signal.Value / 100f);
+                        break;
+                  }
+
+                  return data;
+               })
                .ToList()
             : []);
 
@@ -80,7 +107,7 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
       }
 
       if (_signal.RandomSeed
-          && newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
+         && newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
          newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
 
       var eventBoxGroupId = _eventBoxGroupsState.eventBoxGroupContext.id;

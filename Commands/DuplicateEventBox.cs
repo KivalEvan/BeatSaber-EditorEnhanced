@@ -16,17 +16,20 @@ public class DuplicateEventBoxSignal
    public readonly bool CopyEvent;
    public readonly bool Increment;
    public readonly bool RandomSeed;
+   public readonly float Value;
 
    public DuplicateEventBoxSignal(
       BeatmapEditorObjectId eventBoxId,
       bool copyEvent,
       bool randomSeed,
-      bool increment)
+      bool increment,
+      float value)
    {
       EventBoxId = eventBoxId;
       CopyEvent = copyEvent;
       RandomSeed = randomSeed;
       Increment = increment;
+      Value = value;
    }
 }
 
@@ -72,14 +75,34 @@ public class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
       }
 
       if (_signal.RandomSeed
-          && newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
+         && newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
          newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
 
       _newEventBox = (newEventBox,
          _signal.CopyEvent
             ? _beatmapEventBoxGroupsDataModel
                .GetBaseEventsListByEventBoxId(_signal.EventBoxId)
-               .Select(d => EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d))
+               .Select(d =>
+               {
+                  var data = EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d);
+                  switch (data)
+                  {
+                     case LightColorBaseEditorData color:
+                        color.SetField("brightness", color.brightness + _signal.Value / 100f);
+                        break;
+                     case LightRotationBaseEditorData rotation:
+                        rotation.SetField("rotation", rotation.rotation + _signal.Value);
+                        break;
+                     case LightTranslationBaseEditorData translation:
+                        translation.SetField("translation", translation.translation + _signal.Value / 100f);
+                        break;
+                     case FloatFxBaseEditorData fx:
+                        fx.SetField("value", fx.value + _signal.Value / 100f);
+                        break;
+                  }
+
+                  return data;
+               })
                .ToList()
             : []);
       shouldAddToHistory = true;

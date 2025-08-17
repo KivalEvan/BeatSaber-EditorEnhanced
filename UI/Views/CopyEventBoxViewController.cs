@@ -19,6 +19,8 @@ internal class CopyEventBoxViewController : IInitializable
    private EventBoxesView _ebv;
    private bool _increment;
    private bool _randomSeed;
+   private bool _addValue;
+   private float _value;
 
    public CopyEventBoxViewController(
       SignalBus signalBus,
@@ -59,6 +61,13 @@ internal class CopyEventBoxViewController : IInitializable
          .Checkbox.Instantiate()
          .SetSize(28)
          .SetFontSize(16);
+      var inputFloatTag = _uiBuilder
+         .InputFloat.Instantiate()
+         .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
+         .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
+         .SetValidatorType(FloatInputFieldValidator.ValidatorType.None)
+         .SetPreferredWidth(80)
+         .SetPadding(new RectOffset(2, 2, 2, 2));
 
       var container = stackTag.Create(target.transform);
       container.transform.SetAsFirstSibling();
@@ -98,6 +107,16 @@ internal class CopyEventBoxViewController : IInitializable
          .SetBool(_increment)
          .SetOnValueChange(val => _increment = val)
          .Create(layout.transform);
+      layout = horizontalTag.Create(container.transform);
+      checkboxTag
+         .SetText("Add Value")
+         .SetBool(_addValue)
+         .SetOnValueChange(val => _addValue = val)
+         .Create(layout.transform);
+      inputFloatTag
+         .SetValue(_value)
+         .SetOnValueChange(val => _value = val)
+         .Create(layout.transform);
    }
 
    private void CopyEventBox()
@@ -107,12 +126,23 @@ internal class CopyEventBoxViewController : IInitializable
 
    private void PasteEventBox()
    {
-      _signalBus.Fire(new PasteEventBoxSignal(_ebv._eventBoxView._eventBox, _copyEvent, _randomSeed, _increment));
+      _signalBus.Fire(
+         new PasteEventBoxSignal(
+            _ebv._eventBoxView._eventBox,
+            _copyEvent,
+            _randomSeed,
+            _increment,
+            _addValue ? _value : 0f));
    }
 
    private void DuplicateEventBox()
    {
       _signalBus.Fire(
-         new DuplicateEventBoxSignal(_ebv._eventBoxView._eventBox.id, _copyEvent, _randomSeed, _increment));
+         new DuplicateEventBoxSignal(
+            _ebv._eventBoxView._eventBox.id,
+            _copyEvent,
+            _randomSeed,
+            _increment,
+            _addValue ? _value : 0f));
    }
 }
