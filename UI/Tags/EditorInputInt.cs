@@ -1,32 +1,39 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
+using EditorEnhanced.UI.Components;
 using EditorEnhanced.UI.Interfaces;
 using TMPro;
 using UnityEngine;
+using Zenject;
 
 namespace EditorEnhanced.UI.Tags;
 
 public class EditorInputIntBuilder : IEditorBuilder<EditorInputIntTag>
 {
    private readonly EditBeatmapViewController _ebvc;
+   private readonly DiContainer _container;
 
-   public EditorInputIntBuilder(EditBeatmapViewController ebvc)
+   public EditorInputIntBuilder(EditBeatmapViewController ebvc, DiContainer container)
    {
       _ebvc = ebvc;
+      _container = container;
    }
 
    public EditorInputIntTag Instantiate()
    {
-      return new EditorInputIntTag(_ebvc);
+      return new EditorInputIntTag(_ebvc, _container);
    }
 }
 
 public class EditorInputIntTag : EditorInputTag<int>
 {
-   public EditorInputIntTag(EditBeatmapViewController ebvc)
+   private readonly DiContainer _container;
+   
+   public EditorInputIntTag(EditBeatmapViewController ebvc, DiContainer container)
    {
       _ebvc = ebvc;
+      _container = container;
    }
 
    public override string Name { get; set; } = "EEEditorInputInt";
@@ -50,6 +57,8 @@ public class EditorInputIntTag : EditorInputTag<int>
       if (Value != null) validator.SetValueWithoutNotify((int)Value, false);
       OnValueChange.ForEach(ovc => { validator.onInputValidated += ovc; });
 
+      _container.InstantiateComponent<ScrollableInputInt>(go);
+      
       go.SetActive(true);
       return go;
    }

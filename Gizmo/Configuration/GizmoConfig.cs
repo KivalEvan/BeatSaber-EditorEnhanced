@@ -27,6 +27,8 @@ public class GizmoConfig
    public virtual float SizeTranslation { get; set; } = 2.5f;
    public virtual float SizeRotation { get; set; } = 2.5f;
 
+   public virtual int ColorIdSkip { get; set; } = 1;
+   public virtual int ColorGradientSkip { get; set; } = 1;
    public virtual Color DefaultColor { get; set; } = new(1f, 1f, 1f);
    public virtual Color HighlightColor { get; set; } = new(0f, 1f, 1f);
 }

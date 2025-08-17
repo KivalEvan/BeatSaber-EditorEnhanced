@@ -187,22 +187,30 @@ internal class GizmoManager : IInitializable, IDisposable
       bool mirror,
       LightGroupSubsystem subsystemContext)
    {
+      var counter = new Dictionary<int, int>();
       var onlyUnique = list.Select(d => d.AxisBoxIndex).ToHashSet().Count == 1;
 
       var highlighterMap = new Dictionary<int, GizmoHighlightController>();
       foreach (var data in list)
       {
-         var idx = data.Index;
+         counter.TryAdd(data.GlobalBoxIndex, 0);
+         var idx = counter[data.GlobalBoxIndex];
+         counter[data.GlobalBoxIndex]++;
+         
          var globalBoxIdx = data.GlobalBoxIndex;
          var axisBoxIdx = data.AxisBoxIndex;
          var eventBoxContext = data.EventBoxContext;
          var distributed = data.Distributed;
          var transform = data.Transform;
 
-         if (!onlyUnique) axisBoxIdx += 1;
-         var colorIdx = _config.Gizmo.MulticolorId
-            ? ColorAssignment.GetColorIndexEventBox(axisBoxIdx, idx, distributed)
-            : ColorAssignment.GetColorIndexEventBox(0);
+         var colorIdx = onlyUnique && !distributed
+            ? ColorAssignment.WhiteIndex
+            : _config.Gizmo.MulticolorId
+               ? ColorAssignment.GetColorIndexEventBox(
+                  axisBoxIdx * _config.Gizmo.ColorIdSkip,
+                  idx * _config.Gizmo.ColorGradientSkip,
+                  distributed)
+               : ColorAssignment.WhiteIndex;
 
          if (!highlighterMap.ContainsKey(globalBoxIdx))
          {
@@ -518,7 +526,6 @@ internal class GizmoManager : IInitializable, IDisposable
             .Select(item =>
             {
                var data = item.Value;
-               data.Index = item.Key;
                data.Transform = l.targets.Select(t => t.transform).ElementAtOrDefault(item.Key);
                return data;
             })

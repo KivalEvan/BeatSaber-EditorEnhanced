@@ -33,6 +33,10 @@ internal class ConfigurationViewController : IInitializable
    private GameObject _sizeRotationSlider;
    private GameObject _sizeTranslationInput;
    private GameObject _sizeTranslationSlider;
+   private GameObject _colorIdInput;
+   private GameObject _colorIdSlider;
+   private GameObject _colorGradientInput;
+   private GameObject _colorGradientSlider;
 
    public ConfigurationViewController(
       SignalBus signalBus,
@@ -257,22 +261,43 @@ internal class ConfigurationViewController : IInitializable
          .SetOnValueChange(HandleGizmoSizeTranslation)
          .Create(layout.transform);
 
-      // layout = horizontalTag.Create(container.transform);
-      // textTag
-      //     .SetText("COLOR")
-      //     .SetFontSize(20f)
-      //     .SetFontWeight(FontWeight.Bold)
-      //     .Create(container.transform);
-      // layout = horizontalTag.Create(container.transform);
-      // textTag
-      //     .SetText("Base")
-      //     .SetFontSize(16f)
-      //     .SetFontWeight(FontWeight.Regular)
-      //     .Create(layout.transform);
-      // layout = horizontalTag.Create(container.transform);
-      // textTag
-      //     .SetText("Highlight")
-      //     .Create(layout.transform);
+      layout = horizontalTag.Create(container.transform);
+      textTag
+         .SetText("COLOR")
+         .SetFontSize(20f)
+         .SetFontWeight(FontWeight.Bold)
+         .Create(container.transform);
+      layout = horizontalTag.Create(container.transform);
+      textTag
+         .SetText("ID Skip")
+         .SetFontSize(16f)
+         .SetFontWeight(FontWeight.Regular)
+         .Create(layout.transform);
+      _colorIdSlider = sliderTag
+         .SetValue(_config.Gizmo.ColorIdSkip)
+         .SetMinValue(-8)
+         .SetMaxValue(8)
+         .SetWholeNumber(true)
+         .SetOnValueChange(HandleGizmoColorIdSkip)
+         .Create(layout.transform);
+      _colorIdInput = inputFloatTag
+         .SetValue(_config.Gizmo.ColorIdSkip)
+         .SetMinValue(-8)
+         .SetMaxValue(8)
+         .SetOnValueChange(HandleGizmoColorIdSkip)
+         .Create(layout.transform);
+      layout = horizontalTag.Create(container.transform);
+      textTag
+         .SetText("Gradient Skip")
+         .Create(layout.transform);
+      _colorGradientSlider = sliderTag
+         .SetValue(_config.Gizmo.ColorGradientSkip)
+         .SetOnValueChange(HandleGizmoColorGradientSkip)
+         .Create(layout.transform);
+      _colorGradientInput = inputFloatTag
+         .SetValue(_config.Gizmo.ColorGradientSkip)
+         .SetOnValueChange(HandleGizmoColorGradientSkip)
+         .Create(layout.transform);
 
       container = stackTag.Create(mainContainer.transform);
       Object.Instantiate(
@@ -512,5 +537,27 @@ internal class ConfigurationViewController : IInitializable
          .GetComponent<FloatInputFieldValidator>()
          .SetValueWithoutNotify(_config.Gizmo.SizeTranslation, true);
       _signalBus.Fire<GizmoConfigSizeTranslationUpdateSignal>();
+   }
+
+   private void HandleGizmoColorIdSkip(float value)
+   {
+      _config.Gizmo.ColorIdSkip =
+         (int)Math.Clamp(Mathf.Round(value), -8, 8);
+      _colorIdSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.ColorIdSkip);
+      _colorIdInput
+         .GetComponent<FloatInputFieldValidator>()
+         .SetValueWithoutNotify(_config.Gizmo.ColorIdSkip, true);
+      _signalBus.Fire<GizmoRefreshSignal>();
+   }
+
+   private void HandleGizmoColorGradientSkip(float value)
+   {
+      _config.Gizmo.ColorGradientSkip =
+         (int)Math.Clamp(Mathf.Round(value), -8, 8);
+      _colorGradientSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.ColorGradientSkip);
+      _colorGradientInput
+         .GetComponent<FloatInputFieldValidator>()
+         .SetValueWithoutNotify(_config.Gizmo.ColorGradientSkip, true);
+      _signalBus.Fire<GizmoRefreshSignal>();
    }
 }

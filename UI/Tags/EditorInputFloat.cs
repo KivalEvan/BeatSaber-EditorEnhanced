@@ -1,32 +1,39 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
+using EditorEnhanced.UI.Components;
 using EditorEnhanced.UI.Interfaces;
 using TMPro;
 using UnityEngine;
+using Zenject;
 
 namespace EditorEnhanced.UI.Tags;
 
 public class EditorInputFloatBuilder : IEditorBuilder<EditorInputFloatTag>
 {
    private readonly EditBeatmapViewController _ebvc;
+   private readonly DiContainer _container;
 
-   public EditorInputFloatBuilder(EditBeatmapViewController ebvc)
+   public EditorInputFloatBuilder(EditBeatmapViewController ebvc, DiContainer container)
    {
       _ebvc = ebvc;
+      _container = container;
    }
 
    public EditorInputFloatTag Instantiate()
    {
-      return new EditorInputFloatTag(_ebvc);
+      return new EditorInputFloatTag(_ebvc, _container);
    }
 }
 
 public class EditorInputFloatTag : EditorInputTag<float>
 {
-   public EditorInputFloatTag(EditBeatmapViewController ebvc)
+   private readonly DiContainer _container;
+
+   public EditorInputFloatTag(EditBeatmapViewController ebvc, DiContainer container)
    {
       _ebvc = ebvc;
+      _container = container;
    }
 
    public override string Name { get; set; } = "EEEditorInputFloat";
@@ -49,6 +56,8 @@ public class EditorInputFloatTag : EditorInputTag<float>
       if (ValidatorType != null) validator._validatorType = (FloatInputFieldValidator.ValidatorType)ValidatorType;
       if (Value != null) validator.SetValueWithoutNotify((float)Value, false);
       OnValueChange.ForEach(ovc => { validator.onInputValidated += ovc; });
+
+      _container.InstantiateComponent<ScrollableInputFloat>(go);
 
       go.SetActive(true);
       return go;

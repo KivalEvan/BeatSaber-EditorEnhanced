@@ -15,13 +15,16 @@ public static class ColorAssignment
    public const int BlueIndex = HueRange * 4 / 6;
    public const int MagentaIndex = HueRange * 5 / 6;
 
+   private static int Modulo(int x, int m)
+   {
+      return (x % m + m) % m;
+   }
+
    public static int GetColorIndexEventBox(int eventBoxIdx, int idx = 0, bool distributed = false)
    {
       return distributed
-         ? HueRange / 2 * eventBoxIdx + idx * 2 % HueRange
-         : eventBoxIdx == 0
-            ? WhiteIndex
-            : (eventBoxIdx - 1) * HueRange / 12 % HueRange;
+         ? Modulo(eventBoxIdx * HueRange / 12 + idx * 2, HueRange)
+         : Modulo(eventBoxIdx * HueRange / 12, HueRange);
    }
 
    public static Color GetColorFromIndex(int index)
