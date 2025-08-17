@@ -5,24 +5,27 @@ For level designer, by level designer, to improve your workflow with various QOL
 ## Features
 
 * v3 Light Gizmo
-    * View gizmo for color, rotation, translation and FX with their orientation
+    * View gizmo for colour, rotation, translation and FX with their orientation
     * Highlight current event box lane and selected gizmo when hovered on lane
     * Draggable translation gizmo
-        * Creates event based on event box context, cursor time and event box state
+        * Create event based on event box context, cursor time and event box state
     * Clickable to select event box
 * Better Event Box Reordering
     * Drag the tab to reorder them than using button
     * Lane gizmo can also be dragged to reorder
 * Sort Event Box
-* Event Box Copy & Duplicate
+* Improved Event Box Duplicate & Copy
+    * Ability to copy events, randomise seed, increment ID and add value to existing events.
+* Simple Offset Button for Beat Distribution
 * Random Seed Clipboard
-* Randomise Seed On Paste
-* Unclamped Value
+* Randomise Seed on Paste
+* Unclamped Input Value
     * Basic event float value and distribution value no longer have arbitrary clamp
-    * Certain input like negative value and index filter field require clamp to prevent issue
+    * Certain inputs like negative value and index filter field require clamp to prevent issue
 * Better Scrollable Input Value
 * Simple Math Evaluation on Field Input
-* Built-in auto-light for v2 (Lolighter)
+* Built-in Autolight for v2 (Lolighter)
+* Custom Precision Value
 * Couple of bug fixes
 
 ## Installation
@@ -39,7 +42,7 @@ Simply place `EditorEnhanced.dll` onto `Plugins` folder.
 * [ ] Mass Value Shift
 * [ ] Hide translation event (similar to extension but for hiding them to shadow realm)
 * [ ] Focused v3 light view (hides every other v3 light but selected)
-* [ ] Customisable gizmo view
+* [ ] Fix rotation drag gizmo
 * [ ] Error checker port
 * [ ] Selector plugin port
 * [ ] Redesign UI (for the mod, not the base game)
@@ -47,4 +50,5 @@ Simply place `EditorEnhanced.dll` onto `Plugins` folder.
 
 ## Known Issue
 
-* UI do not have audio feedback
+* Drag rotation gizmo does not work as intended
+* Certain UI does not have audio feedback
