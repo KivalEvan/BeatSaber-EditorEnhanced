@@ -12,4 +12,5 @@ public interface IUIText
    bool? RichText { get; set; }
    float? FontSize { get; set; }
    FontWeight? FontWeight { get; set; }
+   float? CharacterSpacing { get; set; }
 }

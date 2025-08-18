@@ -33,6 +33,7 @@ internal class GizmoManager : IInitializable, IDisposable
    private readonly EditBeatmapViewController _ebvc;
    private readonly GizmoAssets _gizmoAssets;
    private readonly SignalBus _signalBus;
+   private readonly DiContainer _container;
    private readonly UIBuilder _uiBuilder;
    private LightColorGroupEffectManager _colorManager;
    private FloatFxGroupEffectManager _fxManager;
@@ -49,6 +50,7 @@ internal class GizmoManager : IInitializable, IDisposable
       BeatmapState beatmapState,
       EventBoxGroupsState ebgs,
       BeatmapEventBoxGroupsDataModel bebgdm,
+      DiContainer container,
       UIBuilder uiBuilder,
       EditBeatmapViewController ebvc)
    {
@@ -58,8 +60,9 @@ internal class GizmoManager : IInitializable, IDisposable
       _config = config;
       _ebgs = ebgs;
       _bebgdm = bebgdm;
-      _uiBuilder = uiBuilder;
       _ebvc = ebvc;
+      _container = container;
+      _uiBuilder = uiBuilder;
    }
 
    public void Dispose()
@@ -103,12 +106,13 @@ internal class GizmoManager : IInitializable, IDisposable
          .SetAnchorMax(new Vector2(0f, 1f))
          .Create(_ebvc.transform);
       go.SetActive(false);
-      _gizmoInfo = go.AddComponent<GizmoInfo>();
+      _gizmoInfo = _container.InstantiateComponent<GizmoInfo>(go);
       _uiBuilder
          .Text.Instantiate()
          .SetColor(Color.white)
          .SetTextAlignment(TextAlignmentOptions.TopLeft)
          .SetFontSize(12f)
+         .SetCharacterSpacing(16f)
          .Create(go.transform);
 
       _colorManager = Object.FindAnyObjectByType<LightColorGroupEffectManager>();
@@ -159,7 +163,6 @@ internal class GizmoManager : IInitializable, IDisposable
             break;
          case EventBoxGroupType.Translation:
             AddTranslationGizmo();
-            if (_config.Gizmo.ShowInfo) _gizmoInfo.gameObject.SetActive(true);
             break;
          case EventBoxGroupType.FloatFx:
             AddFxGizmo();
@@ -168,6 +171,7 @@ internal class GizmoManager : IInitializable, IDisposable
             throw new ArgumentOutOfRangeException();
       }
 
+      _gizmoInfo.gameObject.SetActive(_config.Gizmo.ShowInfo);
       _gizmoDragInputSystem.gameObject.SetActive(true);
    }
 
@@ -175,8 +179,8 @@ internal class GizmoManager : IInitializable, IDisposable
    {
       foreach (var gizmo in _activeGizmos) gizmo.SetActive(false);
       _activeGizmos.Clear();
-      _gizmoInfo.Clear();
       _gizmoInfo.gameObject.SetActive(false);
+      _gizmoInfo.Clear();
       _gizmoDragInputSystem.gameObject.SetActive(false);
    }
 
@@ -196,7 +200,7 @@ internal class GizmoManager : IInitializable, IDisposable
          counter.TryAdd(data.GlobalBoxIndex, 0);
          var idx = counter[data.GlobalBoxIndex];
          counter[data.GlobalBoxIndex]++;
-         
+
          var globalBoxIdx = data.GlobalBoxIndex;
          var axisBoxIdx = data.AxisBoxIndex;
          var eventBoxContext = data.EventBoxContext;
@@ -307,14 +311,14 @@ internal class GizmoManager : IInitializable, IDisposable
          .Cast<LightColorEventBoxEditorData>();
 
       foreach (var l in _colorManager.lightGroups
-                  .Where(x => x.groupId == _ebgs.eventBoxGroupContext.groupId))
+         .Where(x => x.groupId == _ebgs.eventBoxGroupContext.groupId))
       {
          var markId = new Dictionary<int, LightTransformData>();
          foreach (var item in ebg.Select((eb, boxIdx) =>
-                                            (boxIdx, eb, eb.beatDistributionParam > 0,
-                                               IndexFilterHelpers.GetIndexFilterRange(
-                                                  eb.indexFilter,
-                                                  l.numberOfElements))))
+            (boxIdx, eb, eb.beatDistributionParam > 0,
+               IndexFilterHelpers.GetIndexFilterRange(
+                  eb.indexFilter,
+                  l.numberOfElements))))
          {
             var (boxIdx, eventBox, distributed, indexFilterIds) = item;
             foreach (var idx in indexFilterIds.Where(i => !markId.ContainsKey(i)))
@@ -329,20 +333,20 @@ internal class GizmoManager : IInitializable, IDisposable
 
          var list = new List<LightTransformData>();
          foreach (var item in markId
-                     .Select(i =>
-                     {
-                        return (i.Value, _colorManager
-                           ._lightColorGroupEffects
-                           .FirstOrDefault(x => x._lightId == l.startLightId + i.Key)
-                           ?._lightManager._lights.ElementAt(l.startLightId + i.Key));
-                     })
-                     .Where(item => item.Item2 != null)
-                     .Select((item, i) =>
-                     {
-                        var data = item.Value;
-                        data.Index = i;
-                        return (data, LightWithIds: item.Item2);
-                     }))
+            .Select(i =>
+            {
+               return (i.Value, _colorManager
+                  ._lightColorGroupEffects
+                  .FirstOrDefault(x => x._lightId == l.startLightId + i.Key)
+                  ?._lightManager._lights.ElementAt(l.startLightId + i.Key));
+            })
+            .Where(item => item.Item2 != null)
+            .Select((item, i) =>
+            {
+               var data = item.Value;
+               data.Index = i;
+               return (data, LightWithIds: item.Item2);
+            }))
          foreach (var lightWithId in item.LightWithIds)
             switch (lightWithId)
             {
@@ -365,7 +369,7 @@ internal class GizmoManager : IInitializable, IDisposable
          .Cast<LightRotationEventBoxEditorData>();
 
       foreach (var l in _rotationManager._lightRotationGroups.Where(x =>
-                                                                       x.groupId == _ebgs.eventBoxGroupContext.groupId))
+         x.groupId == _ebgs.eventBoxGroupContext.groupId))
       {
          var axisCount = new Dictionary<LightAxis, int>
             { { LightAxis.X, 0 }, { LightAxis.Y, 0 }, { LightAxis.Z, 0 } };
@@ -373,10 +377,10 @@ internal class GizmoManager : IInitializable, IDisposable
          var markYIdx = new Dictionary<int, LightTransformData>();
          var markZIdx = new Dictionary<int, LightTransformData>();
          foreach (var item in ebg.Select((eb, boxIdx) =>
-                                            (boxIdx, eb, eb.beatDistributionParam > 0,
-                                               IndexFilterHelpers.GetIndexFilterRange(
-                                                  eb.indexFilter,
-                                                  l.lightGroup.numberOfElements), eb.axis)))
+            (boxIdx, eb, eb.beatDistributionParam > 0,
+               IndexFilterHelpers.GetIndexFilterRange(
+                  eb.indexFilter,
+                  l.lightGroup.numberOfElements), eb.axis)))
          {
             var (boxIdx, eventBox, distributed, indexFilterIds, axis) = item;
             var putTo = axis switch
@@ -433,8 +437,8 @@ internal class GizmoManager : IInitializable, IDisposable
          .Cast<LightTranslationEventBoxEditorData>();
 
       foreach (var l in _translationManager._lightTranslationGroups.Where(x =>
-                                                                             x.groupId
-                                                                             == _ebgs.eventBoxGroupContext.groupId))
+         x.groupId
+         == _ebgs.eventBoxGroupContext.groupId))
       {
          var axisCount = new Dictionary<LightAxis, int>
             { { LightAxis.X, 0 }, { LightAxis.Y, 0 }, { LightAxis.Z, 0 } };
@@ -442,10 +446,10 @@ internal class GizmoManager : IInitializable, IDisposable
          var markYIdx = new Dictionary<int, LightTransformData>();
          var markZIdx = new Dictionary<int, LightTransformData>();
          foreach (var item in ebg.Select((eb, boxIdx) =>
-                                            (boxIdx, eb, eb.beatDistributionParam > 0,
-                                               IndexFilterHelpers.GetIndexFilterRange(
-                                                  eb.indexFilter,
-                                                  l.lightGroup.numberOfElements), eb.axis)))
+            (boxIdx, eb, eb.beatDistributionParam > 0,
+               IndexFilterHelpers.GetIndexFilterRange(
+                  eb.indexFilter,
+                  l.lightGroup.numberOfElements), eb.axis)))
          {
             var (boxIdx, eventBox, distributed, indexFilterIds, axis) = item;
             var putTo = axis switch
@@ -502,14 +506,14 @@ internal class GizmoManager : IInitializable, IDisposable
          .Cast<FxEventBoxEditorData>();
 
       foreach (var l in _fxManager._floatFxGroups.Where(x =>
-                                                           x.groupId == _ebgs.eventBoxGroupContext.groupId))
+         x.groupId == _ebgs.eventBoxGroupContext.groupId))
       {
          var markId = new Dictionary<int, LightTransformData>();
          foreach (var item in ebg.Select((eb, boxIdx) =>
-                                            (boxIdx, eb, eb.beatDistributionParam > 0,
-                                               IndexFilterHelpers.GetIndexFilterRange(
-                                                  eb.indexFilter,
-                                                  l.lightGroup.numberOfElements))))
+            (boxIdx, eb, eb.beatDistributionParam > 0,
+               IndexFilterHelpers.GetIndexFilterRange(
+                  eb.indexFilter,
+                  l.lightGroup.numberOfElements))))
          {
             var (boxIdx, eventBox, distributed, indexFilterIds) = item;
             foreach (var idx in indexFilterIds.Where(i => !markId.ContainsKey(i)))

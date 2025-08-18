@@ -123,6 +123,7 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUILayout
    public bool? RichText { get; set; }
    public float? FontSize { get; set; }
    public FontWeight? FontWeight { get; set; }
+   public float? CharacterSpacing { get; set; }
 
    public EditorButtonTag SetSize(Vector2 size)
    {

@@ -102,6 +102,7 @@ public class EditorCheckboxTag : IEditorTag, IUIToggle, IUIText
    public bool? RichText { get; set; }
    public float? FontSize { get; set; }
    public FontWeight? FontWeight { get; set; }
+   public float? CharacterSpacing { get; set; }
 
    [CanBeNull] public List<Action<bool>> OnValueChange { get; set; } = [];
    public bool? Bool { get; set; }

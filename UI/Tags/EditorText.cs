@@ -55,6 +55,7 @@ public class EditorTextTag : IEditorTag, IUIText, IUIRect
       ctmp.text = Text ?? "Default Text";
       ctmp.fontWeight = FontWeight ?? ctmp.fontWeight;
       ctmp.alignment = TextAlignment ?? ctmp.alignment;
+      ctmp.characterSpacing = CharacterSpacing ?? ctmp.characterSpacing;
 
       ctmp.rectTransform.anchorMin = AnchorMin ?? new Vector2(0.5f, 0.5f);
       ctmp.rectTransform.anchorMax = AnchorMax ?? new Vector2(0.5f, 0.5f);
@@ -78,4 +79,5 @@ public class EditorTextTag : IEditorTag, IUIText, IUIRect
    public bool? RichText { get; set; }
    public float? FontSize { get; set; }
    public FontWeight? FontWeight { get; set; }
+   public float? CharacterSpacing { get; set; }
 }

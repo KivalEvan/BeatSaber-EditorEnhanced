@@ -1,13 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BeatmapEditor3D.DataModels;
+using BeatSaber.TrackDefinitions.DataModels;
 using HMUI;
 using UnityEngine;
+using Zenject;
 
 namespace EditorEnhanced.Gizmo;
 
 public class GizmoInfo : MonoBehaviour
 {
+   [Inject] private readonly EventBoxGroupsState _ebgs;
    private List<LightTransformData> data = [];
    private CurvedTextMeshPro tmp;
 
@@ -34,7 +39,21 @@ public class GizmoInfo : MonoBehaviour
    {
       var sb = new StringBuilder();
       for (var i = 0; i < data.Count; i++)
-         sb.AppendLine($"[{data[i].GlobalBoxIndex}::{data[i].Index}] {data[i].Transform.position}");
+      {
+         switch (_ebgs.eventBoxGroupContext.type)
+         {
+            case EventBoxGroupType.Rotation:
+               sb.AppendLine($"[{data[i].GlobalBoxIndex}::{data[i].Index}] {data[i].Transform.eulerAngles}");
+               break;
+            case EventBoxGroupType.Translation:
+               sb.AppendLine($"[{data[i].GlobalBoxIndex}::{data[i].Index}] {data[i].Transform.position}");
+               break;
+            case EventBoxGroupType.Color:
+            case EventBoxGroupType.FloatFx:
+            default:
+               break;
+         }
+      }
 
       tmp.SetText(sb.ToString());
    }

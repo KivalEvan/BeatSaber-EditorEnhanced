@@ -41,4 +41,10 @@ public static class UITextExtensions
       self.FontWeight = value;
       return self;
    }
+
+   public static T SetCharacterSpacing<T>(this T self, float value) where T : IUIText
+   {
+      self.CharacterSpacing = value;
+      return self;
+   }
 }
