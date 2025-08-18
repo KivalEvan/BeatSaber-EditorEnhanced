@@ -68,14 +68,7 @@ internal class GizmoManager : IInitializable, IDisposable
    {
       _signalBus.TryUnsubscribe<BeatmapEditingModeSwitchedSignal>(HandleGizmoSignalWithSignal);
       _signalBus.TryUnsubscribe<EventBoxesUpdatedSignal>(HandleGizmoSignal);
-      _signalBus.TryUnsubscribe<ModifyEventBoxSignal>(HandleGizmoSignal);
-      _signalBus.TryUnsubscribe<InsertEventBoxSignal>(HandleGizmoSignal);
-      _signalBus.TryUnsubscribe<InsertEventBoxesForAllAxesSignal>(HandleGizmoSignal);
-      _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsSignal>(HandleGizmoSignal);
-      _signalBus.TryUnsubscribe<InsertEventBoxesForAllIdsAndAxisSignal>(HandleGizmoSignal);
-      _signalBus.TryUnsubscribe<DeleteEventBoxSignal>(HandleGizmoSignal);
-      _signalBus.TryUnsubscribe<SortAxisEventBoxGroupSignal>(HandleGizmoSignal);
-      _signalBus.TryUnsubscribe<SortIdEventBoxGroupSignal>(HandleGizmoSignal);
+      _signalBus.TryUnsubscribe<EventBoxModifiedSignal>(HandleGizmoSignal);
       _signalBus.TryUnsubscribe<GizmoRefreshSignal>(HandleGizmoSignal);
 
       Object.Destroy(_gizmoInfo);
@@ -124,14 +117,7 @@ internal class GizmoManager : IInitializable, IDisposable
 
       _signalBus.Subscribe<BeatmapEditingModeSwitchedSignal>(HandleGizmoSignalWithSignal);
       _signalBus.Subscribe<EventBoxesUpdatedSignal>(HandleGizmoSignal);
-      _signalBus.Subscribe<ModifyEventBoxSignal>(HandleGizmoSignal);
-      _signalBus.Subscribe<InsertEventBoxSignal>(HandleGizmoSignal);
-      _signalBus.Subscribe<InsertEventBoxesForAllAxesSignal>(HandleGizmoSignal);
-      _signalBus.Subscribe<InsertEventBoxesForAllIdsSignal>(HandleGizmoSignal);
-      _signalBus.Subscribe<InsertEventBoxesForAllIdsAndAxisSignal>(HandleGizmoSignal);
-      _signalBus.Subscribe<DeleteEventBoxSignal>(HandleGizmoSignal);
-      _signalBus.Subscribe<SortAxisEventBoxGroupSignal>(HandleGizmoSignal);
-      _signalBus.Subscribe<SortIdEventBoxGroupSignal>(HandleGizmoSignal);
+      _signalBus.Subscribe<EventBoxModifiedSignal>(HandleGizmoSignal);
       _signalBus.Subscribe<GizmoRefreshSignal>(HandleGizmoSignal);
    }
 

@@ -1,4 +1,5 @@
 using BeatmapEditor3D.Commands;
+using EditorEnhanced.Commands;
 using HMUI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -50,7 +51,7 @@ public class DragSwapSegmentCell : MonoBehaviour, IBeginDragHandler, IDragHandle
    public void OnEndDrag(PointerEventData eventData)
    {
       if (_newIndex != _currentCell.cellNumber)
-         _signalBus.Fire(new MoveEventBoxSignal(_currentCell.cellNumber, _newIndex));
+         _signalBus.Fire(new ReorderEventBoxSignal(_currentCell.cellNumber, _newIndex));
       else
          _rectTransform.anchoredPosition = _startPos;
 

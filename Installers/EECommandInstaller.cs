@@ -14,6 +14,7 @@ public class EECommandInstaller : Installer
       InstallCommands<SortAxisEventBoxGroupSignal, SortAxisEventBoxGroupCommand>();
       InstallCommands<SortIdEventBoxGroupSignal, SortIdEventBoxGroupCommand>();
       InstallCommands<DragGizmoLightTranslationEventBoxSignal, DragGizmoLightTranslationEventBoxCommand>();
+      InstallCommands<ReorderEventBoxSignal, ReorderEventBoxCommand>();
       InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>();
       InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>();
       InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>();
@@ -53,7 +54,7 @@ public class EECommandInstaller : Installer
       Container
          .BindSignal<TSignal>()
          .ToMethod<BeatmapEditorCommandRunnerSignalBinder>(binder =>
-                                                              binder.BindSignal<TSignal, TCommand>)
+            binder.BindSignal<TSignal, TCommand>)
          .FromResolve();
    }
 }
@@ -67,6 +68,7 @@ public class StupidCommandInitializer : IInitializable
       BindThatFact<SortAxisEventBoxGroupCommand>();
       BindThatFact<SortIdEventBoxGroupCommand>();
       BindThatFact<DragGizmoLightTranslationEventBoxCommand>();
+      BindThatFact<ReorderEventBoxCommand>();
       BindThatFact<CopyEventBoxCommand>();
       BindThatFact<PasteEventBoxCommand>();
       BindThatFact<DuplicateEventBoxCommand>();

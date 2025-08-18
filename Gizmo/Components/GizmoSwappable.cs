@@ -3,6 +3,7 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Views;
+using EditorEnhanced.Commands;
 using EditorEnhanced.Configuration;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -79,9 +80,9 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
    {
       if (!_config.Gizmo.Swappable && !IsDragging) return;
       if (_startIndex > _index)
-         _signalBus.Fire(new MoveEventBoxSignal(_startIndex, _index));
+         _signalBus.Fire(new ReorderEventBoxSignal(_startIndex, _index));
       else if (_startIndex < _index - 1)
-         _signalBus.Fire(new MoveEventBoxSignal(_startIndex, _index - 1));
+         _signalBus.Fire(new ReorderEventBoxSignal(_startIndex, _index - 1));
       else
       {
          _index = _startIndex;

@@ -13,7 +13,7 @@ public class DraggableEventBoxCell : IInitializable
    private readonly DiContainer _container;
    private readonly EditBeatmapViewController _ebvc;
 
-   public DraggableEventBoxCell(DiContainer container, SignalBus signalBus, EditBeatmapViewController ebvc)
+   public DraggableEventBoxCell(DiContainer container, EditBeatmapViewController ebvc)
    {
       _container = container;
       _ebvc = ebvc;
