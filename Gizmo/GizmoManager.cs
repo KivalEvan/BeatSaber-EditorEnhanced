@@ -10,7 +10,6 @@ using EditorEnhanced.Commands;
 using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo.Commands;
 using EditorEnhanced.Gizmo.Components;
-using EditorEnhanced.Helpers;
 using EditorEnhanced.UI;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.Utils;
@@ -191,18 +190,14 @@ internal class GizmoManager : IInitializable, IDisposable
       bool mirror,
       LightGroupSubsystem subsystemContext)
    {
-      var counter = new Dictionary<int, int>();
       var onlyUnique = list.Select(d => d.AxisBoxIndex).ToHashSet().Count == 1;
 
       var highlighterMap = new Dictionary<int, GizmoHighlightController>();
       foreach (var data in list)
       {
-         counter.TryAdd(data.GlobalBoxIndex, 0);
-         var idx = counter[data.GlobalBoxIndex];
-         counter[data.GlobalBoxIndex]++;
-
          var globalBoxIdx = data.GlobalBoxIndex;
          var axisBoxIdx = data.AxisBoxIndex;
+         var chunkIdx = data.ChunkIndex;
          var eventBoxContext = data.EventBoxContext;
          var distributed = data.Distributed;
          var transform = data.Transform;
@@ -211,8 +206,8 @@ internal class GizmoManager : IInitializable, IDisposable
             ? ColorAssignment.WhiteIndex
             : _config.Gizmo.MulticolorId
                ? ColorAssignment.GetColorIndexEventBox(
-                  axisBoxIdx * _config.Gizmo.ColorIdSkip,
-                  idx * _config.Gizmo.ColorGradientSkip,
+                  axisBoxIdx * _config.Gizmo.ColorIdStep,
+                  chunkIdx * _config.Gizmo.ColorGradientStep,
                   distributed)
                : ColorAssignment.WhiteIndex;
 
@@ -308,27 +303,33 @@ internal class GizmoManager : IInitializable, IDisposable
    {
       var ebg = _bebgdm
          .GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
-         .Cast<LightColorEventBoxEditorData>();
+         .Cast<LightColorEventBoxEditorData>()
+         .ToArray();
 
       foreach (var l in _colorManager.lightGroups
          .Where(x => x.groupId == _ebgs.eventBoxGroupContext.groupId))
       {
          var markId = new Dictionary<int, LightTransformData>();
-         foreach (var item in ebg.Select((eb, boxIdx) =>
-            (boxIdx, eb, eb.beatDistributionParam > 0,
-               IndexFilterHelpers.GetIndexFilterRange(
-                  eb.indexFilter,
-                  l.numberOfElements))))
+         foreach (var (boxIdx, eventBox, distributed, indexFilterIds)
+            in ebg.Select((eventBox, boxIdx) =>
+               (boxIdx, eventBox, eventBox.beatDistributionParam > 0,
+                  IndexFilterHelpers.GetIndexFilterRange(
+                     eventBox.indexFilter,
+                     l.numberOfElements))))
          {
-            var (boxIdx, eventBox, distributed, indexFilterIds) = item;
-            foreach (var idx in indexFilterIds.Where(i => !markId.ContainsKey(i)))
+            foreach (var (index, chunkIndex) in indexFilterIds.Where(element => !markId.ContainsKey(element.index)))
+            {
                markId.Add(
-                  idx,
+                  index,
                   new LightTransformData
                   {
-                     GlobalBoxIndex = boxIdx, AxisBoxIndex = boxIdx, EventBoxContext = eventBox,
+                     GlobalBoxIndex = boxIdx,
+                     AxisBoxIndex = boxIdx,
+                     ChunkIndex = chunkIndex,
+                     EventBoxContext = eventBox,
                      Distributed = distributed
                   });
+            }
          }
 
          var list = new List<LightTransformData>();
@@ -366,7 +367,8 @@ internal class GizmoManager : IInitializable, IDisposable
    {
       var ebg = _bebgdm
          .GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
-         .Cast<LightRotationEventBoxEditorData>();
+         .Cast<LightRotationEventBoxEditorData>()
+         .ToArray();
 
       foreach (var l in _rotationManager._lightRotationGroups.Where(x =>
          x.groupId == _ebgs.eventBoxGroupContext.groupId))
@@ -376,13 +378,13 @@ internal class GizmoManager : IInitializable, IDisposable
          var markXIdx = new Dictionary<int, LightTransformData>();
          var markYIdx = new Dictionary<int, LightTransformData>();
          var markZIdx = new Dictionary<int, LightTransformData>();
-         foreach (var item in ebg.Select((eb, boxIdx) =>
-            (boxIdx, eb, eb.beatDistributionParam > 0,
-               IndexFilterHelpers.GetIndexFilterRange(
-                  eb.indexFilter,
-                  l.lightGroup.numberOfElements), eb.axis)))
+         foreach (var (boxIdx, eventBox, distributed, indexFilterIds, axis)
+            in ebg.Select((eventBox, boxIdx) =>
+               (boxIdx, eventBox, eventBox.beatDistributionParam > 0,
+                  IndexFilterHelpers.GetIndexFilterRange(
+                     eventBox.indexFilter,
+                     l.lightGroup.numberOfElements), eventBox.axis)))
          {
-            var (boxIdx, eventBox, distributed, indexFilterIds, axis) = item;
             var putTo = axis switch
             {
                LightAxis.X => markXIdx,
@@ -390,14 +392,19 @@ internal class GizmoManager : IInitializable, IDisposable
                LightAxis.Z => markZIdx,
                _ => throw new ArgumentOutOfRangeException()
             };
-            foreach (var i in indexFilterIds.Where(i => !putTo.ContainsKey(i)))
+            foreach (var (index, chunkIndex) in indexFilterIds.Where(element => !putTo.ContainsKey(element.index)))
+            {
                putTo.Add(
-                  i,
+                  index,
                   new LightTransformData
                   {
-                     GlobalBoxIndex = boxIdx, AxisBoxIndex = axisCount[axis], EventBoxContext = eventBox,
+                     GlobalBoxIndex = boxIdx,
+                     AxisBoxIndex = axisCount[axis],
+                     ChunkIndex = chunkIndex,
+                     EventBoxContext = eventBox,
                      Distributed = distributed
                   });
+            }
 
             axisCount[axis]++;
          }
@@ -434,7 +441,8 @@ internal class GizmoManager : IInitializable, IDisposable
    {
       var ebg = _bebgdm
          .GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
-         .Cast<LightTranslationEventBoxEditorData>();
+         .Cast<LightTranslationEventBoxEditorData>()
+         .ToArray();
 
       foreach (var l in _translationManager._lightTranslationGroups.Where(x =>
          x.groupId
@@ -445,13 +453,13 @@ internal class GizmoManager : IInitializable, IDisposable
          var markXIdx = new Dictionary<int, LightTransformData>();
          var markYIdx = new Dictionary<int, LightTransformData>();
          var markZIdx = new Dictionary<int, LightTransformData>();
-         foreach (var item in ebg.Select((eb, boxIdx) =>
-            (boxIdx, eb, eb.beatDistributionParam > 0,
-               IndexFilterHelpers.GetIndexFilterRange(
-                  eb.indexFilter,
-                  l.lightGroup.numberOfElements), eb.axis)))
+         foreach (var (boxIdx, eventBox, distributed, indexFilterIds, axis)
+            in ebg.Select((eventBox, boxIdx) =>
+               (boxIdx, eventBox, eventBox.beatDistributionParam > 0,
+                  IndexFilterHelpers.GetIndexFilterRange(
+                     eventBox.indexFilter,
+                     l.lightGroup.numberOfElements), eventBox.axis)))
          {
-            var (boxIdx, eventBox, distributed, indexFilterIds, axis) = item;
             var putTo = axis switch
             {
                LightAxis.X => markXIdx,
@@ -459,14 +467,19 @@ internal class GizmoManager : IInitializable, IDisposable
                LightAxis.Z => markZIdx,
                _ => throw new ArgumentOutOfRangeException()
             };
-            foreach (var i in indexFilterIds.Where(i => !putTo.ContainsKey(i)))
+            foreach (var (index, chunkIndex) in indexFilterIds.Where(element => !putTo.ContainsKey(element.index)))
+            {
                putTo.Add(
-                  i,
+                  index,
                   new LightTransformData
                   {
-                     GlobalBoxIndex = boxIdx, AxisBoxIndex = axisCount[axis], EventBoxContext = eventBox,
+                     GlobalBoxIndex = boxIdx,
+                     AxisBoxIndex = axisCount[axis],
+                     ChunkIndex = chunkIndex,
+                     EventBoxContext = eventBox,
                      Distributed = distributed
                   });
+            }
 
             axisCount[axis]++;
          }
@@ -501,27 +514,31 @@ internal class GizmoManager : IInitializable, IDisposable
 
    private void AddFxGizmo()
    {
-      var ebg = _bebgdm
+      var eventBoxGroup = _bebgdm
          .GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id)
-         .Cast<FxEventBoxEditorData>();
+         .Cast<FxEventBoxEditorData>()
+         .ToArray();
 
       foreach (var l in _fxManager._floatFxGroups.Where(x =>
          x.groupId == _ebgs.eventBoxGroupContext.groupId))
       {
          var markId = new Dictionary<int, LightTransformData>();
-         foreach (var item in ebg.Select((eb, boxIdx) =>
-            (boxIdx, eb, eb.beatDistributionParam > 0,
-               IndexFilterHelpers.GetIndexFilterRange(
-                  eb.indexFilter,
-                  l.lightGroup.numberOfElements))))
+         foreach (var (boxIdx, eventBox, distributed, indexFilterIds)
+            in eventBoxGroup.Select((eventBox, boxIdx) =>
+               (boxIdx, eventBox, eventBox.beatDistributionParam > 0,
+                  IndexFilterHelpers.GetIndexFilterRange(
+                     eventBox.indexFilter,
+                     l.lightGroup.numberOfElements))))
          {
-            var (boxIdx, eventBox, distributed, indexFilterIds) = item;
-            foreach (var idx in indexFilterIds.Where(i => !markId.ContainsKey(i)))
+            foreach (var (index, chunkIndex) in indexFilterIds.Where(element => !markId.ContainsKey(element.index)))
                markId.Add(
-                  idx,
+                  index,
                   new LightTransformData
                   {
-                     GlobalBoxIndex = boxIdx, AxisBoxIndex = boxIdx, EventBoxContext = eventBox,
+                     GlobalBoxIndex = boxIdx,
+                     AxisBoxIndex = boxIdx,
+                     ChunkIndex = chunkIndex,
+                     EventBoxContext = eventBox,
                      Distributed = distributed
                   });
          }
@@ -542,6 +559,7 @@ internal class GizmoManager : IInitializable, IDisposable
 public record struct LightTransformData
 {
    public int AxisBoxIndex;
+   public int ChunkIndex;
    public bool Distributed;
    public EventBoxEditorData EventBoxContext;
    public int GlobalBoxIndex;

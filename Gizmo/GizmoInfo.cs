@@ -33,6 +33,7 @@ public class GizmoInfo : MonoBehaviour
    private void OnDisable()
    {
       CancelInvoke(nameof(UpdateInfo));
+      tmp.SetText("");
    }
 
    private void UpdateInfo()
