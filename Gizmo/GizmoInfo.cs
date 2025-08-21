@@ -12,7 +12,7 @@ namespace EditorEnhanced.Gizmo;
 
 public class GizmoInfo : MonoBehaviour
 {
-   [Inject] private readonly EventBoxGroupsState _ebgs;
+   [Inject] private readonly EventBoxGroupsState _ebgs = null!;
    private List<LightTransformData> data = [];
    private CurvedTextMeshPro tmp;
 

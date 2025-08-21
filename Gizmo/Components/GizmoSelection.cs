@@ -9,10 +9,10 @@ namespace EditorEnhanced.Gizmo.Components;
 
 public class GizmoSelection : MonoBehaviour
 {
-   [Inject] private readonly BeatmapEventBoxGroupsDataModel _bebgdm;
-   [Inject] private readonly EventBoxGroupsState _ebgs;
-   [Inject] private readonly EditBeatmapViewController _ebvc;
-   [Inject] private readonly SignalBus _signalBus;
+   [Inject] private readonly BeatmapEventBoxGroupsDataModel _bebgdm = null!;
+   [Inject] private readonly EventBoxGroupsState _ebgs = null!;
+   [Inject] private readonly EditBeatmapViewController _ebvc = null!;
+   [Inject] private readonly SignalBus _signalBus = null!;
    private EventBoxesView _eventBoxesView;
    private int _index;
    private int _maxIndex;

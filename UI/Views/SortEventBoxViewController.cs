@@ -11,7 +11,6 @@ namespace EditorEnhanced.UI.Views;
 
 internal class SortEventBoxViewController : IInitializable, IDisposable
 {
-   private readonly DiContainer _container;
    private readonly EditBeatmapViewController _ebvc;
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
@@ -48,9 +47,8 @@ internal class SortEventBoxViewController : IInitializable, IDisposable
 
       _ebv._eventBoxButtonsScrollView.transform.parent.localPosition = new Vector3(-20f, -85f, 0f);
 
-      var instance = Object.Instantiate(target.gameObject);
+      var instance = Object.Instantiate(target.gameObject, target.parent);
       instance.name = "SortButtonsWrapper";
-      instance.transform.SetParent(target.parent, false);
 
       instance.transform.localPosition = new Vector3(40f, -80f, 0f);
       var behev = instance.GetComponent<BeatmapEditorHoverExpandView>();

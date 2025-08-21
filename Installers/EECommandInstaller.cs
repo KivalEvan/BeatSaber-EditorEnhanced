@@ -61,7 +61,7 @@ public class EECommandInstaller : Installer
 
 public class StupidCommandInitializer : IInitializable
 {
-   [Inject(Id = "SignalsContainer")] private readonly DiContainer _commandContainer;
+   [Inject(Id = "SignalsContainer")] private readonly DiContainer _commandContainer = null!;
 
    public void Initialize()
    {

@@ -44,7 +44,7 @@ public class EditorInputFloatTag : EditorInputTag<float>
    public FloatInputFieldValidator.ValidatorType? ValidatorType { get; set; }
    public List<Action<float>> OnValueChange { get; set; } = [];
 
-   public GameObject Create(Transform parent)
+   public override GameObject Create(Transform parent)
    {
       var go = base.Create(parent);
 

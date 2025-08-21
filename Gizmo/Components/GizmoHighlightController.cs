@@ -7,7 +7,7 @@ namespace EditorEnhanced.Gizmo.Components;
 
 public class GizmoHighlightController : MonoBehaviour, IGizmoInput
 {
-   [Inject] private readonly PluginConfig _config;
+   [Inject] private readonly PluginConfig _config = null!;
    private List<GizmoHighlight> _highlights;
    public bool IsDragging { get; set; }
 

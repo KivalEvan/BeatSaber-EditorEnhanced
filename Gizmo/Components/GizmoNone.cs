@@ -8,8 +8,8 @@ namespace EditorEnhanced.Gizmo.Components;
 public class GizmoNone : MonoBehaviour
 {
    public Transform TargetTransform;
-   [Inject] private readonly PluginConfig _config;
-   [Inject] private readonly SignalBus _signalBus;
+   [Inject] private readonly PluginConfig _config = null!;
+   [Inject] private readonly SignalBus _signalBus = null!;
 
    private void OnEnable()
    {

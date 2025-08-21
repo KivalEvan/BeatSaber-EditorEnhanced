@@ -11,9 +11,8 @@ namespace EditorEnhanced.UI.Views;
 
 public class DifficultySwitchViewController : IInitializable, IDisposable
 {
-   [Inject] private readonly BeatmapFlowCoordinator _bfc;
-   [Inject] private readonly BeatmapLevelFlowCoordinator _blfc;
-   [Inject] private readonly BeatmapProjectManager _bpm;
+   [Inject] private readonly BeatmapFlowCoordinator _bfc = null!;
+   [Inject] private readonly BeatmapLevelFlowCoordinator _blfc = null!;
    private readonly EditBeatmapLevelNavigationViewController _eblnvc;
    private readonly EditBeatmapLevelViewController _eblvc;
    private readonly EditBeatmapViewController _ebvc;

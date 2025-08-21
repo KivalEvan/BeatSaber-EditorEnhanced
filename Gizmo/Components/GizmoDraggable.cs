@@ -13,9 +13,9 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
    public LightAxis Axis;
    public Transform TargetTransform;
    public bool Mirror;
-   [Inject] protected readonly BeatmapState _beatmapState;
-   [Inject] protected readonly PluginConfig _config;
-   [Inject] protected readonly SignalBus _signalBus;
+   [Inject] protected readonly BeatmapState _beatmapState = null!;
+   [Inject] protected readonly PluginConfig _config = null!;
+   [Inject] protected readonly SignalBus _signalBus = null!;
    protected Camera Camera;
    public EventBoxEditorData EventBoxEditorDataContext;
    protected Vector3 InitialScreenPosition;

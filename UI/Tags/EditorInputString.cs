@@ -37,7 +37,7 @@ public class EditorInputStringTag : EditorInputTag<string>
    public bool? AllowEmpty { get; set; }
    public List<Action<string>> OnValueChange { get; set; } = [];
 
-   public GameObject Create(Transform parent)
+   public override GameObject Create(Transform parent)
    {
       var go = base.Create(parent);
       go.name = Name;

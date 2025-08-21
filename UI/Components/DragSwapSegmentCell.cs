@@ -9,7 +9,7 @@ namespace EditorEnhanced.UI.Components;
 
 public class DragSwapSegmentCell : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-   [Inject] private readonly SignalBus _signalBus;
+   [Inject] private readonly SignalBus _signalBus = null!;
    private SegmentedControlCell _currentCell;
    private RectTransform _rectTransform;
    private SegmentedControl _segmentedControl;

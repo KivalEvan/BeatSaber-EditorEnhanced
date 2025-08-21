@@ -14,7 +14,7 @@ public class ScrollableInputFloat : MonoBehaviour, IScrollHandler
 {
    public float multiplier = 1.0f;
 
-   [Inject] private readonly BeatmapState _beatmapState;
+   [Inject] private readonly BeatmapState _beatmapState = null!;
    private FloatInputFieldValidator _validator;
 
    public Dictionary<PrecisionType, float> PrecisionDelta = CustomPrecisions.NoPrecisionFloat;
