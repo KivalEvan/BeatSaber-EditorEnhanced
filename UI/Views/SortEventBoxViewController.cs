@@ -45,7 +45,9 @@ internal class SortEventBoxViewController : IInitializable, IDisposable
       // target.parent.gameObject.AddComponent<VerticalLayoutGroup>();
       // var csf = target.parent.gameObject.AddComponent<ContentSizeFitter>();
 
-      _ebv._eventBoxButtonsScrollView.transform.parent.localPosition = new Vector3(-20f, -85f, 0f);
+      var rect = (RectTransform)_ebv._eventBoxButtonsScrollView.transform.parent;
+      rect.sizeDelta = new Vector2(40f, -130f);
+      rect.localPosition = new Vector3(-20f, -65f, 0f);
 
       var instance = Object.Instantiate(target.gameObject, target.parent);
       instance.name = "SortButtonsWrapper";
