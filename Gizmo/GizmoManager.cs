@@ -169,16 +169,16 @@ internal class GizmoManager : IInitializable, IDisposable
    }
 
    private void DistributeGizmo(
-      List<LightTransformData> list,
+      LightTransformData[] ltd,
       EventBoxGroupType groupType,
       LightAxis axis,
       bool mirror,
       LightGroupSubsystem subsystemContext)
    {
-      var onlyUnique = list.Select(d => d.AxisBoxIndex).ToHashSet().Count == 1;
+      var onlyUnique = ltd.Select(d => d.AxisBoxIndex).ToHashSet().Count == 1;
 
       var highlighterMap = new Dictionary<int, GizmoHighlightController>();
-      foreach (var data in list)
+      foreach (var data in ltd)
       {
          var globalBoxIdx = data.GlobalBoxIndex;
          var axisBoxIdx = data.AxisBoxIndex;
@@ -288,7 +288,7 @@ internal class GizmoManager : IInitializable, IDisposable
          _activeGizmos.Add(baseGizmo);
       }
 
-      var selection = _gizmoAssets.GetOrCreate(GizmoType.Selection, 0);
+      var selection = _gizmoAssets.GetOrCreate(GizmoType.Selection, ColorAssignment.WhiteIndex);
       selection.SetActive(_config.Gizmo.ShowLane);
       _activeGizmos.Add(selection);
    }
@@ -326,7 +326,7 @@ internal class GizmoManager : IInitializable, IDisposable
             }
          }
 
-         var list = new List<LightTransformData>();
+         var ltd = new List<LightTransformData>();
          foreach (var item in markId
             .Select(i =>
             {
@@ -346,14 +346,14 @@ internal class GizmoManager : IInitializable, IDisposable
             switch (lightWithId)
             {
                case MaterialLightWithId matLightWithId:
-                  list.Add(item.data with { Transform = matLightWithId.transform });
+                  ltd.Add(item.data with { Transform = matLightWithId.transform });
                   break;
                case TubeBloomPrePassLightWithId tubeBloomPrePassLightWithId:
-                  list.Add(item.data with { Transform = tubeBloomPrePassLightWithId.transform });
+                  ltd.Add(item.data with { Transform = tubeBloomPrePassLightWithId.transform });
                   break;
             }
 
-         DistributeGizmo(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, null);
+         DistributeGizmo(ltd.ToArray(), _ebgs.eventBoxGroupContext.type, LightAxis.X, false, null);
       }
    }
 
@@ -409,7 +409,7 @@ internal class GizmoManager : IInitializable, IDisposable
          {
             var transforms = transformsXYZ[(int)axis];
             var markId = markIdXYZ[(int)axis];
-            var list = markId
+            var ltd = markId
                .Select(item =>
                {
                   var data = item.Value;
@@ -417,7 +417,7 @@ internal class GizmoManager : IInitializable, IDisposable
                   data.Transform = transforms.ElementAtOrDefault(item.Key);
                   return data;
                })
-               .ToList();
+               .ToArray();
 
             var mirror = axis switch
             {
@@ -426,7 +426,7 @@ internal class GizmoManager : IInitializable, IDisposable
                LightAxis.Z => l.mirrorZ,
                _ => false
             };
-            DistributeGizmo(list, _ebgs.eventBoxGroupContext.type, axis, mirror, l);
+            DistributeGizmo(ltd, _ebgs.eventBoxGroupContext.type, axis, mirror, l);
          }
       }
    }
@@ -484,7 +484,7 @@ internal class GizmoManager : IInitializable, IDisposable
          {
             var transforms = transformsXYZ[(int)axis];
             var markId = markIdXYZ[(int)axis];
-            var list = markId
+            var ltd = markId
                .Select(item =>
                {
                   var data = item.Value;
@@ -492,7 +492,7 @@ internal class GizmoManager : IInitializable, IDisposable
                   data.Transform = transforms.ElementAtOrDefault(item.Key);
                   return data;
                })
-               .ToList();
+               .ToArray();
 
             var mirror = axis switch
             {
@@ -501,7 +501,7 @@ internal class GizmoManager : IInitializable, IDisposable
                LightAxis.Z => l.mirrorZ,
                _ => false
             };
-            DistributeGizmo(list, _ebgs.eventBoxGroupContext.type, axis, mirror, l);
+            DistributeGizmo(ltd, _ebgs.eventBoxGroupContext.type, axis, mirror, l);
          }
       }
    }
@@ -537,15 +537,15 @@ internal class GizmoManager : IInitializable, IDisposable
                   });
          }
 
-         var list = markId
+         var ltd = markId
             .Select(item =>
             {
                var data = item.Value;
                data.Transform = l.targets.Select(t => t.transform).ElementAtOrDefault(item.Key);
                return data;
             })
-            .ToList();
-         DistributeGizmo(list, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, l);
+            .ToArray();
+         DistributeGizmo(ltd, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, l);
       }
    }
 }
