@@ -24,11 +24,12 @@ public class GizmoDraggableTranslation : GizmoDraggable
       return _config.Gizmo.SizeTranslation;
    }
 
-   private float SnapPosition(float v, float limit)
+   private float SnapPosition(float v, float limit, float scale)
    {
       var precision = ModifyHoveredLightTranslationDeltaTranslationCommand._precisions
             [_beatmapState.scrollPrecision]
-         / limit;
+         / limit
+         * scale;
       return
          Mathf.Round(v / precision) * precision;
    }
@@ -44,19 +45,28 @@ public class GizmoDraggableTranslation : GizmoDraggable
          transform.parent.localPosition = Axis switch
          {
             LightAxis.X => new Vector3(
-               SnapPosition(transform.parent.localPosition.x, ltg.xTranslationLimits.y),
-               TargetTransform.localPosition.y,
-               TargetTransform.localPosition.z
+               SnapPosition(
+                  transform.parent.localPosition.x,
+                  ltg.xTranslationLimits.y,
+                  TargetTransform.parent.lossyScale.x),
+               0,
+               0
             ),
             LightAxis.Y => new Vector3(
-               TargetTransform.localPosition.x,
-               SnapPosition(transform.parent.localPosition.y, ltg.yTranslationLimits.y),
-               TargetTransform.localPosition.z
+               0,
+               SnapPosition(
+                  transform.parent.localPosition.y,
+                  ltg.yTranslationLimits.y,
+                  TargetTransform.parent.lossyScale.y),
+               0
             ),
             LightAxis.Z => new Vector3(
-               TargetTransform.localPosition.x,
-               TargetTransform.localPosition.y,
-               SnapPosition(transform.parent.localPosition.z, ltg.zTranslationLimits.y)
+               0,
+               0,
+               SnapPosition(
+                  transform.parent.localPosition.z,
+                  ltg.zTranslationLimits.y,
+                  TargetTransform.parent.lossyScale.z)
             ),
             _ => throw new ArgumentOutOfRangeException()
          };
@@ -65,7 +75,6 @@ public class GizmoDraggableTranslation : GizmoDraggable
    public override void OnMouseClick()
    {
       if (!_config.Gizmo.Draggable) return;
-      transform.parent.SetParent(TargetTransform.parent, true);
       IsDragging = true;
    }
 
@@ -74,21 +83,23 @@ public class GizmoDraggableTranslation : GizmoDraggable
       if (!_config.Gizmo.Draggable && !IsDragging) return;
       if (LightGroupSubsystemContext != null && LightGroupSubsystemContext is LightTranslationGroup ltg)
       {
-         var result = transform.parent.localPosition;
+         var localPosition = transform.parent.localPosition;
+         var targetLocalPosition = TargetTransform.localPosition;
          var value = Axis switch
          {
-            LightAxis.X => result.x / ltg.xTranslationLimits.y,
-            LightAxis.Y => result.y / ltg.yTranslationLimits.y,
-            LightAxis.Z => result.z / ltg.zTranslationLimits.y,
+            LightAxis.X => targetLocalPosition.x / ltg.xTranslationLimits.y
+               + localPosition.x / ltg.xTranslationLimits.y * TargetTransform.parent.lossyScale.x,
+            LightAxis.Y => targetLocalPosition.y / ltg.yTranslationLimits.y
+               + localPosition.y / ltg.yTranslationLimits.y * TargetTransform.parent.lossyScale.y,
+            LightAxis.Z => targetLocalPosition.z / ltg.zTranslationLimits.y
+               + localPosition.z / ltg.zTranslationLimits.y * TargetTransform.parent.lossyScale.z,
             _ => throw new ArgumentOutOfRangeException()
          };
          if (Mirror) value = -value;
          _signalBus.Fire(new DragGizmoLightTranslationEventBoxSignal(EventBoxEditorDataContext, value));
       }
 
-      // transform.parent.localPosition = Vector3.zero;
-      transform.parent.SetParent(TargetTransform, true);
-      transform.parent.position = TargetTransform.position;
+      transform.parent.localPosition = Vector3.zero;
       IsDragging = false;
    }
 }

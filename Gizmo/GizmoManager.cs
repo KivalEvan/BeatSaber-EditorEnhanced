@@ -6,7 +6,6 @@ using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
 using BeatmapEditor3D.Types;
-using EditorEnhanced.Commands;
 using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo.Commands;
 using EditorEnhanced.Gizmo.Components;
@@ -15,7 +14,7 @@ using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.Utils;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Animations;
 using Zenject;
 using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupType;
 using Object = UnityEngine.Object;
@@ -228,10 +227,19 @@ internal class GizmoManager : IInitializable, IDisposable
             _gizmoAssets.GetOrCreate(
                _config.Gizmo.DistributeShape && distributed ? GizmoType.Sphere : GizmoType.Cube,
                colorIdx);
-         var baseHighlightController = baseGizmo.GetComponent<GizmoHighlightController>();
+         var baseHighlightController = baseGizmo.GetComponentInChildren<GizmoHighlightController>();
          baseHighlightController.SharedWith(highlighterMap[globalBoxIdx]);
          baseHighlightController.Add(baseGizmo);
-         baseGizmo.GetComponent<GizmoNone>().TargetTransform = transform;
+         baseGizmo
+            .GetComponentInChildren<ParentConstraint>()
+            .SetSources(
+            [
+               new ConstraintSource
+               {
+                  sourceTransform = transform,
+                  weight = 1f
+               }
+            ]);
 
          var modGizmo = groupType switch
          {
@@ -241,7 +249,7 @@ internal class GizmoManager : IInitializable, IDisposable
          };
          if (_config.Gizmo.ShowModifier && modGizmo != null)
          {
-            modGizmo.transform.SetParent(baseGizmo.transform, false);
+            modGizmo.transform.SetParent(baseGizmo.transform.GetChild(0), false);
             var modHighlightController = modGizmo.GetComponent<GizmoHighlightController>();
             modHighlightController.SharedWith(highlighterMap[globalBoxIdx]);
             modHighlightController.Add(modGizmo);

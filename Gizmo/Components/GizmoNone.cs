@@ -1,21 +1,19 @@
 using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo.Commands;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace EditorEnhanced.Gizmo.Components;
 
 public class GizmoNone : MonoBehaviour
 {
-   public Transform TargetTransform;
    [Inject] private readonly PluginConfig _config = null!;
    [Inject] private readonly SignalBus _signalBus = null!;
 
    private void OnEnable()
    {
-      transform.SetParent(TargetTransform, false);
-      transform.position = TargetTransform.position;
-      transform.rotation = TargetTransform.parent.rotation;
       UpdateSizeValue();
 
       _signalBus.Subscribe<GizmoConfigSizeBaseUpdateSignal>(UpdateSizeValue);
