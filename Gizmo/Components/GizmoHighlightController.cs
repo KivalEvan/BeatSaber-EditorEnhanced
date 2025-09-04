@@ -51,7 +51,7 @@ public class GizmoHighlightController : MonoBehaviour, IGizmoInput
 
    public void Add(GameObject gizmo)
    {
-      var gizmoHighlight = gizmo.GetComponent<GizmoHighlight>();
+      var gizmoHighlight = gizmo.GetComponent<GizmoHighlight>() ?? gizmo.GetComponentInChildren<GizmoHighlight>();
       if (gizmoHighlight == null) return;
       _highlights.Add(gizmoHighlight);
    }
