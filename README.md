@@ -7,7 +7,7 @@ For level designer, by level designer, to improve your workflow with various QOL
 * v3 Light Gizmo
     * View gizmo for colour, rotation, translation and FX with their orientation
     * Highlight current event box lane and selected gizmo when hovered on lane
-    * Draggable translation gizmo
+    * Draggable gizmo
         * Create event based on event box context, cursor time and event box state
     * Clickable to select event box
 * Better Event Box Reordering
@@ -42,7 +42,6 @@ Simply place `EditorEnhanced.dll` onto `Plugins` folder.
 * [ ] Mass Value Shift
 * [ ] Hide translation event (similar to extension but for hiding them to shadow realm)
 * [ ] Focused v3 light view (hides every other v3 light but selected)
-* [ ] Fix rotation drag gizmo
 * [ ] Error checker port
 * [ ] Selector plugin port
 * [ ] Redesign UI (for the mod, not the base game)
@@ -50,5 +49,5 @@ Simply place `EditorEnhanced.dll` onto `Plugins` folder.
 
 ## Known Issue
 
-* Drag rotation gizmo does not work as intended
+* Drag rotation gizmo may not work as intended when angled
 * Certain UI does not have audio feedback

@@ -30,9 +30,9 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
       AdjustSize();
       transform.localRotation = Axis switch
       {
-         LightAxis.X => Mirror ? Quaternion.Euler(0, 270, 0) : Quaternion.Euler(0, 90, 0),
+         LightAxis.X => Mirror ? Quaternion.Euler(0, 270, 180) : Quaternion.Euler(0, 90, 180),
          LightAxis.Y => Mirror ? Quaternion.Euler(90, 0, 0) : Quaternion.Euler(270, 0, 0),
-         LightAxis.Z => Mirror ? Quaternion.Euler(180, 0, 0) : Quaternion.Euler(0, 0, 0),
+         LightAxis.Z => Mirror ? Quaternion.Euler(180, 0, 90) : Quaternion.Euler(0, 0, 90),
          _ => Quaternion.identity
       };
    }
