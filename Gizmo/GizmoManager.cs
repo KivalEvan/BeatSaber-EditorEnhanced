@@ -172,7 +172,6 @@ internal class GizmoManager : IInitializable, IDisposable
       LightTransformData[] ltd,
       EventBoxGroupType groupType,
       LightAxis axis,
-      bool mirror,
       LightGroupSubsystem subsystemContext)
    {
       var onlyUnique = ltd.Select(d => d.AxisBoxIndex).ToHashSet().Count == 1;
@@ -231,12 +230,22 @@ internal class GizmoManager : IInitializable, IDisposable
          baseHighlightController.SharedWith(highlighterMap[globalBoxIdx]);
          baseHighlightController.Add(baseGizmo);
          baseGizmo
-            .GetComponentInChildren<ParentConstraint>()
+            .GetComponentInChildren<PositionConstraint>()
             .SetSources(
             [
                new ConstraintSource
                {
                   sourceTransform = transform,
+                  weight = 1f
+               }
+            ]);
+         baseGizmo
+            .GetComponentInChildren<RotationConstraint>()
+            .SetSources(
+            [
+               new ConstraintSource
+               {
+                  sourceTransform = subsystemContext is LightTranslationGroup ? transform.parent : transform,
                   weight = 1f
                }
             ]);
@@ -259,7 +268,6 @@ internal class GizmoManager : IInitializable, IDisposable
             gizmoDraggable.LightGroupSubsystemContext = subsystemContext;
             gizmoDraggable.Axis = axis;
             gizmoDraggable.TargetTransform = transform;
-            gizmoDraggable.Mirror = mirror;
 
             modGizmo.SetActive(true);
             _activeGizmos.Add(modGizmo);
@@ -353,7 +361,7 @@ internal class GizmoManager : IInitializable, IDisposable
                   break;
             }
 
-         DistributeGizmo(ltd.ToArray(), _ebgs.eventBoxGroupContext.type, LightAxis.X, false, null);
+         DistributeGizmo(ltd.ToArray(), _ebgs.eventBoxGroupContext.type, LightAxis.X, null);
       }
    }
 
@@ -418,15 +426,7 @@ internal class GizmoManager : IInitializable, IDisposable
                   return data;
                })
                .ToArray();
-
-            var mirror = axis switch
-            {
-               LightAxis.X => l.mirrorX,
-               LightAxis.Y => l.mirrorY,
-               LightAxis.Z => l.mirrorZ,
-               _ => false
-            };
-            DistributeGizmo(ltd, _ebgs.eventBoxGroupContext.type, axis, mirror, l);
+            DistributeGizmo(ltd, _ebgs.eventBoxGroupContext.type, axis, l);
          }
       }
    }
@@ -493,15 +493,7 @@ internal class GizmoManager : IInitializable, IDisposable
                   return data;
                })
                .ToArray();
-
-            var mirror = axis switch
-            {
-               LightAxis.X => l.mirrorX,
-               LightAxis.Y => l.mirrorY,
-               LightAxis.Z => l.mirrorZ,
-               _ => false
-            };
-            DistributeGizmo(ltd, _ebgs.eventBoxGroupContext.type, axis, mirror, l);
+            DistributeGizmo(ltd, _ebgs.eventBoxGroupContext.type, axis, l);
          }
       }
    }
@@ -545,7 +537,7 @@ internal class GizmoManager : IInitializable, IDisposable
                return data;
             })
             .ToArray();
-         DistributeGizmo(ltd, _ebgs.eventBoxGroupContext.type, LightAxis.X, false, l);
+         DistributeGizmo(ltd, _ebgs.eventBoxGroupContext.type, LightAxis.X, l);
       }
    }
 }

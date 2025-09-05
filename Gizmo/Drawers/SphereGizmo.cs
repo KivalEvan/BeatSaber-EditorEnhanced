@@ -36,7 +36,8 @@ internal static class SphereGizmo
       // var lineRenderController = go.AddComponent<LineRenderController>();
       // lineRenderController.enabled = false;
 
-      go.AddComponent<ParentConstraint>().constraintActive = true;
+      go.AddComponent<PositionConstraint>().constraintActive = true;
+      go.AddComponent<RotationConstraint>().constraintActive = true;
       mesh.AddComponent<GizmoHighlight>();
       mesh.AddComponent<GizmoHighlightController>();
       mesh.AddComponent<GizmoNone>();

@@ -1,8 +1,8 @@
+using System;
 using BeatmapEditor3D;
 using BeatmapEditor3D.DataModels;
 using EditorEnhanced.Configuration;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Zenject;
 
 namespace EditorEnhanced.Gizmo.Components;
@@ -18,7 +18,6 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
    [Inject] protected readonly SignalBus _signalBus = null!;
    protected Camera Camera;
    public EventBoxEditorData EventBoxEditorDataContext;
-   protected Vector3 InitialScreenPosition;
 
    private void Awake()
    {
@@ -28,6 +27,24 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
    protected virtual void OnEnable()
    {
       AdjustSize();
+      Mirror = LightGroupSubsystemContext switch
+      {
+         LightRotationGroup lrg => Axis switch
+         {
+            LightAxis.X => lrg.mirrorX,
+            LightAxis.Y => lrg.mirrorY,
+            LightAxis.Z => lrg.mirrorZ,
+            _ => throw new ArgumentOutOfRangeException()
+         },
+         LightTranslationGroup ltg => Axis switch
+         {
+            LightAxis.X => ltg.mirrorX,
+            LightAxis.Y => ltg.mirrorY,
+            LightAxis.Z => ltg.mirrorZ,
+            _ => throw new ArgumentOutOfRangeException()
+         },
+         _ => Mirror
+      };
       transform.localRotation = Axis switch
       {
          LightAxis.X => Mirror ? Quaternion.Euler(0, 270, 180) : Quaternion.Euler(0, 90, 180),
@@ -61,13 +78,5 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
          Mathf.Abs(GetSize() * _config.Gizmo.GlobalScale / transform.lossyScale.x),
          Mathf.Abs(GetSize() * _config.Gizmo.GlobalScale / transform.lossyScale.y),
          Mathf.Abs(GetSize() * _config.Gizmo.GlobalScale / transform.lossyScale.z));
-   }
-
-   protected Vector3 GetScreenPosition()
-   {
-      return new Vector3(
-         Mouse.current.position.x.value,
-         Mouse.current.position.y.value,
-         Camera.WorldToScreenPoint(transform.parent.position).z);
    }
 }
