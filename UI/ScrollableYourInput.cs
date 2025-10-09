@@ -230,21 +230,10 @@ public class ScrollableYourInput : IInitializable
 
       ApplyScrollableIntInput(ebv._indexFilterView._groupingValidator, CustomPrecisions.NoPrecisionInt);
 
-      // temporary fix
-      Object.Destroy(
-         ebv
-            ._indexFilterView._param0Input
-            .GetComponents<IntInputFieldValidator>()
-            .First(comp => comp != ebv._indexFilterView._param0Input));
       ApplyScrollableIntInput(ebv._indexFilterView._param0Input, CustomPrecisions.NoPrecisionInt);
       ebv._indexFilterView._param0Input._validatorType = IntInputFieldValidator.ValidatorType.Max;
       ebv._indexFilterView._param0Input._max = 1;
 
-      // temporary fix
-      Object.Destroy(
-         ebv
-            ._indexFilterView._param1Input.GetComponents<IntInputFieldValidator>()
-            .First(comp => comp != ebv._indexFilterView._param1Input));
       ApplyScrollableIntInput(ebv._indexFilterView._param1Input, CustomPrecisions.NoPrecisionInt);
       ebv._indexFilterView._param1Input._validatorType = IntInputFieldValidator.ValidatorType.Max;
       ApplyScrollableIntInput(ebv._indexFilterView._randomSeedValidator, CustomPrecisions.NoPrecisionInt);

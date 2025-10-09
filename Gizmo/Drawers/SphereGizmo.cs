@@ -8,7 +8,7 @@ internal static class SphereGizmo
 {
    public static GameObject SObject;
 
-   public static GameObject Create(Material material)
+   public static GameObject Create()
    {
       if (SObject != null) return SObject;
       var go = new GameObject("DistributionGizmo");
@@ -17,14 +17,14 @@ internal static class SphereGizmo
       var mesh = GameObject.CreatePrimitive(PrimitiveType.Sphere);
       mesh.name = "Mesh";
       mesh.layer = 22;
-      mesh.GetComponent<Renderer>().material = material;
+      mesh.GetComponent<Renderer>().sharedMaterial = GizmoAssets.DefaultMaterial;
       mesh.transform.SetParent(go.transform, false);
 
       var highlight = GameObject.CreatePrimitive(PrimitiveType.Sphere);
       Object.Destroy(highlight.GetComponent<SphereCollider>());
       highlight.name = "Highlight";
       highlight.SetActive(false);
-      highlight.GetComponent<Renderer>().material = GizmoAssets.OutlineMaterial;
+      highlight.GetComponent<Renderer>().sharedMaterial = GizmoAssets.OutlineMaterial;
       highlight.transform.localScale *= 1.5f;
       highlight.transform.SetParent(mesh.transform, false);
 
@@ -38,6 +38,8 @@ internal static class SphereGizmo
 
       go.AddComponent<PositionConstraint>().constraintActive = true;
       go.AddComponent<RotationConstraint>().constraintActive = true;
+      
+      mesh.AddComponent<GizmoMaterial>();
       mesh.AddComponent<GizmoHighlight>();
       mesh.AddComponent<GizmoHighlightController>();
       mesh.AddComponent<GizmoNone>();

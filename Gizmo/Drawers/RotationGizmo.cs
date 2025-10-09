@@ -8,7 +8,7 @@ internal static class RotationGizmo
 {
    public static GameObject SObject;
 
-   public static GameObject Create(Material material)
+   public static GameObject Create()
    {
       if (SObject != null) return SObject;
       var bundle = AssetLoader.LoadFromResource(nameof(EditorEnhanced) + ".model");
@@ -16,8 +16,8 @@ internal static class RotationGizmo
       go.name = "RotationGizmo";
       go.layer = 22;
       go.SetActive(false);
-      go.GetComponent<Renderer>().material = material;
 
+      go.AddComponent<GizmoMaterial>();
       go.AddComponent<GizmoHighlight>();
       go.AddComponent<GizmoHighlightController>();
       go.AddComponent<GizmoDraggableRotation>();

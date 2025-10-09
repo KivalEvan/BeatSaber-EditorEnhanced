@@ -7,7 +7,7 @@ internal static class LaneGizmo
 {
    public static GameObject SObject;
 
-   public static GameObject Create(Material material)
+   public static GameObject Create()
    {
       if (SObject != null) return SObject;
       var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -15,13 +15,13 @@ internal static class LaneGizmo
       go.layer = 22;
       go.transform.localScale = new Vector3(0.333f, 0.1f, 0.1f);
       go.SetActive(false);
-      go.GetComponent<Renderer>().material = material;
+      go.GetComponent<Renderer>().sharedMaterial = GizmoAssets.DefaultMaterial;
 
       var highlight = GameObject.CreatePrimitive(PrimitiveType.Cube);
       Object.Destroy(highlight.GetComponent<BoxCollider>());
       highlight.name = "Highlight";
       highlight.SetActive(false);
-      highlight.GetComponent<Renderer>().material = GizmoAssets.OutlineMaterial;
+      highlight.GetComponent<Renderer>().sharedMaterial = GizmoAssets.OutlineMaterial;
       highlight.transform.localScale *= 1.5f;
       highlight.transform.SetParent(go.transform, false);
 
@@ -33,6 +33,7 @@ internal static class LaneGizmo
       // var lineRenderController = go.AddComponent<LineRenderController>();
       // lineRenderController.enabled = false;
 
+      go.AddComponent<GizmoMaterial>();
       go.AddComponent<GizmoHighlight>();
       go.AddComponent<GizmoHighlightController>();
       go.AddComponent<GizmoSwappable>();

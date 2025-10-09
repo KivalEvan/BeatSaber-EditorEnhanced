@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo.Commands;
+using EditorEnhanced.Gizmo.Components;
 using EditorEnhanced.Gizmo.Drawers;
 using EditorEnhanced.Utils;
 using UnityEngine;
@@ -28,14 +29,12 @@ internal class GizmoAssets : IInitializable, IDisposable
 
    public static readonly Material DefaultMaterial = FetchMaterial("Assets/Shaders/Gizmo.mat");
    public static readonly Material OutlineMaterial = FetchMaterial("Assets/Shaders/Outline.mat");
-   private static readonly int MatColorId = Shader.PropertyToID("_Color");
 
    private readonly PluginConfig _config;
    private readonly DiContainer _diContainer;
 
    private readonly List<GameObject>[] _gizmoObjects = new List<GameObject>[6];
    private readonly GameObject[] _gizmoPrefab = new GameObject[6];
-   private readonly Material[] _sharedMaterials = new Material[ColorAssignment.HueRange];
    private readonly SignalBus _signalBus;
 
    public GizmoAssets(DiContainer diContainer, SignalBus signalBus, PluginConfig config)
@@ -59,12 +58,12 @@ internal class GizmoAssets : IInitializable, IDisposable
 
    public void Initialize()
    {
-      _gizmoPrefab[(int)GizmoType.Cube] = CubeGizmo.SObject = CubeGizmo.Create(DefaultMaterial);
-      _gizmoPrefab[(int)GizmoType.Rotation] = RotationGizmo.SObject = RotationGizmo.Create(DefaultMaterial);
-      _gizmoPrefab[(int)GizmoType.Translation] = TranslationGizmo.SObject = TranslationGizmo.Create(DefaultMaterial);
-      _gizmoPrefab[(int)GizmoType.Sphere] = SphereGizmo.SObject = SphereGizmo.Create(DefaultMaterial);
-      _gizmoPrefab[(int)GizmoType.Lane] = LaneGizmo.SObject = LaneGizmo.Create(DefaultMaterial);
-      _gizmoPrefab[(int)GizmoType.Selection] = SelectionGizmo.SObject = SelectionGizmo.Create(DefaultMaterial);
+      _gizmoPrefab[(int)GizmoType.Cube] = CubeGizmo.SObject = CubeGizmo.Create();
+      _gizmoPrefab[(int)GizmoType.Rotation] = RotationGizmo.SObject = RotationGizmo.Create();
+      _gizmoPrefab[(int)GizmoType.Translation] = TranslationGizmo.SObject = TranslationGizmo.Create();
+      _gizmoPrefab[(int)GizmoType.Sphere] = SphereGizmo.SObject = SphereGizmo.Create();
+      _gizmoPrefab[(int)GizmoType.Lane] = LaneGizmo.SObject = LaneGizmo.Create();
+      _gizmoPrefab[(int)GizmoType.Selection] = SelectionGizmo.SObject = SelectionGizmo.Create();
 
       for (var i = 0; i < _gizmoObjects.Length; i++) _gizmoObjects[i] = [];
 
@@ -98,26 +97,15 @@ internal class GizmoAssets : IInitializable, IDisposable
       gizmo.layer = 0;
    }
 
-   private Material GetOrCreateMaterial(int index)
+   private static Color GetColor(int index)
    {
-      if (index is < 0 or >= ColorAssignment.HueRange) return DefaultMaterial;
-      if (_sharedMaterials[index] != null) return _sharedMaterials[index];
-      var color = ColorAssignment.GetColorFromIndex(index);
-      _sharedMaterials[index] = CreateMaterial(color);
-      return _sharedMaterials[index];
+      return index is < 0 or >= ColorAssignment.HueRange ? Color.white : ColorAssignment.GetColorFromIndex(index);
    }
 
    private static Material FetchMaterial(string path)
    {
       var bundle = AssetLoader.LoadFromResource(nameof(EditorEnhanced) + ".model");
       return bundle.LoadAsset<Material>(path);
-   }
-
-   private static Material CreateMaterial(Color color)
-   {
-      var mat = new Material(DefaultMaterial);
-      mat.SetColor(MatColorId, color);
-      return mat;
    }
 
    public GameObject GetOrCreate(GizmoType gizmoType, int colorIdx)
@@ -132,19 +120,20 @@ internal class GizmoAssets : IInitializable, IDisposable
          objects.Add(go);
       }
 
-      var renderer = go.GetComponent<Renderer>();
-      if (renderer == null) return go;
+      var gizmoMat = go.GetComponent<GizmoMaterial>();
+      if (gizmoMat == null) return go;
 
-      Action<GameObject> action;
+      Action<GameObject> colliderAction;
       if (gizmoType is GizmoType.Lane or GizmoType.Selection)
-         action = _config.Gizmo.RaycastLane ? EnableCollider : DisableCollider;
+         colliderAction = _config.Gizmo.RaycastLane ? EnableCollider : DisableCollider;
       else
-         action = _config.Gizmo.RaycastGizmo ? EnableCollider : DisableCollider;
+         colliderAction = _config.Gizmo.RaycastGizmo ? EnableCollider : DisableCollider;
 
-      action(go);
+      colliderAction(go);
 
-      var mat = GetOrCreateMaterial(colorIdx);
-      renderer.sharedMaterial = mat;
+      var color = GetColor(colorIdx);
+      Plugin.Log.Info($"{go.name}: {gizmoMat} color : {color}");
+      gizmoMat.SetColor(color);
 
       // var lineRenderController = go.GetComponent<LineRenderController>();
       // if (lineRenderController != null)
