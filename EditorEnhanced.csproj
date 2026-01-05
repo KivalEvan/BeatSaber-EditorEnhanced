@@ -42,6 +42,9 @@
         <Reference Include="BeatSaber.TrackDefinitions">
             <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\BeatSaber.TrackDefinitions.dll</HintPath>
         </Reference>
+        <Reference Include="BGLib.UnityExtension">
+            <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\BGLib.UnityExtension.dll</HintPath>
+        </Reference>
         <Reference Include="DataModels">
             <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\DataModels.dll</HintPath>
         </Reference>

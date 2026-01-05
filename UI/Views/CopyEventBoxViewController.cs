@@ -93,23 +93,22 @@ internal class CopyEventBoxViewController : IInitializable
          .Create(layout.transform);
       layout = horizontalTag.Create(container.transform);
       checkboxTag
-         .SetText("Copy Event")
+         .SetText("Event")
          .SetBool(_copyEvent)
          .SetOnValueChange(val => _copyEvent = val)
          .Create(layout.transform);
       checkboxTag
-         .SetText("Random Seed")
+         .SetText("RSeed")
          .SetBool(_randomSeed)
          .SetOnValueChange(val => _randomSeed = val)
          .Create(layout.transform);
       checkboxTag
-         .SetText("Increment ID")
+         .SetText("ID++")
          .SetBool(_increment)
          .SetOnValueChange(val => _increment = val)
          .Create(layout.transform);
-      layout = horizontalTag.Create(container.transform);
       checkboxTag
-         .SetText("Add Value")
+         .SetText("+Val")
          .SetBool(_addValue)
          .SetOnValueChange(val => _addValue = val)
          .Create(layout.transform);

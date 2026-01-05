@@ -132,7 +132,6 @@ internal class GizmoAssets : IInitializable, IDisposable
       colliderAction(go);
 
       var color = GetColor(colorIdx);
-      Plugin.Log.Info($"{go.name}: {gizmoMat} color : {color}");
       gizmoMat.SetColor(color);
 
       // var lineRenderController = go.GetComponent<LineRenderController>();
