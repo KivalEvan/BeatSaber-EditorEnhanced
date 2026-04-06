@@ -26,12 +26,12 @@ public class GizmoSelection : MonoBehaviour
    {
       _maxIndex = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id).Count - 1;
       MoveTransform();
-      _signalBus.Subscribe<GizmoEventBoxSelectedSignal>(MoveTransform);
+      _signalBus.Subscribe<EventBoxSelectedSignal>(MoveTransform);
    }
 
    private void OnDisable()
    {
-      _signalBus.TryUnsubscribe<GizmoEventBoxSelectedSignal>(MoveTransform);
+      _signalBus.TryUnsubscribe<EventBoxSelectedSignal>(MoveTransform);
    }
 
    private void MoveTransform()

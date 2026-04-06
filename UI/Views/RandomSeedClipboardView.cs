@@ -14,7 +14,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-public class RandomSeedClipboardViewController : IInitializable, IDisposable
+public class RandomSeedClipboardView : IInitializable, IDisposable
 {
    private readonly EditBeatmapNavigationViewController _ebnvc;
    private readonly EditBeatmapViewController _ebvc;
@@ -24,7 +24,7 @@ public class RandomSeedClipboardViewController : IInitializable, IDisposable
    private readonly UIBuilder _uiBuilder;
    private EventBoxesView _ebv;
 
-   public RandomSeedClipboardViewController(
+   public RandomSeedClipboardView(
       EditBeatmapViewController ebvc,
       EditBeatmapNavigationViewController ebnvc,
       RandomSeedClipboardManager rscm,

@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class SortEventBoxViewController : IInitializable, IDisposable
+internal class SortEventBoxView : IInitializable, IDisposable
 {
    private readonly EditBeatmapViewController _ebvc;
    private readonly SignalBus _signalBus;
@@ -17,7 +17,7 @@ internal class SortEventBoxViewController : IInitializable, IDisposable
 
    private EventBoxesView _ebv;
 
-   public SortEventBoxViewController(
+   public SortEventBoxView(
       SignalBus signalBus,
       EditBeatmapViewController ebvc,
       UIBuilder uiBuilder)

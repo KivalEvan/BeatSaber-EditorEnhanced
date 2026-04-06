@@ -5,14 +5,14 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-public class IntegratedScriptViewController : IInitializable
+public class IntegratedScriptView : IInitializable
 {
    private readonly EditBeatmapViewController _ebvc;
    private readonly UIBuilder _uiBuilder;
 
    private GameObject _view;
 
-   public IntegratedScriptViewController(
+   public IntegratedScriptView(
       EditBeatmapViewController ebvc,
       UIBuilder uiBuilder)
    {

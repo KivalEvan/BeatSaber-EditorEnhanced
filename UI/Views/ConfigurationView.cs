@@ -18,7 +18,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class ConfigurationViewController : IInitializable
+internal class ConfigurationView : IInitializable
 {
    private readonly PluginConfig _config;
    private readonly EditBeatmapViewController _ebvc;
@@ -38,7 +38,7 @@ internal class ConfigurationViewController : IInitializable
    private GameObject _colorGradientInput;
    private GameObject _colorGradientSlider;
 
-   public ConfigurationViewController(
+   public ConfigurationView(
       SignalBus signalBus,
       PluginConfig config,
       EditBeatmapViewController ebvc,

@@ -9,7 +9,7 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-public class DifficultySwitchViewController : IInitializable, IDisposable
+public class DifficultySwitchView : IInitializable, IDisposable
 {
    [Inject] private readonly BeatmapFlowCoordinator _bfc = null!;
    [Inject] private readonly BeatmapLevelFlowCoordinator _blfc = null!;
@@ -19,7 +19,7 @@ public class DifficultySwitchViewController : IInitializable, IDisposable
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
 
-   public DifficultySwitchViewController(
+   public DifficultySwitchView(
       SignalBus signalBus,
       EditBeatmapViewController ebvc,
       EditBeatmapLevelViewController eblvc,

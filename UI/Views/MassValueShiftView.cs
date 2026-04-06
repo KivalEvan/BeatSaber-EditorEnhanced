@@ -5,13 +5,13 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-public class MassValueShiftViewController : IInitializable
+public class MassValueShiftView : IInitializable
 {
    private readonly EditBeatmapViewController _ebvc;
    private readonly UIBuilder _uiBuilder;
    private GameObject _view;
 
-   public MassValueShiftViewController(
+   public MassValueShiftView(
       EditBeatmapViewController ebvc,
       UIBuilder uiBuilder)
    {

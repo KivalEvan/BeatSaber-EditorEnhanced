@@ -18,6 +18,6 @@ public class EventBoxesViewPatches : IAffinity
    [AffinityPatch(typeof(EventBoxesView), nameof(EventBoxesView.SetEventBoxData))]
    private void SignalSelectedEventBox()
    {
-      _signalBus.Fire<GizmoEventBoxSelectedSignal>();
+      _signalBus.Fire<EventBoxSelectedSignal>();
    }
 }

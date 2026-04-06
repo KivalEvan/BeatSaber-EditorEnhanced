@@ -27,18 +27,19 @@ public class EEUIInstaller : Installer
       Container.BindInterfacesAndSelfTo<UIBuilder>().AsSingle();
 
       // Event Boxes
-      Container.BindInterfacesTo<OffsetDurationDistributionViewController>().AsSingle();
-      Container.BindInterfacesTo<SortEventBoxViewController>().AsSingle();
-      Container.BindInterfacesTo<CopyEventBoxViewController>().AsSingle();
+      Container.BindInterfacesTo<OffsetDurationDistributionView>().AsSingle();
+      Container.BindInterfacesTo<SortEventBoxView>().AsSingle();
+      Container.BindInterfacesTo<CopyEventBoxView>().AsSingle();
+      Container.BindInterfacesTo<EventBoxIDVisualView>().AsSingle();
       Container.BindInterfacesAndSelfTo<EventBoxClipboardManager>().AsSingle();
       // Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();
 
       // Mixed
-      Container.BindInterfacesTo<RandomSeedClipboardViewController>().AsSingle();
+      Container.BindInterfacesTo<RandomSeedClipboardView>().AsSingle();
       Container.BindInterfacesAndSelfTo<RandomSeedClipboardManager>().AsSingle();
 
       // Others
-      Container.BindInterfacesTo<ConfigurationViewController>().AsSingle();
+      Container.BindInterfacesTo<ConfigurationView>().AsSingle();
       // Container.BindInterfacesTo<DifficultySwitchViewController>().AsSingle();
       // Container.BindInterfacesTo<LolighterViewController>().AsSingle();
       // Container.BindInterfacesTo<MassValueShiftViewController>().AsSingle();

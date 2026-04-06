@@ -9,14 +9,14 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-public class OffsetDurationDistributionViewController : IInitializable, IDisposable
+public class OffsetDurationDistributionView : IInitializable, IDisposable
 {
    private readonly EditBeatmapViewController _ebvc;
    private readonly UIBuilder _uiBuilder;
 
    private EventBoxView _ebv;
 
-   public OffsetDurationDistributionViewController(
+   public OffsetDurationDistributionView(
       EditBeatmapViewController ebvc,
       UIBuilder uiBuilder)
    {

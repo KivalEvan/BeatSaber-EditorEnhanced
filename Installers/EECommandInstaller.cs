@@ -22,7 +22,7 @@ public class EECommandInstaller : Installer
       InstallCommands<LolighterSignal, LolighterCommand>();
 
       // Gizmo Listener
-      Container.DeclareSignal<GizmoEventBoxSelectedSignal>().OptionalSubscriber();
+      Container.DeclareSignal<EventBoxSelectedSignal>().OptionalSubscriber();
       Container.DeclareSignal<GizmoRefreshSignal>().OptionalSubscriber();
 
       // Gizmo Config

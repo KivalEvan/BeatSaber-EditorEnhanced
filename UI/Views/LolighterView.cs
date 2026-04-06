@@ -6,13 +6,13 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class LolighterViewController : IInitializable, IDisposable
+internal class LolighterView : IInitializable, IDisposable
 {
    private readonly EditBeatmapNavigationViewController _ebnvc;
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
 
-   public LolighterViewController(
+   public LolighterView(
       SignalBus signalBus,
       EditBeatmapNavigationViewController ebnvc,
       UIBuilder uiBuilder)

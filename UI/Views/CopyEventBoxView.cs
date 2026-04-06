@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CopyEventBoxViewController : IInitializable
+internal class CopyEventBoxView : IInitializable
 {
    private readonly EditBeatmapViewController _ebvc;
    private readonly SignalBus _signalBus;
@@ -22,7 +22,7 @@ internal class CopyEventBoxViewController : IInitializable
    private bool _addValue;
    private float _value;
 
-   public CopyEventBoxViewController(
+   public CopyEventBoxView(
       SignalBus signalBus,
       EditBeatmapViewController ebvc,
       UIBuilder uiBuilder)
@@ -36,7 +36,7 @@ internal class CopyEventBoxViewController : IInitializable
    {
       _ebv = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
       var target = _ebv._eventBoxView;
-      var replacement = target.transform.GetChild(0);
+      var replacement = target.transform.Find("EventBoxInfo");
       replacement.gameObject.SetActive(false);
 
       var stackTag = _uiBuilder
