@@ -17,6 +17,7 @@ internal static class IndexFilterHelpers
       var convertedIndexFilter = IndexFilterConverter.Convert(
          LightshowSaver.ConvertIndexFilter(indexFilter),
          groupSize);
+      if (convertedIndexFilter == null) return [];
       var chunkSize = indexFilter.chunks == 0 ? 1 : Mathf.CeilToInt(groupSize / (float)indexFilter.chunks);
       return convertedIndexFilter.Select((item, localIdx) => (item.element, localIdx / chunkSize));
    }

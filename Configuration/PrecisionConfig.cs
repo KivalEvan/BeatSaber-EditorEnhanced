@@ -11,22 +11,45 @@ namespace EditorEnhanced.Configuration;
 public class PrecisionConfig
 {
    [UseConverter(typeof(ListConverter<float>))]
-   public virtual List<float> Color { get; set; } = LightColorEventHelper._precisions.Values.ToList();
+   public virtual List<float> Color { get; set; } =
+      LightColorEventHelper
+         ._precisions.OrderBy(x => x.Key)
+         .Select(x => x.Value)
+         .ToList();
 
    [UseConverter(typeof(ListConverter<float>))]
    public virtual List<float> Rotation { get; set; } =
-      ModifyHoveredLightRotationDeltaRotationCommand._precisions.Values.ToList();
+      ModifyHoveredLightRotationDeltaRotationCommand
+         ._precisions.OrderBy(x => x.Key)
+         .Select(x => x.Value)
+         .ToList();
 
    [UseConverter(typeof(ListConverter<float>))]
    public virtual List<float> Translation { get; set; } =
-      ModifyHoveredLightTranslationDeltaTranslationCommand._precisions.Values.ToList();
+      ModifyHoveredLightTranslationDeltaTranslationCommand
+         ._precisions.OrderBy(x => x.Key)
+         .Select(x => x.Value)
+         .ToList();
 
    [UseConverter(typeof(ListConverter<float>))]
-   public virtual List<float> Fx { get; set; } = ModifyHoveredFloatFxDeltaValueCommand._precisions.Values.ToList();
-   
+   public virtual List<float> Fx { get; set; } = ModifyHoveredFloatFxDeltaValueCommand
+      ._precisions.OrderBy(x => x.Key)
+      .Select(x => x.Value)
+      .ToList();
+
    [UseConverter(typeof(ListConverter<float>))]
-   public virtual List<float> Time { get; set; } = CustomPrecisions.TimePrecisionFloat.Values.ToList();
-   
+   public virtual List<float> Time { get; set; } =
+      CustomPrecisions
+         .TimePrecisionFloat
+         .OrderBy(x => x.Key)
+         .Select(x => x.Value)
+         .ToList();
+
    [UseConverter(typeof(ListConverter<float>))]
-   public virtual List<float> Percent { get; set; } = CustomPrecisions.PercentPrecisionFloat.Values.ToList();
+   public virtual List<float> Percent { get; set; } =
+      CustomPrecisions
+         .PercentPrecisionFloat
+         .OrderBy(x => x.Key)
+         .Select(x => x.Value)
+         .ToList();
 }
