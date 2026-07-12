@@ -12,6 +12,7 @@ using BeatmapEditor3D.Views;
 using EditorEnhanced.Gizmo.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
+using EditorEnhanced.Utils;
 using HMUI;
 using TMPro;
 using UnityEngine;
@@ -30,6 +31,10 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
    private EventBoxesView _ebv;
 
    private EditorTextTag _textTag;
+   private TMP_Text _maxDurationText;
+   private Button _setDurationButton;
+   private float? _minimumDuration;
+   private int _selectedIdCount;
    private readonly List<GameObject> _instantiatedErrorText = new();
    private Transform _errorTextTargetTransform;
 
@@ -71,6 +76,23 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
          .SetVerticalFit(ContentSizeFitter.FitMode.Unconstrained);
 
       _imageContainer = horizontalTag.Create(modification.transform);
+      horizontalTag.SetChildAlignment(TextAnchor.MiddleLeft);
+      var durationContainer = horizontalTag.Create(modification.transform);
+      _maxDurationText = _uiBuilder
+         .Text.Instantiate()
+         .SetText("Max Duration: ∞")
+         .SetFontSize(16f)
+         .SetTextAlignment(TextAlignmentOptions.Left)
+         .Create(durationContainer.transform)
+         .GetComponent<TMP_Text>();
+      _setDurationButton = _uiBuilder
+         .Button.Instantiate()
+         .SetText("Set")
+         .SetFontSize(16f)
+         .SetSize(new Vector2(56f, 32f))
+         .SetOnClick(SetMinimumDuration)
+         .Create(durationContainer.transform)
+         .GetComponent<Button>();
       _signalBus.Subscribe<BeatmapEditingModeSwitchedSignal>(HandleEditingEventBoxGroupChangedWithSignal);
       _signalBus.Subscribe<EventBoxesUpdatedSignal>(HandleEditingEventBoxGroupChanged);
       _signalBus.Subscribe<EventBoxModifiedSignal>(HandleEditingEventBoxGroupChanged);
@@ -103,6 +125,21 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
 
       var boxes = _ebv._eventBoxes;
       var box = _ebv._eventBoxView._eventBox;
+
+      var durationById = EventBoxDurationHelpers.GetNextEventBoxGroupDurationById(
+         _ebv._beatmapEventBoxGroupsDataModel,
+         _ebv._eventBoxGroupsState.eventBoxGroupContext,
+         box);
+      var selectedIds = IndexFilterHelpers
+         .GetIndexFilterRange(box.indexFilter, groupSize)
+         .Select(item => item.index)
+         .Where(id => id >= 0 && id < groupSize)
+         .Distinct()
+         .ToArray();
+      _selectedIdCount = selectedIds.Length;
+      _minimumDuration = durationById.Count == 0 ? null : durationById.Values.Min();
+      _setDurationButton.interactable = _minimumDuration.HasValue;
+      _maxDurationText.text = GetDurationText(selectedIds.Length, durationById);
 
       int i;
       for (i = 0; i < groupSize; i++)
@@ -148,6 +185,52 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
             else if (b == box) _instantiatedImages[element].color = Color.red;
          }
       }
+   }
+
+   private string GetDurationText(int selectedIdCount, IReadOnlyDictionary<int, float> durationById)
+   {
+      if (durationById.Count == 0) return "Max Duration: ∞";
+
+      var minimum = durationById.Values.Min();
+      if (selectedIdCount <= 1) return $"Max Duration: {minimum:0.###} beats";
+
+      var maximum = durationById.Count < selectedIdCount ? (float?)null : durationById.Values.Max();
+      if (maximum.HasValue && Mathf.Approximately(minimum, maximum.Value))
+         return $"Max Duration: {minimum:0.###} beats";
+
+      var maximumText = maximum.HasValue ? $"{maximum.Value:0.###}" : "∞";
+      return $"Max Duration: {minimum:0.###}–{maximumText} beats";
+   }
+
+   private void SetMinimumDuration()
+   {
+      if (!_minimumDuration.HasValue || _ebv._eventBoxView._eventBox == null) return;
+
+      var eventBox = _ebv._eventBoxView._eventBox;
+      var availableDuration = Mathf.Max(0f, _minimumDuration.Value - 0.001f);
+      var limitRatio = eventBox.indexFilter.limitAlsoAffectType == IndexFilter.IndexFilterLimitAlsoAffectType.Duration
+                       && eventBox.indexFilter.limit > 0f
+         ? eventBox.indexFilter.limit
+         : 1f;
+
+      float distribution;
+      if (eventBox.beatDistributionParamType == BeatmapEventDataBox.DistributionParamType.Step)
+      {
+         var baseEvents = _ebv._beatmapEventBoxGroupsDataModel
+            .GetBaseEventsListByEventBoxId(eventBox.id)
+            .ToArray();
+         var latestEventBeat = baseEvents.Length == 0 ? 0f : baseEvents.Max(baseEvent => baseEvent.beat);
+         var effectiveIdCount = _selectedIdCount * limitRatio;
+         distribution = effectiveIdCount <= 0f
+            ? 0f
+            : Mathf.Max(0f, availableDuration - latestEventBeat) / effectiveIdCount;
+      }
+      else
+      {
+         distribution = availableDuration * limitRatio;
+      }
+
+      _ebv._eventBoxView._beatDistributionInput.SetValue(distribution);
    }
 
    private LightAxis GetAxis(EventBoxEditorData data)
