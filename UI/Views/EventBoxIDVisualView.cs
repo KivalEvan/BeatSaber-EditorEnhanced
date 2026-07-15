@@ -25,6 +25,7 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
 {
    private readonly List<GameObject> _instantiatedErrorText = new();
 
+   private readonly List<GameObject> _instantiatedChunkContainers = new();
    private readonly List<Image> _instantiatedImages = new();
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
@@ -80,6 +81,7 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       var horizontalTag = _uiBuilder
          .CreateHorizontalLayout()
          .SetChildAlignment(TextAnchor.LowerCenter)
+         .SetSpacing(4f)
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.Unconstrained);
 
@@ -141,6 +143,8 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       _setDurationButton.interactable = _minimumDuration.HasValue;
       _maxDurationText.text = GetDurationText(selectedIds.Length, durationById);
 
+      ArrangeImagesInChunks(groupSize, box.indexFilter.chunks);
+
       int i;
       for (i = 0; i < groupSize; i++)
       {
@@ -182,6 +186,33 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
                   b == box ? Color.green : currentBoxPassed ? Color.gray : Color.white;
             else if (b == box) _instantiatedImages[element].color = Color.red;
          }
+      }
+   }
+
+   private void ArrangeImagesInChunks(int groupSize, int chunks)
+   {
+      var chunkSize = chunks == 0 ? 1 : Mathf.CeilToInt(groupSize / (float)chunks);
+      var chunkCount = chunkSize == 0 ? 0 : Mathf.CeilToInt(groupSize / (float)chunkSize);
+
+      for (var chunkIndex = 0; chunkIndex < chunkCount; chunkIndex++)
+      {
+         var chunk = chunkIndex >= _instantiatedChunkContainers.Count
+            ? CreateChunkContainer()
+            : _instantiatedChunkContainers[chunkIndex];
+         var idCount = Mathf.Min(chunkSize, groupSize - chunkIndex * chunkSize);
+         chunk.GetComponent<LayoutElement>().flexibleWidth = idCount;
+         chunk.SetActive(true);
+         chunk.transform.SetSiblingIndex(chunkIndex);
+      }
+
+      for (var i = chunkCount; i < _instantiatedChunkContainers.Count; i++)
+         _instantiatedChunkContainers[i].SetActive(false);
+
+      for (var id = 0; id < groupSize; id++)
+      {
+         var image = id >= _instantiatedImages.Count ? CreateImage() : _instantiatedImages[id];
+         image.transform.SetParent(_instantiatedChunkContainers[id / chunkSize].transform, false);
+         image.transform.SetAsLastSibling();
       }
    }
 
@@ -243,12 +274,31 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
    private Image CreateImage()
    {
       var go = new GameObject("Image");
-      go.transform.SetParent(_imageContainer.transform);
       var image = go.AddComponent<Image>();
       image.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), Vector2.zero);
       image.raycastTarget = false;
 
       _instantiatedImages.Add(image);
       return image;
+   }
+
+   private GameObject CreateChunkContainer()
+   {
+      var chunk = new GameObject("ID Chunk") { layer = 5 };
+      chunk.transform.SetParent(_imageContainer.transform, false);
+
+      var layoutElement = chunk.AddComponent<LayoutElement>();
+      layoutElement.minWidth = 0f;
+      layoutElement.preferredWidth = 0f;
+
+      var layout = chunk.AddComponent<HorizontalLayoutGroup>();
+      layout.spacing = 0f;
+      layout.childControlWidth = true;
+      layout.childControlHeight = true;
+      layout.childForceExpandWidth = true;
+      layout.childForceExpandHeight = true;
+
+      _instantiatedChunkContainers.Add(chunk);
+      return chunk;
    }
 }
