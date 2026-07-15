@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using BeatmapEditor3D;
-using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
-using BeatmapEditor3D.LevelEditor;
-using Zenject;
+using EditorEnhanced.EventBoxes;
 
 namespace EditorEnhanced.Commands;
 
@@ -21,27 +18,23 @@ public class ReorderEventBoxSignal
    }
 }
 
-public class ReorderEventBoxCommand : IBeatmapEditorCommandWithHistory
+internal sealed class ReorderEventBoxCommand : IBeatmapEditorCommandWithHistory
 {
-   private readonly BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;
    private readonly EventBoxGroupsState _eventBoxGroupsState;
+   private readonly EventBoxGroupMutation _mutation;
    private readonly ReorderEventBoxSignal _signal;
-   private readonly SignalBus _signalBus;
-   private BeatmapEditorObjectId _eventBoxGroupId;
-   private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _newEventBoxes;
+   private EventBoxGroupSnapshot _newSnapshot;
    private int _newIdx;
-   private List<(EventBoxEditorData eventBox, List<BaseEditorData> baseList)> _previousEventBoxes;
+   private EventBoxGroupSnapshot _previousSnapshot;
 
    public ReorderEventBoxCommand(
       ReorderEventBoxSignal signal,
-      SignalBus signalBus,
       EventBoxGroupsState eventBoxGroupsState,
-      BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel)
+      EventBoxGroupMutation mutation)
    {
       _signal = signal;
-      _signalBus = signalBus;
       _eventBoxGroupsState = eventBoxGroupsState;
-      _beatmapEventBoxGroupsDataModel = beatmapEventBoxGroupsDataModel;
+      _mutation = mutation;
    }
 
    public bool shouldAddToHistory { get; private set; }
@@ -53,84 +46,32 @@ public class ReorderEventBoxCommand : IBeatmapEditorCommandWithHistory
       var context = _eventBoxGroupsState.eventBoxGroupContext;
       if (context == null) return;
 
-      var eventBoxGroupId = context.id;
-      var byEventBoxGroupId = _beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);
-      if (byEventBoxGroupId.Count == 0) return;
-      if (_signal.CurrentIndex < 0 || _signal.CurrentIndex >= byEventBoxGroupId.Count) return;
+      var previousSnapshot = _mutation.Capture(context.id);
+      if (_signal.CurrentIndex < 0 || _signal.CurrentIndex >= previousSnapshot.Count) return;
 
-      var selectedEventBox = byEventBoxGroupId[_signal.CurrentIndex];
-      var previousEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>(byEventBoxGroupId.Count);
-      var newEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>();
-
-      (EventBoxEditorData, List<BaseEditorData>) toMove = (null, null);
-      var newIdx = 0;
-      foreach (var eventBoxEditorData in byEventBoxGroupId)
-      {
-         var list = _beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(eventBoxEditorData.id).ToList();
-         previousEventBoxes.Add((eventBoxEditorData, list));
-         if (eventBoxEditorData.id == selectedEventBox.id)
-         {
-            newIdx = _signal.MoveToIndex;
-            newIdx = Math.Clamp(newIdx, 0, byEventBoxGroupId.Count - 1);
-
-            toMove = (eventBoxEditorData, list);
-            continue;
-         }
-
-         newEventBoxes.Add((eventBoxEditorData, list));
-      }
-
-      newEventBoxes.Insert(newIdx, toMove);
+      var newIdx = Math.Clamp(_signal.MoveToIndex, 0, previousSnapshot.Count - 1);
 
       if (newIdx == _signal.CurrentIndex) return;
 
-      _eventBoxGroupId = eventBoxGroupId;
+      var reordered = previousSnapshot.EventBoxes.ToList();
+      var selectedEventBox = reordered[_signal.CurrentIndex];
+      reordered.RemoveAt(_signal.CurrentIndex);
+      reordered.Insert(newIdx, selectedEventBox);
+
       _newIdx = newIdx;
-      _previousEventBoxes = previousEventBoxes;
-      _newEventBoxes = newEventBoxes;
+      _previousSnapshot = previousSnapshot;
+      _newSnapshot = previousSnapshot.WithEventBoxes(reordered);
       shouldAddToHistory = true;
       Redo();
    }
 
    public void Undo()
    {
-      foreach (var newEventBox in _newEventBoxes)
-      {
-         _beatmapEventBoxGroupsDataModel.RemoveBaseEditorDataList(newEventBox.eventBox.id, newEventBox.baseList);
-         _beatmapEventBoxGroupsDataModel.RemoveEventBox(_eventBoxGroupId, newEventBox.eventBox);
-      }
-
-      foreach (var previousEventBox in _previousEventBoxes)
-      {
-         _beatmapEventBoxGroupsDataModel.InsertEventBox(_eventBoxGroupId, previousEventBox.eventBox);
-         if (previousEventBox.baseList != null)
-            _beatmapEventBoxGroupsDataModel.InsertBaseEditorDataList(
-               previousEventBox.eventBox.id,
-               previousEventBox.baseList);
-      }
-
-      _signalBus.Fire(new EventBoxesUpdatedSignal(_newIdx));
-      _signalBus.Fire<BeatmapLevelUpdatedSignal>();
+      _mutation.Replace(_newSnapshot, _previousSnapshot, _newIdx);
    }
 
    public void Redo()
    {
-      foreach (var previousEventBox in _previousEventBoxes)
-      {
-         _beatmapEventBoxGroupsDataModel.RemoveBaseEditorDataList(
-            previousEventBox.eventBox.id,
-            previousEventBox.baseList);
-         _beatmapEventBoxGroupsDataModel.RemoveEventBox(_eventBoxGroupId, previousEventBox.eventBox);
-      }
-
-      foreach (var newEventBox in _newEventBoxes)
-      {
-         _beatmapEventBoxGroupsDataModel.InsertEventBox(_eventBoxGroupId, newEventBox.eventBox);
-         if (newEventBox.baseList != null)
-            _beatmapEventBoxGroupsDataModel.InsertBaseEditorDataList(newEventBox.eventBox.id, newEventBox.baseList);
-      }
-
-      _signalBus.Fire(new EventBoxesUpdatedSignal(_newIdx));
-      _signalBus.Fire<BeatmapLevelUpdatedSignal>();
+      _mutation.Replace(_previousSnapshot, _newSnapshot, _newIdx);
    }
 }

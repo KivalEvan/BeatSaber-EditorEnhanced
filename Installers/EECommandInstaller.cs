@@ -1,5 +1,6 @@
 using BeatmapEditor3D;
 using EditorEnhanced.Commands;
+using EditorEnhanced.EventBoxes;
 using EditorEnhanced.Gizmo.Commands;
 using Zenject;
 
@@ -9,6 +10,8 @@ public class EECommandInstaller : Installer
 {
    public override void InstallBindings()
    {
+      Container.Bind<EventBoxGroupMutation>().AsSingle();
+      Container.Bind<EventBoxCloneService>().AsSingle();
       Container.BindInterfacesTo<CommandFactoryInitializer>().AsSingle();
 
       InstallCommands<SortAxisEventBoxGroupSignal, SortAxisEventBoxGroupCommand>();

@@ -1,12 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
 using BeatmapEditor3D;
-using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
-using BeatmapEditor3D.LevelEditor;
-using IPA.Utilities;
-using UnityEngine;
-using Zenject;
+using EditorEnhanced.EventBoxes;
 
 namespace EditorEnhanced.Commands;
 
@@ -33,26 +27,26 @@ public class DuplicateEventBoxSignal
    }
 }
 
-public class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
+internal sealed class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
 {
-   private readonly BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;
+   private readonly EventBoxCloneService _cloneService;
    private readonly EventBoxGroupsState _eventBoxGroupsState;
+   private readonly EventBoxGroupMutation _mutation;
    private readonly DuplicateEventBoxSignal _signal;
-   private readonly SignalBus _signalBus;
    private BeatmapEditorObjectId _eventBoxGroupId;
-   private (EventBoxEditorData eventBox, List<BaseEditorData> events) _newEventBox;
+   private EventBoxSnapshot _newEventBox;
    private int _newIdx;
 
    public DuplicateEventBoxCommand(
       DuplicateEventBoxSignal signal,
-      SignalBus signalBus,
       EventBoxGroupsState eventBoxGroupsState,
-      BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel)
+      EventBoxGroupMutation mutation,
+      EventBoxCloneService cloneService)
    {
       _signal = signal;
-      _signalBus = signalBus;
       _eventBoxGroupsState = eventBoxGroupsState;
-      _beatmapEventBoxGroupsDataModel = beatmapEventBoxGroupsDataModel;
+      _mutation = mutation;
+      _cloneService = cloneService;
    }
 
    public bool shouldAddToHistory { get; private set; }
@@ -63,74 +57,28 @@ public class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
       if (context == null) return;
 
       _eventBoxGroupId = context.id;
-      var sourceIndex = _beatmapEventBoxGroupsDataModel.GetEventBoxIdxByEventBoxId(_signal.EventBoxId);
-      var eventBoxCollection = _beatmapEventBoxGroupsDataModel
-         .GetEventBoxesCollectionByEventBoxGroupId(_eventBoxGroupId);
-      if (eventBoxCollection == null) return;
-
-      var eventBoxes = eventBoxCollection.eventBoxes;
-      if (sourceIndex < 0 || sourceIndex >= eventBoxes.Count) return;
+      var snapshot = _mutation.Capture(_eventBoxGroupId);
+      var sourceIndex = snapshot.IndexOf(_signal.EventBoxId);
+      if (sourceIndex < 0) return;
 
       _newIdx = sourceIndex + 1;
-      var newEventBox = EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(
-         eventBoxes[sourceIndex]);
-
-      if (_signal.Increment)
-      {
-         if (newEventBox.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division)
-            newEventBox.indexFilter.SetField("param1", newEventBox.indexFilter.param1 + 1);
-         else
-            newEventBox.indexFilter.SetField("param0", newEventBox.indexFilter.param0 + 1);
-      }
-
-      if (_signal.RandomSeed
-         && newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
-         newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
-
-      _newEventBox = (newEventBox,
-         _signal.CopyEvent
-            ? _beatmapEventBoxGroupsDataModel
-               .GetBaseEventsListByEventBoxId(_signal.EventBoxId)
-               .Select(d =>
-               {
-                  var data = EventBoxGroupsClipboardHelper.CopyBaseEditorDataWithoutId(d);
-                  switch (data)
-                  {
-                     case LightColorBaseEditorData color:
-                        color.SetField("brightness", color.brightness + _signal.Value / 100f);
-                        break;
-                     case LightRotationBaseEditorData rotation:
-                        rotation.SetField("rotation", rotation.rotation + _signal.Value);
-                        break;
-                     case LightTranslationBaseEditorData translation:
-                        translation.SetField("translation", translation.translation + _signal.Value / 100f);
-                        break;
-                     case FloatFxBaseEditorData fx:
-                        fx.SetField("value", fx.value + _signal.Value / 100f);
-                        break;
-                  }
-
-                  return data;
-               })
-               .ToList()
-            : []);
+      _newEventBox = _cloneService.Clone(
+         snapshot.EventBoxes[sourceIndex],
+         _signal.CopyEvent,
+         _signal.Increment,
+         _signal.RandomSeed,
+         _signal.Value);
       shouldAddToHistory = true;
       Redo();
    }
 
    public void Undo()
    {
-      _beatmapEventBoxGroupsDataModel.RemoveBaseEditorDataList(_newEventBox.eventBox.id, _newEventBox.events);
-      _beatmapEventBoxGroupsDataModel.RemoveEventBox(_eventBoxGroupId, _newEventBox.eventBox);
-      _signalBus.Fire(new EventBoxesUpdatedSignal(_newIdx - 1));
-      _signalBus.Fire<BeatmapLevelUpdatedSignal>();
+      _mutation.Remove(_eventBoxGroupId, _newEventBox, _newIdx - 1);
    }
 
    public void Redo()
    {
-      _beatmapEventBoxGroupsDataModel.InsertEventBox(_eventBoxGroupId, _newEventBox.eventBox, _newIdx);
-      _beatmapEventBoxGroupsDataModel.InsertBaseEditorDataList(_newEventBox.eventBox.id, _newEventBox.events);
-      _signalBus.Fire(new EventBoxesUpdatedSignal(_newIdx));
-      _signalBus.Fire<BeatmapLevelUpdatedSignal>();
+      _mutation.Insert(_eventBoxGroupId, _newEventBox, _newIdx, _newIdx);
    }
 }

@@ -1,45 +1,44 @@
-using System.Collections.Generic;
-using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.DataModels;
 using BeatSaber.TrackDefinitions.DataModels;
+using EditorEnhanced.EventBoxes;
 
 namespace EditorEnhanced.Managers;
 
-public class EventBoxClipboardManager
+internal sealed class EventBoxClipboardManager
 {
-   private readonly BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;
-   private (EventBoxEditorData, List<BaseEditorData>)? _fxEventBoxClipboard;
-   private (EventBoxEditorData, List<BaseEditorData>)? _lightColorEventBoxClipboard;
-   private (EventBoxEditorData, List<BaseEditorData>)? _lightRotationEventBoxClipboard;
-   private (EventBoxEditorData, List<BaseEditorData>)? _lightTranslationEventBoxClipboard;
+   private readonly EventBoxGroupMutation _mutation;
+   private EventBoxSnapshot _fxEventBoxClipboard;
+   private EventBoxSnapshot _lightColorEventBoxClipboard;
+   private EventBoxSnapshot _lightRotationEventBoxClipboard;
+   private EventBoxSnapshot _lightTranslationEventBoxClipboard;
 
-   public EventBoxClipboardManager(BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel)
+   public EventBoxClipboardManager(EventBoxGroupMutation mutation)
    {
-      _beatmapEventBoxGroupsDataModel = beatmapEventBoxGroupsDataModel;
+      _mutation = mutation;
    }
 
    public void Copy(EventBoxEditorData eventBoxEditorData)
    {
-      var l = _beatmapEventBoxGroupsDataModel.GetBaseEventsListByEventBoxId(eventBoxEditorData.id).ToList();
+      var snapshot = _mutation.Capture(eventBoxEditorData);
       switch (eventBoxEditorData)
       {
-         case LightColorEventBoxEditorData data:
-            _lightColorEventBoxClipboard = (data, l);
+         case LightColorEventBoxEditorData:
+            _lightColorEventBoxClipboard = snapshot;
             break;
-         case LightRotationEventBoxEditorData data:
-            _lightRotationEventBoxClipboard = (data, l);
+         case LightRotationEventBoxEditorData:
+            _lightRotationEventBoxClipboard = snapshot;
             break;
-         case LightTranslationEventBoxEditorData data:
-            _lightTranslationEventBoxClipboard = (data, l);
+         case LightTranslationEventBoxEditorData:
+            _lightTranslationEventBoxClipboard = snapshot;
             break;
-         case FxEventBoxEditorData data:
-            _fxEventBoxClipboard = (data, l);
+         case FxEventBoxEditorData:
+            _fxEventBoxClipboard = snapshot;
             break;
       }
    }
 
-   public (EventBoxEditorData box, List<BaseEditorData> events)? Paste(EventBoxGroupType type)
+   public EventBoxSnapshot Get(EventBoxGroupType type)
    {
       return type switch
       {
