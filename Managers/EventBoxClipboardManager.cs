@@ -3,27 +3,20 @@ using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.DataModels;
 using BeatSaber.TrackDefinitions.DataModels;
-using Zenject;
 
 namespace EditorEnhanced.Managers;
 
-public class EventBoxClipboardManager : IInitializable
+public class EventBoxClipboardManager
 {
    private readonly BeatmapEventBoxGroupsDataModel _beatmapEventBoxGroupsDataModel;
-   private (EventBoxEditorData, List<BaseEditorData>)? fxEventBoxClipboard;
-   private (EventBoxEditorData, List<BaseEditorData>)? lightColorEventBoxClipboard;
-   private (EventBoxEditorData, List<BaseEditorData>)? lightRotationEventBoxClipboard;
-
-   private (EventBoxEditorData, List<BaseEditorData>)?
-      lightTranslationEventBoxClipboard;
+   private (EventBoxEditorData, List<BaseEditorData>)? _fxEventBoxClipboard;
+   private (EventBoxEditorData, List<BaseEditorData>)? _lightColorEventBoxClipboard;
+   private (EventBoxEditorData, List<BaseEditorData>)? _lightRotationEventBoxClipboard;
+   private (EventBoxEditorData, List<BaseEditorData>)? _lightTranslationEventBoxClipboard;
 
    public EventBoxClipboardManager(BeatmapEventBoxGroupsDataModel beatmapEventBoxGroupsDataModel)
    {
       _beatmapEventBoxGroupsDataModel = beatmapEventBoxGroupsDataModel;
-   }
-
-   public void Initialize()
-   {
    }
 
    public void Copy(EventBoxEditorData eventBoxEditorData)
@@ -32,16 +25,16 @@ public class EventBoxClipboardManager : IInitializable
       switch (eventBoxEditorData)
       {
          case LightColorEventBoxEditorData data:
-            lightColorEventBoxClipboard = (data, l);
+            _lightColorEventBoxClipboard = (data, l);
             break;
          case LightRotationEventBoxEditorData data:
-            lightRotationEventBoxClipboard = (data, l);
+            _lightRotationEventBoxClipboard = (data, l);
             break;
          case LightTranslationEventBoxEditorData data:
-            lightTranslationEventBoxClipboard = (data, l);
+            _lightTranslationEventBoxClipboard = (data, l);
             break;
          case FxEventBoxEditorData data:
-            fxEventBoxClipboard = (data, l);
+            _fxEventBoxClipboard = (data, l);
             break;
       }
    }
@@ -50,10 +43,10 @@ public class EventBoxClipboardManager : IInitializable
    {
       return type switch
       {
-         EventBoxGroupType.Color => lightColorEventBoxClipboard,
-         EventBoxGroupType.Rotation => lightRotationEventBoxClipboard,
-         EventBoxGroupType.Translation => lightTranslationEventBoxClipboard,
-         EventBoxGroupType.FloatFx => fxEventBoxClipboard,
+         EventBoxGroupType.Color => _lightColorEventBoxClipboard,
+         EventBoxGroupType.Rotation => _lightRotationEventBoxClipboard,
+         EventBoxGroupType.Translation => _lightTranslationEventBoxClipboard,
+         EventBoxGroupType.FloatFx => _fxEventBoxClipboard,
          _ => null
       };
    }

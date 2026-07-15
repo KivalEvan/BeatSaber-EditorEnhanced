@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace EditorEnhanced.Gizmo.Configuration;
 
 public class GizmoConfig
@@ -29,6 +27,4 @@ public class GizmoConfig
 
    public virtual int ColorIdStep { get; set; } = 1;
    public virtual int ColorGradientStep { get; set; } = 1;
-   public virtual Color DefaultColor { get; set; } = new(1f, 1f, 1f);
-   public virtual Color HighlightColor { get; set; } = new(0f, 1f, 1f);
 }

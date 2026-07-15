@@ -506,13 +506,11 @@ internal class ConfigurationView : IInitializable
    private void HandleGizmoDraggable(bool value)
    {
       _config.Gizmo.Draggable = value;
-      _signalBus.Fire<GizmoConfigDraggableUpdateSignal>();
    }
 
    private void HandleGizmoSwappable(bool value)
    {
       _config.Gizmo.Swappable = value;
-      _signalBus.Fire<GizmoConfigSwappableUpdateSignal>();
    }
 
    private void HandleGizmoRaycastGizmo(bool value)
@@ -554,7 +552,6 @@ internal class ConfigurationView : IInitializable
    private void HandleGizmoHighlight(bool value)
    {
       _config.Gizmo.Highlight = value;
-      _signalBus.Fire<GizmoConfigHighlightUpdateSignal>();
    }
 
    private void HandleGizmoIdColor(bool value)

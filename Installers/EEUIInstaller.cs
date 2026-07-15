@@ -17,8 +17,7 @@ public class EEUIInstaller : Installer
       Container.BindInterfacesTo<SortEventBoxView>().AsSingle();
       Container.BindInterfacesTo<CopyEventBoxView>().AsSingle();
       Container.BindInterfacesTo<EventBoxIDVisualView>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EventBoxClipboardManager>().AsSingle();
-      // Container.BindInterfacesTo<ReorderEventBoxViewController>().AsSingle();
+      Container.Bind<EventBoxClipboardManager>().AsSingle();
 
       // Mixed
       Container.BindInterfacesTo<RandomSeedClipboardView>().AsSingle();
@@ -26,10 +25,6 @@ public class EEUIInstaller : Installer
 
       // Others
       Container.BindInterfacesTo<ConfigurationView>().AsSingle();
-      // Container.BindInterfacesTo<DifficultySwitchViewController>().AsSingle();
-      // Container.BindInterfacesTo<LolighterViewController>().AsSingle();
-      // Container.BindInterfacesTo<MassValueShiftViewController>().AsSingle();
-      // Container.BindInterfacesTo<IntegratedScriptViewController>().AsSingle();
 
       // UI Patch
       Container.BindInterfacesTo<ScrollableYourInput>().AsSingle();

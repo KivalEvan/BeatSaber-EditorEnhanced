@@ -24,7 +24,6 @@ For level designer, by level designer, to improve your workflow with various QOL
     * Certain inputs like negative value and index filter field require clamp to prevent issue
 * Better Scrollable Input Value
 * Simple Math Evaluation on Field Input
-* Built-in Autolight for v2 (Lolighter)
 * Custom Precision Value
 * Couple of bug fixes
 

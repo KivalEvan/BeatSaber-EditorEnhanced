@@ -2,7 +2,7 @@ namespace EditorEnhanced.Managers;
 
 public class RandomSeedClipboardManager
 {
-   public bool RandomOnPaste = false;
-   public int Seed = 0;
-   public bool UseClipboard = false;
+   public bool RandomOnPaste { get; set; }
+   public int Seed { get; set; }
+   public bool UseClipboard { get; set; }
 }
