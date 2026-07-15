@@ -9,5 +9,4 @@ public interface IUIRect
    Vector2? OffsetMin { get; set; }
    Vector2? OffsetMax { get; set; }
    Vector2? SizeDelta { get; set; }
-   Rect? Rect { get; set; }
 }

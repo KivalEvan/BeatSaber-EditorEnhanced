@@ -23,10 +23,10 @@ public class MassValueShiftView : IInitializable
    {
       var targetBtn = _ebvc._beatmapEditorExtendedSettingsView;
 
-      var stackTag = _uiBuilder.LayoutStack.Instantiate();
-      var horizontalTag = _uiBuilder.LayoutHorizontal.Instantiate();
-      var btnTag = _uiBuilder.Button.Instantiate();
-      var textTag = _uiBuilder.Text.Instantiate();
+      var stackTag = _uiBuilder.CreateStackLayout();
+      var horizontalTag = _uiBuilder.CreateHorizontalLayout();
+      var btnTag = _uiBuilder.CreateButton();
+      var textTag = _uiBuilder.CreateText();
 
       _view = stackTag
          .SetAnchorMin(new Vector2(0, 1))

@@ -8,26 +8,10 @@ using UnityEngine;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorInputStringBuilder : IEditorBuilder<EditorInputStringTag>
-{
-   private readonly EditBeatmapViewController _ebvc;
-
-   public EditorInputStringBuilder(EditBeatmapViewController ebvc)
-   {
-      _ebvc = ebvc;
-   }
-
-   public EditorInputStringTag Instantiate()
-   {
-      return new EditorInputStringTag(_ebvc);
-   }
-}
-
 public class EditorInputStringTag : EditorInputTag<string>
 {
-   public EditorInputStringTag(EditBeatmapViewController ebvc)
+   public EditorInputStringTag(EditBeatmapViewController ebvc) : base(ebvc)
    {
-      _ebvc = ebvc;
    }
 
    public override string Name { get; set; } = "EEEditorInputString";

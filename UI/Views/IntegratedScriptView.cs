@@ -22,9 +22,9 @@ public class IntegratedScriptView : IInitializable
 
    public void Initialize()
    {
-      var buttonTag = _uiBuilder.Button.Instantiate();
-      var stackTag = _uiBuilder.LayoutHorizontal.Instantiate();
-      var textTag = _uiBuilder.Text.Instantiate();
+      var buttonTag = _uiBuilder.CreateButton();
+      var stackTag = _uiBuilder.CreateHorizontalLayout();
+      var textTag = _uiBuilder.CreateText();
 
       _view = stackTag.Create(_ebvc.transform);
       textTag.SetText("Integrated Script").Create(_view.transform);

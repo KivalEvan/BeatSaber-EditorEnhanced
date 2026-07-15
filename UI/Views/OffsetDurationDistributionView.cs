@@ -36,8 +36,7 @@ public class OffsetDurationDistributionView : IInitializable, IDisposable
          .GetComponent<EventBoxesView>()
          ._eventBoxView;
 
-      var buttonTag = _uiBuilder
-         .Button.Instantiate()
+      var buttonTag = _uiBuilder.CreateButton()
          .SetFontSize(16);
 
       buttonTag

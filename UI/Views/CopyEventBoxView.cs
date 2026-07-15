@@ -39,35 +39,28 @@ internal class CopyEventBoxView : IInitializable
       var replacement = target.transform.Find("EventBoxInfo");
       replacement.gameObject.SetActive(false);
 
-      var stackTag = _uiBuilder
-         .LayoutStack.Instantiate()
+      var stackTag = _uiBuilder.CreateStackLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-      var verticalTag = _uiBuilder
-         .LayoutVertical.Instantiate()
+      var verticalTag = _uiBuilder.CreateVerticalLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetPadding(new RectOffset(4, 4, 4, 4));
-      var horizontalTag = _uiBuilder
-         .LayoutHorizontal.Instantiate()
+      var horizontalTag = _uiBuilder.CreateHorizontalLayout()
          .SetChildAlignment(TextAnchor.LowerCenter)
          .SetChildControlWidth(true)
          .SetSpacing(8)
          .SetPadding(new RectOffset(4, 4, 2, 2));
-      var btnTag = _uiBuilder
-         .Button.Instantiate()
+      var btnTag = _uiBuilder.CreateButton()
          .SetFontSize(16);
-      var checkboxTag = _uiBuilder
-         .Checkbox.Instantiate()
+      var checkboxTag = _uiBuilder.CreateCheckbox()
          .SetSize(28)
          .SetFontSize(16);
-      var inputFloatTag = _uiBuilder
-         .InputFloat.Instantiate()
+      var inputFloatTag = _uiBuilder.CreateFloatInput()
          .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetValidatorType(FloatInputFieldValidator.ValidatorType.None)
-         .SetPreferredWidth(80)
-         .SetPadding(new RectOffset(2, 2, 2, 2));
+         .SetPreferredWidth(80);
 
       var container = stackTag.Create(target.transform);
       container.transform.SetAsFirstSibling();

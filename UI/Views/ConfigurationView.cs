@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
@@ -9,6 +10,7 @@ using EditorEnhanced.Gizmo;
 using EditorEnhanced.Gizmo.Commands;
 using EditorEnhanced.Misc;
 using EditorEnhanced.UI.Extensions;
+using EditorEnhanced.UI.Tags;
 using HarmonyLib;
 using TMPro;
 using UnityEngine;
@@ -24,19 +26,30 @@ internal class ConfigurationView : IInitializable
    private readonly EditBeatmapViewController _ebvc;
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
-   private GameObject _globalScaleInput;
+   private NumericControl _colorGradientControl;
+   private NumericControl _colorIdControl;
+   private NumericControl _globalScaleControl;
+   private NumericControl _sizeBaseControl;
+   private NumericControl _sizeRotationControl;
+   private NumericControl _sizeTranslationControl;
 
-   private GameObject _globalScaleSlider;
-   private GameObject _sizeBaseInput;
-   private GameObject _sizeBaseSlider;
-   private GameObject _sizeRotationInput;
-   private GameObject _sizeRotationSlider;
-   private GameObject _sizeTranslationInput;
-   private GameObject _sizeTranslationSlider;
-   private GameObject _colorIdInput;
-   private GameObject _colorIdSlider;
-   private GameObject _colorGradientInput;
-   private GameObject _colorGradientSlider;
+   private sealed class NumericControl
+   {
+      private readonly FloatInputFieldValidator _input;
+      private readonly Slider _slider;
+
+      public NumericControl(Slider slider, FloatInputFieldValidator input)
+      {
+         _slider = slider;
+         _input = input;
+      }
+
+      public void SetValueWithoutNotify(float value)
+      {
+         _slider.SetValueWithoutNotify(value);
+         _input.SetValueWithoutNotify(value, true);
+      }
+   }
 
    public ConfigurationView(
       SignalBus signalBus,
@@ -54,48 +67,40 @@ internal class ConfigurationView : IInitializable
    {
       var target = _ebvc._editBeatmapRightPanelView._scrollView.contentTransform;
 
-      var stackTag = _uiBuilder
-         .LayoutStack.Instantiate()
+      var stackTag = _uiBuilder.CreateStackLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetChildAlignment(TextAnchor.MiddleCenter)
          .SetPadding(new RectOffset(4, 4, 4, 4));
-      var verticalTag = _uiBuilder
-         .LayoutVertical.Instantiate()
+      var verticalTag = _uiBuilder.CreateVerticalLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetChildAlignment(TextAnchor.UpperLeft)
          .SetPadding(new RectOffset(4, 4, 4, 4));
-      var horizontalTag = _uiBuilder
-         .LayoutHorizontal.Instantiate()
+      var horizontalTag = _uiBuilder.CreateHorizontalLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetChildAlignment(TextAnchor.MiddleLeft)
          .SetSpacing(8)
          .SetPadding(new RectOffset(4, 4, 4, 4));
-      var checkboxTag = _uiBuilder
-         .Checkbox.Instantiate()
+      var checkboxTag = _uiBuilder.CreateCheckbox()
          .SetTextAlignment(TextAlignmentOptions.Left)
          .SetSize(28)
          .SetFontSize(16);
-      var inputFloatTag = _uiBuilder
-         .InputFloat.Instantiate()
+      var inputFloatTag = _uiBuilder.CreateFloatInput()
          .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetPreferredWidth(80)
          .SetMinValue(GizmoAssets.MinSize)
          .SetMaxValue(GizmoAssets.MaxSize)
-         .SetValidatorType(FloatInputFieldValidator.ValidatorType.Clamp)
-         .SetPadding(new RectOffset(2, 2, 2, 2));
-      var sliderTag = _uiBuilder
-         .Slider.Instantiate()
+         .SetValidatorType(FloatInputFieldValidator.ValidatorType.Clamp);
+      var sliderTag = _uiBuilder.CreateSlider()
          .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetPreferredWidth(260)
          .SetMinValue(GizmoAssets.MinSize)
          .SetMaxValue(GizmoAssets.MaxSize);
-      var textTag = _uiBuilder
-         .Text.Instantiate()
+      var textTag = _uiBuilder.CreateText()
          .SetFontSize(16);
 
       var mainContainer = verticalTag
@@ -216,50 +221,54 @@ internal class ConfigurationView : IInitializable
          .SetFontSize(16f)
          .SetFontWeight(FontWeight.Regular)
          .Create(layout.transform);
-      _globalScaleSlider = sliderTag
-         .SetValue(_config.Gizmo.GlobalScale)
-         .SetOnValueChange(HandleGizmoGlobalScale)
-         .Create(layout.transform);
-      _globalScaleInput = inputFloatTag
-         .SetValue(_config.Gizmo.GlobalScale)
-         .SetOnValueChange(HandleGizmoGlobalScale)
-         .Create(layout.transform);
+      _globalScaleControl = CreateNumericControl(
+         layout.transform,
+         sliderTag,
+         inputFloatTag,
+         _config.Gizmo.GlobalScale,
+         GizmoAssets.MinSize,
+         GizmoAssets.MaxSize,
+         false,
+         HandleGizmoGlobalScale);
       layout = horizontalTag.Create(container.transform);
       textTag
          .SetText("Base")
          .Create(layout.transform);
-      _sizeBaseSlider = sliderTag
-         .SetValue(_config.Gizmo.SizeBase)
-         .SetOnValueChange(HandleGizmoSizeBase)
-         .Create(layout.transform);
-      _sizeBaseInput = inputFloatTag
-         .SetValue(_config.Gizmo.SizeBase)
-         .SetOnValueChange(HandleGizmoSizeBase)
-         .Create(layout.transform);
+      _sizeBaseControl = CreateNumericControl(
+         layout.transform,
+         sliderTag,
+         inputFloatTag,
+         _config.Gizmo.SizeBase,
+         GizmoAssets.MinSize,
+         GizmoAssets.MaxSize,
+         false,
+         HandleGizmoSizeBase);
       layout = horizontalTag.Create(container.transform);
       textTag
          .SetText("Rotation")
          .Create(layout.transform);
-      _sizeRotationSlider = sliderTag
-         .SetValue(_config.Gizmo.SizeRotation)
-         .SetOnValueChange(HandleGizmoSizeRotation)
-         .Create(layout.transform);
-      _sizeRotationInput = inputFloatTag
-         .SetValue(_config.Gizmo.SizeRotation)
-         .SetOnValueChange(HandleGizmoSizeRotation)
-         .Create(layout.transform);
+      _sizeRotationControl = CreateNumericControl(
+         layout.transform,
+         sliderTag,
+         inputFloatTag,
+         _config.Gizmo.SizeRotation,
+         GizmoAssets.MinSize,
+         GizmoAssets.MaxSize,
+         false,
+         HandleGizmoSizeRotation);
       layout = horizontalTag.Create(container.transform);
       textTag
          .SetText("Translation")
          .Create(layout.transform);
-      _sizeTranslationSlider = sliderTag
-         .SetValue(_config.Gizmo.SizeTranslation)
-         .SetOnValueChange(HandleGizmoSizeTranslation)
-         .Create(layout.transform);
-      _sizeTranslationInput = inputFloatTag
-         .SetValue(_config.Gizmo.SizeTranslation)
-         .SetOnValueChange(HandleGizmoSizeTranslation)
-         .Create(layout.transform);
+      _sizeTranslationControl = CreateNumericControl(
+         layout.transform,
+         sliderTag,
+         inputFloatTag,
+         _config.Gizmo.SizeTranslation,
+         GizmoAssets.MinSize,
+         GizmoAssets.MaxSize,
+         false,
+         HandleGizmoSizeTranslation);
 
       layout = horizontalTag.Create(container.transform);
       textTag
@@ -273,35 +282,28 @@ internal class ConfigurationView : IInitializable
          .SetFontSize(16f)
          .SetFontWeight(FontWeight.Regular)
          .Create(layout.transform);
-      _colorIdSlider = sliderTag
-         .SetValue(_config.Gizmo.ColorIdStep)
-         .SetMinValue(-8)
-         .SetMaxValue(8)
-         .SetWholeNumber(true)
-         .SetOnValueChange(HandleGizmoColorIdSkip)
-         .Create(layout.transform);
-      _colorIdInput = inputFloatTag
-         .SetValue(_config.Gizmo.ColorIdStep)
-         .SetMinValue(-8)
-         .SetMaxValue(8)
-         .SetOnValueChange(HandleGizmoColorIdSkip)
-         .Create(layout.transform);
+      _colorIdControl = CreateNumericControl(
+         layout.transform,
+         sliderTag,
+         inputFloatTag,
+         _config.Gizmo.ColorIdStep,
+         -8,
+         8,
+         true,
+         HandleGizmoColorIdSkip);
       layout = horizontalTag.Create(container.transform);
       textTag
          .SetText("Gradient Step")
          .Create(layout.transform);
-      _colorGradientSlider = sliderTag
-         .SetValue(_config.Gizmo.ColorGradientStep)
-         .SetMinValue(-16)
-         .SetMaxValue(16)
-         .SetOnValueChange(HandleGizmoColorGradientSkip)
-         .Create(layout.transform);
-      _colorGradientInput = inputFloatTag
-         .SetValue(_config.Gizmo.ColorGradientStep)
-         .SetMinValue(-16)
-         .SetMaxValue(16)
-         .SetOnValueChange(HandleGizmoColorGradientSkip)
-         .Create(layout.transform);
+      _colorGradientControl = CreateNumericControl(
+         layout.transform,
+         sliderTag,
+         inputFloatTag,
+         _config.Gizmo.ColorGradientStep,
+         -16,
+         16,
+         true,
+         HandleGizmoColorGradientSkip);
 
       container = stackTag.Create(mainContainer.transform);
       Object.Instantiate(
@@ -324,93 +326,85 @@ internal class ConfigurationView : IInitializable
          .SetFontSize(16)
          .SetFontWeight(FontWeight.Regular)
          .Create(layout.transform);
-      inputFloatTag
-         .SetValidatorType(FloatInputFieldValidator.ValidatorType.None);
-      foreach (var precisionsKey in LightColorEventHelper._precisions.Keys)
-         inputFloatTag
-            .SetValue(LightColorEventHelper._precisions[precisionsKey])
-            .SetOnValueChange(val =>
-            {
-               LightColorEventHelper._precisions[precisionsKey] = val;
-               _config.Precision.Color[(int)precisionsKey] = val;
-            })
-            .Create(layout.transform);
+      CreatePrecisionInputs(
+         layout.transform,
+         LightColorEventHelper._precisions,
+         (key, value) =>
+         {
+            LightColorEventHelper._precisions[key] = value;
+            _config.Precision.Color[(int)key] = value;
+         });
 
       layout = horizontalTag
          .Create(container.transform);
       textTag
          .SetText("Rotation")
          .Create(layout.transform);
-      foreach (var precisionsKey in ModifyHoveredLightRotationDeltaRotationCommand._precisions.Keys)
-         inputFloatTag
-            .SetValue(ModifyHoveredLightRotationDeltaRotationCommand._precisions[precisionsKey])
-            .SetOnValueChange(val =>
-            {
-               ModifyHoveredLightRotationDeltaRotationCommand._precisions[precisionsKey] = val;
-               _config.Precision.Rotation[(int)precisionsKey] = val;
-            })
-            .Create(layout.transform);
+      CreatePrecisionInputs(
+         layout.transform,
+         ModifyHoveredLightRotationDeltaRotationCommand._precisions,
+         (key, value) =>
+         {
+            ModifyHoveredLightRotationDeltaRotationCommand._precisions[key] = value;
+            _config.Precision.Rotation[(int)key] = value;
+         });
 
       layout = horizontalTag
          .Create(container.transform);
       textTag
          .SetText("Translation")
          .Create(layout.transform);
-      foreach (var precisionsKey in ModifyHoveredLightTranslationDeltaTranslationCommand._precisions.Keys)
-         inputFloatTag
-            .SetValue(ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[precisionsKey])
-            .SetOnValueChange(val =>
-            {
-               ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[precisionsKey] = val;
-               _config.Precision.Translation[(int)precisionsKey] = val;
-            })
-            .Create(layout.transform);
+      CreatePrecisionInputs(
+         layout.transform,
+         ModifyHoveredLightTranslationDeltaTranslationCommand._precisions,
+         (key, value) =>
+         {
+            ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[key] = value;
+            _config.Precision.Translation[(int)key] = value;
+         });
 
       layout = horizontalTag
          .Create(container.transform);
       textTag
          .SetText("FX")
          .Create(layout.transform);
-      foreach (var precisionsKey in ModifyHoveredFloatFxDeltaValueCommand._precisions.Keys)
-         inputFloatTag
-            .SetValue(ModifyHoveredFloatFxDeltaValueCommand._precisions[precisionsKey])
-            .SetOnValueChange(val =>
-            {
-               ModifyHoveredFloatFxDeltaValueCommand._precisions[precisionsKey] = val;
-               _config.Precision.Fx[(int)precisionsKey] = val;
-            })
-            .Create(layout.transform);
+      CreatePrecisionInputs(
+         layout.transform,
+         ModifyHoveredFloatFxDeltaValueCommand._precisions,
+         (key, value) =>
+         {
+            ModifyHoveredFloatFxDeltaValueCommand._precisions[key] = value;
+            _config.Precision.Fx[(int)key] = value;
+         });
 
       layout = horizontalTag
          .Create(container.transform);
       textTag
          .SetText("Time")
          .Create(layout.transform);
-      foreach (var precisionsKey in CustomPrecisions.TimePrecisionFloat.Keys)
-         inputFloatTag
-            .SetValue(CustomPrecisions.TimePrecisionFloat[precisionsKey])
-            .SetOnValueChange(val =>
-            {
-               CustomPrecisions.TimePrecisionFloat[precisionsKey] = val;
-               _config.Precision.Time[(int)precisionsKey] = val;
-            })
-            .Create(layout.transform);
+      CreatePrecisionInputs(
+         layout.transform,
+         CustomPrecisions.TimePrecisionFloat,
+         (key, value) =>
+         {
+            CustomPrecisions.TimePrecisionFloat[key] = value;
+            _config.Precision.Time[(int)key] = value;
+         });
 
       layout = horizontalTag
          .Create(container.transform);
       textTag
          .SetText("Percent")
          .Create(layout.transform);
-      foreach (var precisionsKey in CustomPrecisions.PercentPrecisionFloat.Keys)
-         inputFloatTag
-            .SetValue(CustomPrecisions.PercentPrecisionFloat[precisionsKey])
-            .SetOnValueChange(val =>
-            {
-               CustomPrecisions.PercentPrecisionFloat[precisionsKey] = val;
-               CustomPrecisions.PercentPrecisionInt[precisionsKey] = (int)Math.Round(val);
-               _config.Precision.Percent[(int)precisionsKey] = val;
-            })
-            .Create(layout.transform);
+      CreatePrecisionInputs(
+         layout.transform,
+         CustomPrecisions.PercentPrecisionFloat,
+         (key, value) =>
+         {
+            CustomPrecisions.PercentPrecisionFloat[key] = value;
+            CustomPrecisions.PercentPrecisionInt[key] = (int)Math.Round(value);
+            _config.Precision.Percent[(int)key] = value;
+         });
 
       var configPanel = new EditBeatmapRightPanelView.PanelElement
       {
@@ -425,6 +419,82 @@ internal class ConfigurationView : IInitializable
             .ToArray());
       _ebvc._editBeatmapRightPanelView._dropdown._numberOfVisibleCell =
          _ebvc._editBeatmapRightPanelView._panels.Length;
+   }
+
+   private static NumericControl CreateNumericControl(
+      Transform parent,
+      EditorSliderTag sliderTag,
+      EditorInputFloatTag inputTag,
+      float value,
+      float minValue,
+      float maxValue,
+      bool wholeNumbers,
+      Action<float> onValueChange)
+   {
+      var slider = sliderTag
+         .SetValue(value)
+         .SetMinValue(minValue)
+         .SetMaxValue(maxValue)
+         .SetWholeNumber(wholeNumbers)
+         .SetOnValueChange(onValueChange)
+         .Create(parent)
+         .GetComponent<Slider>();
+      var input = inputTag
+         .SetValue(value)
+         .SetMinValue(minValue)
+         .SetMaxValue(maxValue)
+         .SetOnValueChange(onValueChange)
+         .Create(parent)
+         .GetComponent<FloatInputFieldValidator>();
+
+      return new NumericControl(slider, input);
+   }
+
+   private void CreatePrecisionInputs<TKey>(
+      Transform parent,
+      IDictionary<TKey, float> values,
+      Action<TKey, float> onValueChange)
+   {
+      foreach (var key in values.Keys)
+         _uiBuilder.CreateFloatInput()
+            .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
+            .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
+            .SetPreferredWidth(80)
+            .SetMinValue(-16)
+            .SetMaxValue(16)
+            .SetValidatorType(FloatInputFieldValidator.ValidatorType.None)
+            .SetValue(values[key])
+            .SetOnValueChange(value => onValueChange(key, value))
+            .Create(parent);
+   }
+
+   private static void UpdateRoundedFloat(
+      float value,
+      Action<float> updateConfig,
+      NumericControl control,
+      Action fireSignal)
+   {
+      var normalized = Mathf.Clamp(
+         Mathf.Round(value * 100f) / 100f,
+         GizmoAssets.MinSize,
+         GizmoAssets.MaxSize);
+      updateConfig(normalized);
+      control.SetValueWithoutNotify(normalized);
+      fireSignal();
+   }
+
+   private static void UpdateRoundedInteger(
+      float value,
+      int minValue,
+      int maxValue,
+      Action<int> updateConfig,
+      NumericControl control,
+      Action fireSignal)
+   {
+      var normalized = (int)Math.Clamp(Mathf.Round(value), minValue, maxValue);
+      updateConfig(normalized);
+      control.SetValueWithoutNotify(normalized);
+      fireSignal();
    }
 
    private void HandleGizmoEnable(bool value)
@@ -501,67 +571,59 @@ internal class ConfigurationView : IInitializable
 
    private void HandleGizmoGlobalScale(float value)
    {
-      _config.Gizmo.GlobalScale =
-         Mathf.Clamp(Mathf.Round(value * 100f) / 100f, GizmoAssets.MinSize, GizmoAssets.MaxSize);
-      _globalScaleSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.GlobalScale);
-      _globalScaleInput
-         .GetComponent<FloatInputFieldValidator>()
-         .SetValueWithoutNotify(_config.Gizmo.GlobalScale, true);
-      _signalBus.Fire<GizmoConfigGlobalScaleUpdateSignal>();
+      UpdateRoundedFloat(
+         value,
+         normalized => _config.Gizmo.GlobalScale = normalized,
+         _globalScaleControl,
+         () => _signalBus.Fire<GizmoConfigGlobalScaleUpdateSignal>());
    }
 
    private void HandleGizmoSizeBase(float value)
    {
-      _config.Gizmo.SizeBase =
-         Mathf.Clamp(Mathf.Round(value * 100f) / 100f, GizmoAssets.MinSize, GizmoAssets.MaxSize);
-      _sizeBaseSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.SizeBase);
-      _sizeBaseInput
-         .GetComponent<FloatInputFieldValidator>()
-         .SetValueWithoutNotify(_config.Gizmo.SizeBase, true);
-      _signalBus.Fire<GizmoConfigSizeBaseUpdateSignal>();
+      UpdateRoundedFloat(
+         value,
+         normalized => _config.Gizmo.SizeBase = normalized,
+         _sizeBaseControl,
+         () => _signalBus.Fire<GizmoConfigSizeBaseUpdateSignal>());
    }
 
    private void HandleGizmoSizeRotation(float value)
    {
-      _config.Gizmo.SizeRotation =
-         Mathf.Clamp(Mathf.Round(value * 100f) / 100f, GizmoAssets.MinSize, GizmoAssets.MaxSize);
-      _sizeRotationSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.SizeRotation);
-      _sizeRotationInput
-         .GetComponent<FloatInputFieldValidator>()
-         .SetValueWithoutNotify(_config.Gizmo.SizeRotation, true);
-      _signalBus.Fire<GizmoConfigSizeRotationUpdateSignal>();
+      UpdateRoundedFloat(
+         value,
+         normalized => _config.Gizmo.SizeRotation = normalized,
+         _sizeRotationControl,
+         () => _signalBus.Fire<GizmoConfigSizeRotationUpdateSignal>());
    }
 
    private void HandleGizmoSizeTranslation(float value)
    {
-      _config.Gizmo.SizeTranslation =
-         Mathf.Clamp(Mathf.Round(value * 100f) / 100f, GizmoAssets.MinSize, GizmoAssets.MaxSize);
-      _sizeTranslationSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.SizeTranslation);
-      _sizeTranslationInput
-         .GetComponent<FloatInputFieldValidator>()
-         .SetValueWithoutNotify(_config.Gizmo.SizeTranslation, true);
-      _signalBus.Fire<GizmoConfigSizeTranslationUpdateSignal>();
+      UpdateRoundedFloat(
+         value,
+         normalized => _config.Gizmo.SizeTranslation = normalized,
+         _sizeTranslationControl,
+         () => _signalBus.Fire<GizmoConfigSizeTranslationUpdateSignal>());
    }
 
    private void HandleGizmoColorIdSkip(float value)
    {
-      _config.Gizmo.ColorIdStep =
-         (int)Math.Clamp(Mathf.Round(value), -8, 8);
-      _colorIdSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.ColorIdStep);
-      _colorIdInput
-         .GetComponent<FloatInputFieldValidator>()
-         .SetValueWithoutNotify(_config.Gizmo.ColorIdStep, true);
-      _signalBus.Fire<GizmoRefreshSignal>();
+      UpdateRoundedInteger(
+         value,
+         -8,
+         8,
+         normalized => _config.Gizmo.ColorIdStep = normalized,
+         _colorIdControl,
+         () => _signalBus.Fire<GizmoRefreshSignal>());
    }
 
    private void HandleGizmoColorGradientSkip(float value)
    {
-      _config.Gizmo.ColorGradientStep =
-         (int)Math.Clamp(Mathf.Round(value), -16, 16);
-      _colorGradientSlider.GetComponent<Slider>().SetValueWithoutNotify(_config.Gizmo.ColorGradientStep);
-      _colorGradientInput
-         .GetComponent<FloatInputFieldValidator>()
-         .SetValueWithoutNotify(_config.Gizmo.ColorGradientStep, true);
-      _signalBus.Fire<GizmoRefreshSignal>();
+      UpdateRoundedInteger(
+         value,
+         -16,
+         16,
+         normalized => _config.Gizmo.ColorGradientStep = normalized,
+         _colorGradientControl,
+         () => _signalBus.Fire<GizmoRefreshSignal>());
    }
 }

@@ -30,8 +30,7 @@ internal class LolighterView : IInitializable, IDisposable
    {
       var target = _ebnvc._eventsToolbarView;
 
-      _uiBuilder
-         .Button.Instantiate()
+      _uiBuilder.CreateButton()
          .SetFontSize(10)
          .SetText("Commit Crime")
          .SetOnClick(() => _signalBus.Fire(new LolighterSignal()))

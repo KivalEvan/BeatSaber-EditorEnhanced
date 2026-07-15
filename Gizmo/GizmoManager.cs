@@ -88,8 +88,7 @@ internal class GizmoManager : IInitializable, IDisposable
       go.SetActive(false);
       _gizmoDragInputSystem = go.AddComponent<GizmoDragInputSystem>();
 
-      go = _uiBuilder
-         .LayoutStack.Instantiate()
+      go = _uiBuilder.CreateStackLayout()
          .SetName("GizmoInfo")
          .SetPreferredWidth(0)
          .SetPreferredHeight(0)
@@ -98,8 +97,7 @@ internal class GizmoManager : IInitializable, IDisposable
          .Create(_ebvc.transform);
       go.SetActive(false);
       _gizmoInfo = _container.InstantiateComponent<GizmoInfo>(go);
-      _uiBuilder
-         .Text.Instantiate()
+      _uiBuilder.CreateText()
          .SetColor(Color.white)
          .SetTextAlignment(TextAlignmentOptions.TopLeft)
          .SetFontSize(12f)

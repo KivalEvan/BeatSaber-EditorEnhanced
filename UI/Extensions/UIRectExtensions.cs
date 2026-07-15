@@ -34,10 +34,4 @@ public static class UIRectExtensions
       self.SizeDelta = value;
       return self;
    }
-
-   public static T SetRect<T>(this T self, Rect value) where T : IUIRect
-   {
-      self.Rect = value;
-      return self;
-   }
 }

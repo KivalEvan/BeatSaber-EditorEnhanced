@@ -13,23 +13,6 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorCheckboxBuilder : IEditorBuilder<EditorCheckboxTag>
-{
-   private readonly EditBeatmapNavigationViewController _ebnvc;
-   private readonly TimeTweeningManager _twm;
-
-   public EditorCheckboxBuilder(EditBeatmapNavigationViewController ebnvc, TimeTweeningManager twm)
-   {
-      _ebnvc = ebnvc;
-      _twm = twm;
-   }
-
-   public EditorCheckboxTag Instantiate()
-   {
-      return new EditorCheckboxTag(_ebnvc, _twm);
-   }
-}
-
 public class EditorCheckboxTag : IEditorTag, IUIToggle, IUIText
 {
    private readonly EditBeatmapNavigationViewController _ebnvc;
@@ -63,13 +46,10 @@ public class EditorCheckboxTag : IEditorTag, IUIToggle, IUIText
       horizontalLayoutGroup.childControlHeight = false;
       horizontalLayoutGroup.spacing = 2f;
       horizontalLayoutGroup.childAlignment = TextAnchor.MiddleLeft;
-      // var layoutElement = toggleObject.AddComponent<LayoutElement>();
-      // layoutElement.flexibleWidth = 1f;
 
       var contentWrapper = new GameObject("ContentWrapper");
       contentWrapper.transform.SetParent(toggleObject.transform, false);
-      var stackLayoutGroup = contentWrapper.AddComponent<StackLayoutGroup>();
-      // stackLayoutGroup.padding = new RectOffset(12, 12, 6, 6);
+      contentWrapper.AddComponent<StackLayoutGroup>();
 
       var labelObject = toggle.transform.Find("BeatmapEditorLabel").gameObject;
       labelObject.transform.SetParent(contentWrapper.transform, false);
@@ -79,7 +59,8 @@ public class EditorCheckboxTag : IEditorTag, IUIToggle, IUIText
       tmp.color = Color ?? tmp.color;
       tmp.fontSize = FontSize ?? 12f;
       tmp.fontWeight = FontWeight ?? tmp.fontWeight;
-      tmp.richText = true;
+      tmp.richText = RichText ?? true;
+      tmp.characterSpacing = CharacterSpacing ?? tmp.characterSpacing;
 
       var contentSizeFitter = contentWrapper.AddComponent<ContentSizeFitter>();
       contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;

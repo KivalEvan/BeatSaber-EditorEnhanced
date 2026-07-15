@@ -1,6 +1,5 @@
 using EditorEnhanced.Managers;
 using EditorEnhanced.UI;
-using EditorEnhanced.UI.Tags;
 using EditorEnhanced.UI.Views;
 using Zenject;
 
@@ -11,20 +10,7 @@ public class EEUIInstaller : Installer
    public override void InstallBindings()
    {
       // UI Builder
-      Container.BindInterfacesAndSelfTo<EditorButtonBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorButtonWithIconBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorCheckboxBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorInputFloatBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorInputIntBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorInputStringBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorLayoutHorizontalBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorLayoutVerticalBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorLayoutStackBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorSliderBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorTextBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorToggleButtonBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<EditorToggleGroupBuilder>().AsSingle();
-      Container.BindInterfacesAndSelfTo<UIBuilder>().AsSingle();
+      Container.Bind<UIBuilder>().AsSingle();
 
       // Event Boxes
       Container.BindInterfacesTo<OffsetDurationDistributionView>().AsSingle();

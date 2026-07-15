@@ -41,26 +41,21 @@ public class DifficultySwitchView : IInitializable, IDisposable
    {
       var target = _ebvc.transform;
 
-      var stackTag = _uiBuilder
-         .LayoutStack.Instantiate()
+      var stackTag = _uiBuilder.CreateStackLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-      var verticalTag = _uiBuilder
-         .LayoutVertical.Instantiate()
+      var verticalTag = _uiBuilder.CreateVerticalLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetPadding(new RectOffset(4, 4, 4, 4));
-      var horizontalTag = _uiBuilder
-         .LayoutHorizontal.Instantiate()
+      var horizontalTag = _uiBuilder.CreateHorizontalLayout()
          .SetChildAlignment(TextAnchor.LowerCenter)
          .SetChildControlWidth(true)
          .SetSpacing(8)
          .SetPadding(new RectOffset(4, 4, 2, 4));
-      var btnTag = _uiBuilder
-         .Button.Instantiate()
+      var btnTag = _uiBuilder.CreateButton()
          .SetFontSize(16);
-      var checkboxTag = _uiBuilder
-         .Checkbox.Instantiate()
+      var checkboxTag = _uiBuilder.CreateCheckbox()
          .SetSize(28)
          .SetFontSize(16);
 

@@ -13,24 +13,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorButtonBuilder : IEditorBuilder<EditorButtonTag>
-{
-   private readonly EditBeatmapViewController _ebvc;
-   private readonly TimeTweeningManager _twm;
-
-   public EditorButtonBuilder(EditBeatmapViewController ebvc, TimeTweeningManager twm)
-   {
-      _ebvc = ebvc;
-      _twm = twm;
-   }
-
-   public EditorButtonTag Instantiate()
-   {
-      return new EditorButtonTag(_ebvc, _twm);
-   }
-}
-
-public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUILayout
+public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUIContainer
 {
    private readonly EditBeatmapViewController _ebvc;
    private readonly TimeTweeningManager _twm;
@@ -82,7 +65,6 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUILayout
       stackLayoutGroup.childForceExpandHeight = ChildForceExpandHeight ?? stackLayoutGroup.childForceExpandHeight;
       stackLayoutGroup.padding = Padding ?? new RectOffset(12, 12, 6, 6);
 
-
       var labelObject = button.transform.Find("BeatmapEditorLabel").gameObject;
       labelObject.transform.SetParent(contentWrapper.transform, false);
       var tmp = labelObject.GetComponent<TextMeshProUGUI>();
@@ -91,7 +73,8 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUILayout
       tmp.color = Color ?? tmp.color;
       tmp.fontSize = FontSize ?? 12;
       tmp.fontWeight = FontWeight ?? tmp.fontWeight;
-      tmp.richText = true;
+      tmp.richText = RichText ?? true;
+      tmp.characterSpacing = CharacterSpacing ?? tmp.characterSpacing;
 
       var contentSizeFitter = btnObject.AddComponent<ContentSizeFitter>();
       contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -102,21 +85,9 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUILayout
    }
 
    [CanBeNull] public List<Action> OnClick { get; set; } = [];
-   public float? Spacing { get; set; }
    public RectOffset Padding { get; set; }
-   public ContentSizeFitter.FitMode? VerticalFit { get; set; }
-   public ContentSizeFitter.FitMode? HorizontalFit { get; set; }
-   public TextAnchor? ChildAlignment { get; set; }
-   public bool? ChildControlWidth { get; set; }
-   public bool? ChildControlHeight { get; set; }
-   public bool? ChildScaleWidth { get; set; }
-   public bool? ChildScaleHeight { get; set; }
    public bool? ChildForceExpandWidth { get; set; }
    public bool? ChildForceExpandHeight { get; set; }
-   public float? FlexibleWidth { get; set; }
-   public float? FlexibleHeight { get; set; }
-   public float? PreferredWidth { get; set; }
-   public float? PreferredHeight { get; set; }
    [CanBeNull] public string Text { get; set; }
    public Color? Color { get; set; }
    public TextAlignmentOptions? TextAlignment { get; set; }

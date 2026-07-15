@@ -7,21 +7,6 @@ using UnityEngine;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorTextBuilder : IEditorBuilder<EditorTextTag>
-{
-   private readonly EditBeatmapViewController _ebvc;
-
-   public EditorTextBuilder(EditBeatmapViewController ebvc)
-   {
-      _ebvc = ebvc;
-   }
-
-   public EditorTextTag Instantiate()
-   {
-      return new EditorTextTag(_ebvc);
-   }
-}
-
 public class EditorTextTag : IEditorTag, IUIText, IUIRect
 {
    private readonly EditBeatmapViewController _ebvc;
@@ -55,12 +40,14 @@ public class EditorTextTag : IEditorTag, IUIText, IUIRect
       ctmp.text = Text ?? "Default Text";
       ctmp.fontWeight = FontWeight ?? ctmp.fontWeight;
       ctmp.alignment = TextAlignment ?? ctmp.alignment;
+      ctmp.richText = RichText ?? ctmp.richText;
       ctmp.characterSpacing = CharacterSpacing ?? ctmp.characterSpacing;
 
       ctmp.rectTransform.anchorMin = AnchorMin ?? new Vector2(0.5f, 0.5f);
       ctmp.rectTransform.anchorMax = AnchorMax ?? new Vector2(0.5f, 0.5f);
       ctmp.rectTransform.offsetMin = OffsetMin ?? ctmp.rectTransform.offsetMin;
       ctmp.rectTransform.offsetMax = OffsetMax ?? ctmp.rectTransform.offsetMax;
+      ctmp.rectTransform.sizeDelta = SizeDelta ?? ctmp.rectTransform.sizeDelta;
 
       go.SetActive(true);
       return go;
@@ -71,7 +58,6 @@ public class EditorTextTag : IEditorTag, IUIText, IUIRect
    public Vector2? OffsetMin { get; set; }
    public Vector2? OffsetMax { get; set; }
    public Vector2? SizeDelta { get; set; }
-   public Rect? Rect { get; set; }
 
    [CanBeNull] public string Text { get; set; }
    public Color? Color { get; set; }

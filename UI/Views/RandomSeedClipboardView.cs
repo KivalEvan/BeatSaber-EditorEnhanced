@@ -50,11 +50,11 @@ public class RandomSeedClipboardView : IInitializable, IDisposable
          .GetComponent<EventBoxesView>();
       var targetNav = _ebnvc._eventBoxGroupsToolbarView;
 
-      var verticalTag = _uiBuilder.LayoutVertical.Instantiate();
-      var horizontalTag = _uiBuilder.LayoutHorizontal.Instantiate();
-      var textTag = _uiBuilder.Text.Instantiate();
-      var checkboxTag = _uiBuilder.Checkbox.Instantiate().SetFontSize(10f);
-      var buttonTag = _uiBuilder.Button.Instantiate().SetFontSize(10f);
+      var verticalTag = _uiBuilder.CreateVerticalLayout();
+      var horizontalTag = _uiBuilder.CreateHorizontalLayout();
+      var textTag = _uiBuilder.CreateText();
+      var checkboxTag = _uiBuilder.CreateCheckbox().SetFontSize(10f);
+      var buttonTag = _uiBuilder.CreateButton().SetFontSize(10f);
 
       var vt = verticalTag
          .SetChildControlWidth(true)

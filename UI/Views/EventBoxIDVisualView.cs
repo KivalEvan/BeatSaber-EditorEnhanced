@@ -60,7 +60,7 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       var le = modification.GetChild(0).gameObject.AddComponent<LayoutElement>();
       le.ignoreLayout = true;
 
-      _textTag = _uiBuilder.Text.Instantiate().SetColor(new Color(0.75f, 0f, 0f)).SetFontSize(16f);
+      _textTag = _uiBuilder.CreateText().SetColor(new Color(0.75f, 0f, 0f)).SetFontSize(16f);
       _errorTextTargetTransform = modification;
 
       var vlg = modification.gameObject.AddComponent<VerticalLayoutGroup>();
@@ -69,8 +69,7 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       vlg.childForceExpandWidth = true;
       vlg.spacing = 4f;
 
-      var horizontalTag = _uiBuilder
-         .LayoutHorizontal.Instantiate()
+      var horizontalTag = _uiBuilder.CreateHorizontalLayout()
          .SetChildAlignment(TextAnchor.LowerCenter)
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.Unconstrained);
@@ -78,15 +77,13 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       _imageContainer = horizontalTag.Create(modification.transform);
       horizontalTag.SetChildAlignment(TextAnchor.MiddleLeft);
       var durationContainer = horizontalTag.Create(modification.transform);
-      _maxDurationText = _uiBuilder
-         .Text.Instantiate()
+      _maxDurationText = _uiBuilder.CreateText()
          .SetText("Max Duration: ∞")
          .SetFontSize(16f)
          .SetTextAlignment(TextAlignmentOptions.Left)
          .Create(durationContainer.transform)
          .GetComponent<TMP_Text>();
-      _setDurationButton = _uiBuilder
-         .Button.Instantiate()
+      _setDurationButton = _uiBuilder.CreateButton()
          .SetText("Set")
          .SetFontSize(16f)
          .SetSize(new Vector2(56f, 32f))

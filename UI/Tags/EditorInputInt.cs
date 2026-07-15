@@ -9,30 +9,12 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Tags;
 
-public class EditorInputIntBuilder : IEditorBuilder<EditorInputIntTag>
-{
-   private readonly EditBeatmapViewController _ebvc;
-   private readonly DiContainer _container;
-
-   public EditorInputIntBuilder(EditBeatmapViewController ebvc, DiContainer container)
-   {
-      _ebvc = ebvc;
-      _container = container;
-   }
-
-   public EditorInputIntTag Instantiate()
-   {
-      return new EditorInputIntTag(_ebvc, _container);
-   }
-}
-
 public class EditorInputIntTag : EditorInputTag<int>
 {
    private readonly DiContainer _container;
    
-   public EditorInputIntTag(EditBeatmapViewController ebvc, DiContainer container)
+   public EditorInputIntTag(EditBeatmapViewController ebvc, DiContainer container) : base(ebvc)
    {
-      _ebvc = ebvc;
       _container = container;
    }
 
