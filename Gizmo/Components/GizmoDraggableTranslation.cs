@@ -1,7 +1,6 @@
 using System;
 using BeatmapEditor3D.Commands;
 using EditorEnhanced.Commands;
-using EditorEnhanced.Gizmo.Commands;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,12 +28,6 @@ public class GizmoDraggableTranslation : GizmoDraggable
             : _lightTranslationGroup.zTranslationLimits.y,
          _ => throw new ArgumentOutOfRangeException()
       };
-      _signalBus.Subscribe<GizmoConfigSizeTranslationUpdateSignal>(AdjustSize);
-   }
-
-   private void OnDisable()
-   {
-      _signalBus.TryUnsubscribe<GizmoConfigSizeTranslationUpdateSignal>(AdjustSize);
    }
 
    protected override float GetSize()

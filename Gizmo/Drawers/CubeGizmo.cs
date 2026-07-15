@@ -42,7 +42,7 @@ internal static class CubeGizmo
       mesh.AddComponent<GizmoMaterial>();
       mesh.AddComponent<GizmoHighlight>();
       mesh.AddComponent<GizmoHighlightController>();
-      mesh.AddComponent<GizmoNone>();
+      mesh.AddComponent<GizmoScaleController>();
 
       return go;
    }

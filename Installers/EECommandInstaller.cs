@@ -28,13 +28,8 @@ public class EECommandInstaller : Installer
       Container.DeclareSignal<GizmoRefreshSignal>().OptionalSubscriber();
 
       // Gizmo Config
-      Container.DeclareSignal<GizmoConfigRaycastGizmoUpdateSignal>().OptionalSubscriber();
-      Container.DeclareSignal<GizmoConfigRaycastLaneUpdateSignal>().OptionalSubscriber();
-
-      Container.DeclareSignal<GizmoConfigGlobalScaleUpdateSignal>().OptionalSubscriber();
-      Container.DeclareSignal<GizmoConfigSizeBaseUpdateSignal>().OptionalSubscriber();
-      Container.DeclareSignal<GizmoConfigSizeRotationUpdateSignal>().OptionalSubscriber();
-      Container.DeclareSignal<GizmoConfigSizeTranslationUpdateSignal>().OptionalSubscriber();
+      Container.DeclareSignal<GizmoColliderConfigChangedSignal>().OptionalSubscriber();
+      Container.DeclareSignal<GizmoScaleConfigChangedSignal>().OptionalSubscriber();
    }
 
    private void InstallCommands<TSignal, TCommand>()

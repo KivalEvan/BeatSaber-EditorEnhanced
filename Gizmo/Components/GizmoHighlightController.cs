@@ -5,7 +5,7 @@ using Zenject;
 
 namespace EditorEnhanced.Gizmo.Components;
 
-public class GizmoHighlightController : MonoBehaviour, IGizmoInput
+public class GizmoHighlightController : MonoBehaviour, IGizmoInput, IGizmoPoolable
 {
    [Inject] private readonly PluginConfig _config = null!;
    private List<GizmoHighlight> _highlights;
@@ -64,5 +64,16 @@ public class GizmoHighlightController : MonoBehaviour, IGizmoInput
    public void Init()
    {
       _highlights = [];
+   }
+
+   public void ResetForPool()
+   {
+      if (_highlights != null)
+         foreach (var highlight in _highlights)
+            if (highlight != null)
+               highlight.RemoveOutline();
+
+      _highlights = [];
+      IsDragging = false;
    }
 }

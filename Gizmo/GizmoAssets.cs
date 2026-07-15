@@ -7,6 +7,7 @@ using EditorEnhanced.Gizmo.Components;
 using EditorEnhanced.Gizmo.Drawers;
 using EditorEnhanced.Utils;
 using UnityEngine;
+using UnityEngine.Animations;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -35,6 +36,7 @@ internal class GizmoAssets : IInitializable, IDisposable
 
    private readonly List<GameObject>[] _gizmoObjects = new List<GameObject>[6];
    private readonly GameObject[] _gizmoPrefab = new GameObject[6];
+   private readonly HashSet<GameObject> _leasedObjects = [];
    private readonly SignalBus _signalBus;
 
    public GizmoAssets(DiContainer diContainer, SignalBus signalBus, PluginConfig config)
@@ -52,9 +54,9 @@ internal class GizmoAssets : IInitializable, IDisposable
          gizmos.ForEach(Object.Destroy);
          gizmos.Clear();
       }
+      _leasedObjects.Clear();
 
-      _signalBus.TryUnsubscribe<GizmoConfigRaycastGizmoUpdateSignal>(HandleRaycastGizmoUpdate);
-      _signalBus.TryUnsubscribe<GizmoConfigRaycastLaneUpdateSignal>(HandleRaycastLaneUpdate);
+      _signalBus.TryUnsubscribe<GizmoColliderConfigChangedSignal>(HandleColliderConfigChanged);
    }
 
    public void Initialize()
@@ -68,8 +70,13 @@ internal class GizmoAssets : IInitializable, IDisposable
 
       for (var i = 0; i < _gizmoObjects.Length; i++) _gizmoObjects[i] = [];
 
-      _signalBus.Subscribe<GizmoConfigRaycastGizmoUpdateSignal>(HandleRaycastGizmoUpdate);
-      _signalBus.Subscribe<GizmoConfigRaycastLaneUpdateSignal>(HandleRaycastLaneUpdate);
+      _signalBus.Subscribe<GizmoColliderConfigChangedSignal>(HandleColliderConfigChanged);
+   }
+
+   private void HandleColliderConfigChanged()
+   {
+      HandleRaycastGizmoUpdate();
+      HandleRaycastLaneUpdate();
    }
 
    private void HandleRaycastGizmoUpdate()
@@ -113,13 +120,14 @@ internal class GizmoAssets : IInitializable, IDisposable
    {
       var objects = _gizmoObjects[(int)gizmoType];
 
-      var go = objects.FirstOrDefault(obj => !obj.activeSelf);
+      var go = objects.FirstOrDefault(obj => !_leasedObjects.Contains(obj));
       if (go == null)
       {
          var prefab = _gizmoPrefab[(int)gizmoType];
          go = _diContainer.InstantiatePrefab(prefab);
          objects.Add(go);
       }
+      _leasedObjects.Add(go);
 
       var gizmoMat = go.GetComponent<GizmoMaterial>();
       if (gizmoMat == null) return go;
@@ -144,5 +152,19 @@ internal class GizmoAssets : IInitializable, IDisposable
       // }
 
       return go;
+   }
+
+   public void Release(GameObject gizmo)
+   {
+      if (gizmo == null) return;
+
+      _leasedObjects.Remove(gizmo);
+      gizmo.SetActive(false);
+      foreach (var poolable in gizmo.GetComponentsInChildren<IGizmoPoolable>(true)) poolable.ResetForPool();
+      foreach (var constraint in gizmo.GetComponentsInChildren<PositionConstraint>(true)) constraint.SetSources([]);
+      foreach (var constraint in gizmo.GetComponentsInChildren<RotationConstraint>(true)) constraint.SetSources([]);
+      gizmo.transform.SetParent(null, false);
+      gizmo.transform.localPosition = Vector3.zero;
+      gizmo.transform.localRotation = Quaternion.identity;
    }
 }

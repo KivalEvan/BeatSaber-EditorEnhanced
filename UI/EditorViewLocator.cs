@@ -170,6 +170,11 @@ internal sealed class EditorViewLocator
       return Require(statusBar?._musicVolumeSlider, "slider-prefab", "the editor slider template").gameObject;
    }
 
+   public Transform GetEditorRoot()
+   {
+      return Require(_viewController, "editor-root", "the editor view controller").transform;
+   }
+
    private T Require<T>(T value, string key, string description) where T : UnityEngine.Object
    {
       if (value != null) return value;

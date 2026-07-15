@@ -83,6 +83,18 @@ public class GizmoDragInputSystem : MonoBehaviour
       }
    }
 
+   private void OnDisable()
+   {
+      if (_currentGizmoDraggables != null)
+         foreach (var input in _currentGizmoDraggables)
+            input.IsDragging = false;
+
+      _currentGizmoDraggables = null;
+      _currentHoveredObject = null;
+      _isDragging = false;
+      _offset = Vector3.zero;
+   }
+
    private void OnClickPerformed(InputAction.CallbackContext context)
    {
       var mouseScreenPos = _pointerPositionAction.ReadValue<Vector2>();

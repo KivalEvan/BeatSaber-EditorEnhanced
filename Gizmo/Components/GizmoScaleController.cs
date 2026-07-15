@@ -1,36 +1,32 @@
 using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo.Commands;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace EditorEnhanced.Gizmo.Components;
 
-public class GizmoNone : MonoBehaviour
+public class GizmoScaleController : MonoBehaviour
 {
    [Inject] private readonly PluginConfig _config = null!;
    [Inject] private readonly SignalBus _signalBus = null!;
 
    private void OnEnable()
    {
-      UpdateSizeValue();
+      UpdateSize();
 
-      _signalBus.Subscribe<GizmoConfigSizeBaseUpdateSignal>(UpdateSizeValue);
-      _signalBus.Subscribe<GizmoConfigGlobalScaleUpdateSignal>(UpdateSizeValue);
+      _signalBus.Subscribe<GizmoScaleConfigChangedSignal>(UpdateSize);
    }
 
    private void OnDisable()
    {
-      _signalBus.TryUnsubscribe<GizmoConfigSizeBaseUpdateSignal>(UpdateSizeValue);
-      _signalBus.TryUnsubscribe<GizmoConfigGlobalScaleUpdateSignal>(UpdateSizeValue);
+      _signalBus.TryUnsubscribe<GizmoScaleConfigChangedSignal>(UpdateSize);
    }
 
-   private void UpdateSizeValue()
+   private void UpdateSize()
    {
       AdjustSize();
-      _signalBus.Fire<GizmoConfigSizeRotationUpdateSignal>();
-      _signalBus.Fire<GizmoConfigSizeTranslationUpdateSignal>();
+      var draggable = GetComponentInChildren<GizmoDraggable>(true);
+      if (draggable != null) draggable.RefreshSize();
    }
 
    private void AdjustSize()

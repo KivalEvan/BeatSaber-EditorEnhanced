@@ -7,7 +7,7 @@ using Zenject;
 
 namespace EditorEnhanced.Gizmo.Components;
 
-public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
+public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput, IGizmoPoolable
 {
    public LightGroupSubsystem LightGroupSubsystemContext;
    public LightAxis Axis;
@@ -78,5 +78,24 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput
          Mathf.Abs(GetSize() * _config.Gizmo.GlobalScale / transform.lossyScale.x),
          Mathf.Abs(GetSize() * _config.Gizmo.GlobalScale / transform.lossyScale.y),
          Mathf.Abs(GetSize() * _config.Gizmo.GlobalScale / transform.lossyScale.z));
+   }
+
+   public void RefreshSize()
+   {
+      AdjustSize();
+   }
+
+   public void ResetForPool()
+   {
+      IsDragging = false;
+      EventBoxEditorDataContext = null;
+      LightGroupSubsystemContext = null;
+      TargetTransform = null;
+      Mirror = false;
+      if (transform.parent != null)
+      {
+         transform.parent.localPosition = Vector3.zero;
+         transform.parent.localRotation = Quaternion.identity;
+      }
    }
 }

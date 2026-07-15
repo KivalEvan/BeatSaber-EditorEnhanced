@@ -1,7 +1,5 @@
-using System;
 using BeatmapEditor3D.Commands;
 using EditorEnhanced.Commands;
-using EditorEnhanced.Gizmo.Commands;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,17 +7,6 @@ namespace EditorEnhanced.Gizmo.Components;
 
 public class GizmoDraggableRotation : GizmoDraggable
 {
-   protected override void OnEnable()
-   {
-      base.OnEnable();
-      _signalBus.Subscribe<GizmoConfigSizeRotationUpdateSignal>(AdjustSize);
-   }
-
-   private void OnDisable()
-   {
-      _signalBus.TryUnsubscribe<GizmoConfigSizeRotationUpdateSignal>(AdjustSize);
-   }
-
    protected override float GetSize()
    {
       return _config.Gizmo.SizeRotation;
@@ -37,13 +24,7 @@ public class GizmoDraggableRotation : GizmoDraggable
    {
       if (!_config.Gizmo.Draggable && !IsDragging) return;
       var origin = transform.parent;
-      var axisNormal = Axis switch
-      {
-         LightAxis.X => origin.parent.right,
-         LightAxis.Y => origin.parent.up,
-         LightAxis.Z => origin.parent.forward,
-         _ => throw new ArgumentOutOfRangeException()
-      };
+      var axisNormal = GizmoRotationMath.GetAxisNormal(origin.parent, Axis);
 
       var ray = Camera.ScreenPointToRay(Mouse.current.position.value);
       var rotationPlane = new Plane(axisNormal, origin.position);
@@ -54,18 +35,7 @@ public class GizmoDraggableRotation : GizmoDraggable
 
       var targetRotation = Quaternion.LookRotation(direction, axisNormal);
       origin.rotation = targetRotation;
-      // dear god i dont know how to actually deal with rotation, let alone quaternion
-      origin.localEulerAngles = Axis switch
-      {
-         LightAxis.X => Mathf.Approximately(origin.localEulerAngles.z, 90f)
-            ? new Vector3(SnapRotation(-origin.localEulerAngles.x + 270f), 0f, 0f)
-            : new Vector3(SnapRotation(origin.localEulerAngles.x) + 90f, 0f, 0f),
-         LightAxis.Y => new Vector3(0f, SnapRotation(origin.localEulerAngles.y), 0f),
-         LightAxis.Z => Mathf.Approximately(origin.localEulerAngles.z, 90f)
-            ? new Vector3(0f, 0f, SnapRotation(-origin.localEulerAngles.x))
-            : new Vector3(0f, 0f, SnapRotation(origin.localEulerAngles.x + 180f)),
-         _ => throw new ArgumentOutOfRangeException()
-      };
+      origin.localEulerAngles = GizmoRotationMath.GetSnappedLocalEuler(origin.localEulerAngles, Axis, SnapRotation);
    }
 
    public override void OnMouseClick()
@@ -79,14 +49,7 @@ public class GizmoDraggableRotation : GizmoDraggable
       if (!_config.Gizmo.Draggable && !IsDragging) return;
       var localRotation = transform.parent.localEulerAngles;
       var targetLocalRotation = TargetTransform.localEulerAngles;
-      var value = Axis switch
-      {
-         LightAxis.X => localRotation.x + targetLocalRotation.x,
-         LightAxis.Y => localRotation.y + targetLocalRotation.y,
-         LightAxis.Z => localRotation.z + targetLocalRotation.z,
-         _ => throw new ArgumentOutOfRangeException()
-      };
-      if (Mirror) value = -value;
+      var value = GizmoRotationMath.GetTargetValue(localRotation, targetLocalRotation, Axis, Mirror);
       _signalBus.Fire(new DragGizmoLightRotationEventBoxSignal(EventBoxEditorDataContext, Mathf.Repeat(value, 360f)));
 
       transform.parent.localRotation = Quaternion.identity;

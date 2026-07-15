@@ -12,7 +12,7 @@ using Zenject;
 
 namespace EditorEnhanced.Gizmo.Components;
 
-public class GizmoSwappable : MonoBehaviour, IGizmoInput
+public class GizmoSwappable : MonoBehaviour, IGizmoInput, IGizmoPoolable
 {
    [Inject] private readonly BeatmapEventBoxGroupsDataModel _bebgdm = null!;
    [Inject] private readonly PluginConfig _config = null!;
@@ -112,5 +112,15 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
          Mouse.current.position.x.value,
          Mouse.current.position.y.value,
          _camera.WorldToScreenPoint(transform.position).z);
+   }
+
+   public void ResetForPool()
+   {
+      EventBoxEditorDataContext = null;
+      IsDragging = false;
+      _index = 0;
+      _maxIndex = 0;
+      _startIndex = 0;
+      _initialPosition = Vector3.zero;
    }
 }

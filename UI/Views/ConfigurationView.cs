@@ -503,13 +503,13 @@ internal class ConfigurationView : IInitializable
    private void HandleGizmoRaycastGizmo(bool value)
    {
       _config.Gizmo.RaycastGizmo = value;
-      _signalBus.Fire<GizmoConfigRaycastGizmoUpdateSignal>();
+      _signalBus.Fire<GizmoColliderConfigChangedSignal>();
    }
 
    private void HandleGizmoRaycastLane(bool value)
    {
       _config.Gizmo.RaycastLane = value;
-      _signalBus.Fire<GizmoConfigRaycastLaneUpdateSignal>();
+      _signalBus.Fire<GizmoColliderConfigChangedSignal>();
    }
 
    private void HandleGizmoShowBase(bool value)
@@ -559,7 +559,7 @@ internal class ConfigurationView : IInitializable
          value,
          normalized => _config.Gizmo.GlobalScale = normalized,
          _globalScaleControl,
-         () => _signalBus.Fire<GizmoConfigGlobalScaleUpdateSignal>());
+         () => _signalBus.Fire<GizmoScaleConfigChangedSignal>());
    }
 
    private void HandleGizmoSizeBase(float value)
@@ -568,7 +568,7 @@ internal class ConfigurationView : IInitializable
          value,
          normalized => _config.Gizmo.SizeBase = normalized,
          _sizeBaseControl,
-         () => _signalBus.Fire<GizmoConfigSizeBaseUpdateSignal>());
+         () => _signalBus.Fire<GizmoScaleConfigChangedSignal>());
    }
 
    private void HandleGizmoSizeRotation(float value)
@@ -577,7 +577,7 @@ internal class ConfigurationView : IInitializable
          value,
          normalized => _config.Gizmo.SizeRotation = normalized,
          _sizeRotationControl,
-         () => _signalBus.Fire<GizmoConfigSizeRotationUpdateSignal>());
+         () => _signalBus.Fire<GizmoScaleConfigChangedSignal>());
    }
 
    private void HandleGizmoSizeTranslation(float value)
@@ -586,7 +586,7 @@ internal class ConfigurationView : IInitializable
          value,
          normalized => _config.Gizmo.SizeTranslation = normalized,
          _sizeTranslationControl,
-         () => _signalBus.Fire<GizmoConfigSizeTranslationUpdateSignal>());
+         () => _signalBus.Fire<GizmoScaleConfigChangedSignal>());
    }
 
    private void HandleGizmoColorIdSkip(float value)
