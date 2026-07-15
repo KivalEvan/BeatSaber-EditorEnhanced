@@ -8,8 +8,12 @@ namespace EditorEnhanced.Gizmo.Components;
 
 public class GizmoDraggableTranslation : GizmoDraggable
 {
+   private Vector3 _dragLocalDelta;
+   private Plane _dragPlane;
    private LightTranslationGroup _lightTranslationGroup;
    private float _limit;
+   private Vector3 _startLocalPosition;
+   private Vector3 _startPointerPosition;
 
    protected override void OnEnable()
    {
@@ -47,60 +51,68 @@ public class GizmoDraggableTranslation : GizmoDraggable
 
    public override void OnDrag()
    {
-      if (!_config.Gizmo.Draggable && !IsDragging) return;
+      if (!IsDragging) return;
       var origin = transform.parent;
-      var screenPosition = new Vector3(
-         Mouse.current.position.x.value,
-         Mouse.current.position.y.value,
-         Camera.WorldToScreenPoint(origin.position).z);
-      var worldPosition = Camera.ScreenToWorldPoint(screenPosition);
-      origin.position = worldPosition;
-      transform.parent.localPosition = Axis switch
+      var ray = Camera.ScreenPointToRay(Mouse.current.position.value);
+      if (!_dragPlane.Raycast(ray, out var distance)) return;
+
+      var localDelta = origin.parent.InverseTransformVector(ray.GetPoint(distance) - _startPointerPosition);
+      _dragLocalDelta = Axis switch
       {
          LightAxis.X => new Vector3(
-            SnapPosition(origin.localPosition.x, TargetTransform.parent.lossyScale.x),
+            SnapPosition(localDelta.x, TargetTransform.parent.lossyScale.x),
             0,
             0),
          LightAxis.Y => new Vector3(
             0,
-            SnapPosition(origin.localPosition.y, TargetTransform.parent.lossyScale.y),
+            SnapPosition(localDelta.y, TargetTransform.parent.lossyScale.y),
             0),
          LightAxis.Z => new Vector3(
             0,
             0,
-            SnapPosition(origin.localPosition.z, TargetTransform.parent.lossyScale.z)),
+            SnapPosition(localDelta.z, TargetTransform.parent.lossyScale.z)),
          _ => throw new ArgumentOutOfRangeException()
       };
+      origin.localPosition = _startLocalPosition + _dragLocalDelta;
    }
 
    public override void OnMouseClick()
    {
       if (!_config.Gizmo.Draggable) return;
+
+      var origin = transform.parent;
+      _dragPlane = new Plane(Camera.transform.forward, origin.position);
+      var ray = Camera.ScreenPointToRay(Mouse.current.position.value);
+      if (!_dragPlane.Raycast(ray, out var distance)) return;
+
+      _startLocalPosition = origin.localPosition;
+      _startPointerPosition = ray.GetPoint(distance);
+      _dragLocalDelta = Vector3.zero;
       IsDragging = true;
    }
 
    public override void OnMouseRelease()
    {
-      if (!_config.Gizmo.Draggable && !IsDragging) return;
+      if (!IsDragging) return;
 
-      if (transform.parent.localPosition.sqrMagnitude > 0.001f)
+      if (_dragLocalDelta.sqrMagnitude > 0.001f)
       {
-         var localPosition = transform.parent.localPosition;
          var targetLocalPosition = TargetTransform.localPosition;
          var value = Axis switch
          {
             LightAxis.X => targetLocalPosition.x / _limit
-               + localPosition.x / _limit / TargetTransform.parent.lossyScale.x,
+               + _dragLocalDelta.x / _limit / TargetTransform.parent.lossyScale.x,
             LightAxis.Y => targetLocalPosition.y / _limit
-               + localPosition.y / _limit / TargetTransform.parent.lossyScale.y,
+               + _dragLocalDelta.y / _limit / TargetTransform.parent.lossyScale.y,
             LightAxis.Z => targetLocalPosition.z / _limit
-               + localPosition.z / _limit / TargetTransform.parent.lossyScale.z,
+               + _dragLocalDelta.z / _limit / TargetTransform.parent.lossyScale.z,
             _ => throw new ArgumentOutOfRangeException()
          };
          _signalBus.Fire(new DragGizmoLightTranslationEventBoxSignal(EventBoxEditorDataContext, value));
       }
 
-      transform.parent.localPosition = Vector3.zero;
+      transform.parent.localPosition = _startLocalPosition;
+      _dragLocalDelta = Vector3.zero;
       IsDragging = false;
    }
 }

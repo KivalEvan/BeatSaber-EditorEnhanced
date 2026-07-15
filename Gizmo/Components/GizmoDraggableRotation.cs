@@ -1,3 +1,4 @@
+using System;
 using BeatmapEditor3D.Commands;
 using EditorEnhanced.Commands;
 using UnityEngine;
@@ -7,6 +8,12 @@ namespace EditorEnhanced.Gizmo.Components;
 
 public class GizmoDraggableRotation : GizmoDraggable
 {
+   private float _dragAngle;
+   private Plane _dragPlane;
+   private Vector3 _startDirection;
+   private Quaternion _startLocalRotation;
+   private float _startValue;
+
    protected override float GetSize()
    {
       return _config.Gizmo.SizeRotation;
@@ -22,37 +29,59 @@ public class GizmoDraggableRotation : GizmoDraggable
 
    public override void OnDrag()
    {
-      if (!_config.Gizmo.Draggable && !IsDragging) return;
+      if (!IsDragging) return;
       var origin = transform.parent;
       var axisNormal = GizmoRotationMath.GetAxisNormal(origin.parent, Axis);
 
       var ray = Camera.ScreenPointToRay(Mouse.current.position.value);
-      var rotationPlane = new Plane(axisNormal, origin.position);
+      if (!_dragPlane.Raycast(ray, out var distance)) return;
 
-      if (!rotationPlane.Raycast(ray, out var distance)) return;
-      var hitPoint = ray.GetPoint(distance);
-      var direction = hitPoint - origin.position;
+      var direction = ray.GetPoint(distance) - origin.position;
+      if (direction.sqrMagnitude <= Mathf.Epsilon) return;
 
-      var targetRotation = Quaternion.LookRotation(direction, axisNormal);
-      origin.rotation = targetRotation;
-      origin.localEulerAngles = GizmoRotationMath.GetSnappedLocalEuler(origin.localEulerAngles, Axis, SnapRotation);
+      _dragAngle = SnapRotation(Vector3.SignedAngle(_startDirection, direction, axisNormal));
+      var localAxis = Axis switch
+      {
+         LightAxis.X => Vector3.right,
+         LightAxis.Y => Vector3.up,
+         LightAxis.Z => Vector3.forward,
+         _ => throw new ArgumentOutOfRangeException()
+      };
+      origin.localRotation = Quaternion.AngleAxis(_dragAngle, localAxis) * _startLocalRotation;
    }
 
    public override void OnMouseClick()
    {
       if (!_config.Gizmo.Draggable) return;
+
+      var origin = transform.parent;
+      var axisNormal = GizmoRotationMath.GetAxisNormal(origin.parent, Axis);
+      _dragPlane = new Plane(axisNormal, origin.position);
+      var ray = Camera.ScreenPointToRay(Mouse.current.position.value);
+      if (!_dragPlane.Raycast(ray, out var distance)) return;
+
+      _startDirection = ray.GetPoint(distance) - origin.position;
+      if (_startDirection.sqrMagnitude <= Mathf.Epsilon) return;
+
+      _startLocalRotation = origin.localRotation;
+      _startValue = GizmoRotationMath.GetEventValue(TargetTransform.localRotation, Axis, Mirror);
+      _dragAngle = 0f;
       IsDragging = true;
    }
 
    public override void OnMouseRelease()
    {
-      if (!_config.Gizmo.Draggable && !IsDragging) return;
-      var localRotation = transform.parent.localEulerAngles;
-      var targetLocalRotation = TargetTransform.localEulerAngles;
-      var value = GizmoRotationMath.GetTargetValue(localRotation, targetLocalRotation, Axis, Mirror);
-      _signalBus.Fire(new DragGizmoLightRotationEventBoxSignal(EventBoxEditorDataContext, Mathf.Repeat(value, 360f)));
+      if (!IsDragging) return;
 
-      transform.parent.localRotation = Quaternion.identity;
+      if (!Mathf.Approximately(_dragAngle, 0f))
+      {
+         var value = _startValue + (Mirror ? -_dragAngle : _dragAngle);
+         _signalBus.Fire(
+            new DragGizmoLightRotationEventBoxSignal(EventBoxEditorDataContext, Mathf.Repeat(value, 360f)));
+      }
+
+      transform.parent.localRotation = _startLocalRotation;
+      _dragAngle = 0f;
       IsDragging = false;
    }
 }
