@@ -11,12 +11,12 @@ namespace EditorEnhanced.UI.Views;
 
 internal class CopyEventBoxView : IInitializable
 {
-   private readonly EditBeatmapViewController _ebvc;
+   private readonly EditorViewLocator _viewLocator;
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
 
    private bool _copyEvent;
-   private EventBoxesView _ebv;
+   private EventBoxView _eventBoxView;
    private bool _increment;
    private bool _randomSeed;
    private bool _addValue;
@@ -24,19 +24,21 @@ internal class CopyEventBoxView : IInitializable
 
    public CopyEventBoxView(
       SignalBus signalBus,
-      EditBeatmapViewController ebvc,
+      EditorViewLocator viewLocator,
       UIBuilder uiBuilder)
    {
       _signalBus = signalBus;
-      _ebvc = ebvc;
+      _viewLocator = viewLocator;
       _uiBuilder = uiBuilder;
    }
 
    public void Initialize()
    {
-      _ebv = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
-      var target = _ebv._eventBoxView;
-      var replacement = target.transform.Find("EventBoxInfo");
+      if (!_viewLocator.TryGetEventBoxView(out _eventBoxView)) return;
+      var target = _eventBoxView;
+      if (!_viewLocator.TryFind(target.transform, "EventBoxInfo", out var replacement)
+          || !_viewLocator.TryFind(target.transform, "GroupInfoView/Background4px", out var background))
+         return;
       replacement.gameObject.SetActive(false);
 
       var stackTag = _uiBuilder.CreateStackLayout()
@@ -65,7 +67,7 @@ internal class CopyEventBoxView : IInitializable
       var container = stackTag.Create(target.transform);
       container.transform.SetAsFirstSibling();
       Object.Instantiate(
-         target.transform.Find("GroupInfoView/Background4px"),
+         background,
          container.transform,
          false);
       container = verticalTag.Create(container.transform);
@@ -113,14 +115,14 @@ internal class CopyEventBoxView : IInitializable
 
    private void CopyEventBox()
    {
-      _signalBus.Fire(new CopyEventBoxSignal(_ebv._eventBoxView._eventBox));
+      _signalBus.Fire(new CopyEventBoxSignal(_eventBoxView._eventBox));
    }
 
    private void PasteEventBox()
    {
       _signalBus.Fire(
          new PasteEventBoxSignal(
-            _ebv._eventBoxView._eventBox,
+            _eventBoxView._eventBox,
             _copyEvent,
             _randomSeed,
             _increment,
@@ -131,7 +133,7 @@ internal class CopyEventBoxView : IInitializable
    {
       _signalBus.Fire(
          new DuplicateEventBoxSignal(
-            _ebv._eventBoxView._eventBox.id,
+            _eventBoxView._eventBox.id,
             _copyEvent,
             _randomSeed,
             _increment,

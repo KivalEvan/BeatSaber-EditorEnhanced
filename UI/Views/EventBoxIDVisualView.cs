@@ -24,7 +24,7 @@ namespace EditorEnhanced.UI.Views;
 
 internal class EventBoxIDVisualView : IInitializable, IDisposable
 {
-   private readonly EditBeatmapViewController _ebvc;
+   private readonly EditorViewLocator _viewLocator;
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
 
@@ -43,19 +43,20 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
 
    public EventBoxIDVisualView(
       SignalBus signalBus,
-      EditBeatmapViewController ebvc,
+      EditorViewLocator viewLocator,
       UIBuilder uiBuilder)
    {
       _signalBus = signalBus;
-      _ebvc = ebvc;
+      _viewLocator = viewLocator;
       _uiBuilder = uiBuilder;
    }
 
    public void Initialize()
    {
-      _ebv = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
-      var target = _ebv._eventBoxView;
-      var modification = target.transform.Find("GroupInfoView") as RectTransform;
+      if (!_viewLocator.TryGetEventBoxesView(out _ebv)
+          || !_viewLocator.TryGetEventBoxView(out var target))
+         return;
+      if (!_viewLocator.TryFindRect(target.transform, "GroupInfoView", out var modification)) return;
       modification.GetComponent<LayoutElement>().preferredHeight = -1;
       var le = modification.GetChild(0).gameObject.AddComponent<LayoutElement>();
       le.ignoreLayout = true;

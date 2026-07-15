@@ -10,6 +10,7 @@ public class EEUIInstaller : Installer
    public override void InstallBindings()
    {
       // UI Builder
+      Container.Bind<EditorViewLocator>().AsSingle();
       Container.Bind<UIBuilder>().AsSingle();
 
       // Event Boxes

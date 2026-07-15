@@ -2,6 +2,7 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Gizmo.Commands;
+using EditorEnhanced.UI;
 using UnityEngine;
 using Zenject;
 
@@ -11,19 +12,20 @@ public class GizmoSelection : MonoBehaviour
 {
    [Inject] private readonly BeatmapEventBoxGroupsDataModel _bebgdm = null!;
    [Inject] private readonly EventBoxGroupsState _ebgs = null!;
-   [Inject] private readonly EditBeatmapViewController _ebvc = null!;
    [Inject] private readonly SignalBus _signalBus = null!;
+   [Inject] private readonly EditorViewLocator _viewLocator = null!;
    private EventBoxesView _eventBoxesView;
    private int _index;
    private int _maxIndex;
 
    private void Awake()
    {
-      _eventBoxesView = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
+      if (!_viewLocator.TryGetEventBoxesView(out _eventBoxesView)) enabled = false;
    }
 
    private void OnEnable()
    {
+      if (_eventBoxesView == null || _ebgs.eventBoxGroupContext == null) return;
       _maxIndex = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id).Count - 1;
       MoveTransform();
       _signalBus.Subscribe<EventBoxSelectedSignal>(MoveTransform);

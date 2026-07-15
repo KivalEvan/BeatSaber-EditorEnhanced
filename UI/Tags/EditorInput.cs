@@ -8,22 +8,18 @@ namespace EditorEnhanced.UI.Tags;
 
 public abstract class EditorInputTag<T> : IEditorTag, IUILayoutElement
 {
-   private readonly EditBeatmapViewController _ebvc;
+   private readonly GameObject _prefabInput;
 
-   protected EditorInputTag(EditBeatmapViewController ebvc)
+   protected EditorInputTag(GameObject prefabInput)
    {
-      _ebvc = ebvc;
+      _prefabInput = prefabInput;
    }
-
-   private GameObject PrefabInput =>
-      _ebvc._editBeatmapRightPanelView._editObjectView._noteDataView
-         ._beatInputFieldValidator.gameObject;
 
    public abstract string Name { get; set; }
 
    public virtual GameObject Create(Transform parent)
    {
-      var go = Object.Instantiate(PrefabInput, parent, false);
+      var go = Object.Instantiate(_prefabInput, parent, false);
       go.name = Name;
       go.SetActive(false);
 

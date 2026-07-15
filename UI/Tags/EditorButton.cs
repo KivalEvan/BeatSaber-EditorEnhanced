@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using BeatmapEditor3D;
 using EditorEnhanced.UI.Interfaces;
 using HMUI;
 using IPA.Utilities;
@@ -15,23 +14,22 @@ namespace EditorEnhanced.UI.Tags;
 
 public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUIContainer
 {
-   private readonly EditBeatmapViewController _ebvc;
+   private readonly Button _prefabButton;
    private readonly TimeTweeningManager _twm;
 
-   public EditorButtonTag(EditBeatmapViewController ebvc, TimeTweeningManager twm)
+   public EditorButtonTag(Button prefabButton, TimeTweeningManager twm)
    {
-      _ebvc = ebvc;
+      _prefabButton = prefabButton;
       _twm = twm;
    }
 
-   private Button PrefabButton => _ebvc._beatmapEditorExtendedSettingsView._copyDifficultyButton;
    public Vector2? Size { get; set; }
 
    public string Name { get; set; } = "EEEditorButton";
 
    public GameObject Create(Transform parent)
    {
-      var button = (NoTransitionsButton)Object.Instantiate(PrefabButton, parent, false);
+      var button = (NoTransitionsButton)Object.Instantiate(_prefabButton, parent, false);
       button.name = Name;
       button.interactable = true;
       OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));

@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using BeatmapEditor3D;
-using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Managers;
 using EditorEnhanced.UI.Extensions;
@@ -14,25 +11,22 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-public class RandomSeedClipboardView : IInitializable, IDisposable
+internal sealed class RandomSeedClipboardView : IInitializable, IDisposable
 {
-   private readonly EditBeatmapNavigationViewController _ebnvc;
-   private readonly EditBeatmapViewController _ebvc;
    private readonly RandomSeedClipboardManager _rscm;
 
    private readonly List<GameObject> _texts = [];
    private readonly UIBuilder _uiBuilder;
-   private EventBoxesView _ebv;
+   private readonly EditorViewLocator _viewLocator;
+   private EventBoxView _eventBoxView;
 
    public RandomSeedClipboardView(
-      EditBeatmapViewController ebvc,
-      EditBeatmapNavigationViewController ebnvc,
       RandomSeedClipboardManager rscm,
+      EditorViewLocator viewLocator,
       UIBuilder uiBuilder)
    {
-      _ebvc = ebvc;
-      _ebnvc = ebnvc;
       _rscm = rscm;
+      _viewLocator = viewLocator;
       _uiBuilder = uiBuilder;
    }
 
@@ -44,11 +38,9 @@ public class RandomSeedClipboardView : IInitializable, IDisposable
 
    public void Initialize()
    {
-      _ebv = _ebvc
-         ._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox)
-         .elements[0]
-         .GetComponent<EventBoxesView>();
-      var targetNav = _ebnvc._eventBoxGroupsToolbarView;
+      if (!_viewLocator.TryGetEventBoxView(out _eventBoxView)
+          || !_viewLocator.TryGetEventBoxToolbarInsertion(out var toolbar, out var siblingIndex))
+         return;
 
       var verticalTag = _uiBuilder.CreateVerticalLayout();
       var horizontalTag = _uiBuilder.CreateHorizontalLayout();
@@ -59,9 +51,8 @@ public class RandomSeedClipboardView : IInitializable, IDisposable
       var vt = verticalTag
          .SetChildControlWidth(true)
          .SetSpacing(2f)
-         .Create(targetNav.transform);
-      vt.transform.SetSiblingIndex(
-         _ebnvc._eventBoxGroupsToolbarView._extensionToggle.transform.parent.GetSiblingIndex());
+         .Create(toolbar);
+      vt.transform.SetSiblingIndex(siblingIndex);
 
       var ht = horizontalTag.Create(vt.transform);
       textTag
@@ -98,20 +89,20 @@ public class RandomSeedClipboardView : IInitializable, IDisposable
          .SetText(_rscm.Seed.ToString())
          .SetFontSize(14f)
          .SetTextAlignment(TextAlignmentOptions.Left)
-         .Create(_ebv._eventBoxView._indexFilterView._randomSeedValidator.transform.parent);
+         .Create(_eventBoxView._indexFilterView._randomSeedValidator.transform.parent);
       _texts.Add(text);
       text.GetComponent<RectTransform>()
          .anchoredPosition = new Vector2(-55f, -30f);
       buttonTag
          .SetText("C")
          .SetOnClick(CopySeed)
-         .Create(_ebv._eventBoxView._indexFilterView._newSeedButton.transform.parent)
+         .Create(_eventBoxView._indexFilterView._newSeedButton.transform.parent)
          .GetComponent<RectTransform>()
          .anchoredPosition = new Vector2(-32f, -30f);
       buttonTag
          .SetText("P")
          .SetOnClick(PasteSeed)
-         .Create(_ebv._eventBoxView._indexFilterView._newSeedButton.transform.parent)
+         .Create(_eventBoxView._indexFilterView._newSeedButton.transform.parent)
          .GetComponent<RectTransform>()
          .anchoredPosition = new Vector2(0f, -30f);
    }
@@ -128,12 +119,12 @@ public class RandomSeedClipboardView : IInitializable, IDisposable
 
    private void CopySeed()
    {
-      _rscm.Seed = _ebv._eventBoxView._eventBox.indexFilter.seed;
+      _rscm.Seed = _eventBoxView._eventBox.indexFilter.seed;
       _texts.ForEach(t => t.GetComponent<CurvedTextMeshPro>().text = _rscm.Seed.ToString());
    }
 
    private void PasteSeed()
    {
-      _ebv._eventBoxView._indexFilterView._randomSeedValidator.SetValue(_rscm.Seed);
+      _eventBoxView._indexFilterView._randomSeedValidator.SetValue(_rscm.Seed);
    }
 }

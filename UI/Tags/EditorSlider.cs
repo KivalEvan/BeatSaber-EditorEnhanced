@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
-using BeatmapEditor3D.Views;
 using EditorEnhanced.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,20 +10,18 @@ namespace EditorEnhanced.UI.Tags;
 
 public class EditorSliderTag : IEditorTag, IUISlider, IUILayoutElement
 {
-   private readonly EditBeatmapViewController _ebvc;
+   private readonly GameObject _prefabSlider;
 
-   public EditorSliderTag(EditBeatmapViewController ebvc)
+   public EditorSliderTag(GameObject prefabSlider)
    {
-      _ebvc = ebvc;
+      _prefabSlider = prefabSlider;
    }
-
-   private GameObject PrefabSlider => _ebvc.GetComponentInChildren<StatusBarView>()._musicVolumeSlider.gameObject;
 
    public string Name { get; set; } = "EEEditorSlider";
 
    public GameObject Create(Transform parent)
    {
-      var go = Object.Instantiate(PrefabSlider, parent, false);
+      var go = Object.Instantiate(_prefabSlider, parent, false);
       go.name = Name;
       go.SetActive(false);
 

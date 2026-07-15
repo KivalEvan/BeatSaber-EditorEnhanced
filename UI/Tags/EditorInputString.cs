@@ -10,7 +10,7 @@ namespace EditorEnhanced.UI.Tags;
 
 public class EditorInputStringTag : EditorInputTag<string>
 {
-   public EditorInputStringTag(EditBeatmapViewController ebvc) : base(ebvc)
+   public EditorInputStringTag(GameObject prefabInput) : base(prefabInput)
    {
    }
 

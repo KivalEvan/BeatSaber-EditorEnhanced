@@ -1,6 +1,3 @@
-using System.Linq;
-using BeatmapEditor3D;
-using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.UI.Components;
 using HMUI;
@@ -8,23 +5,20 @@ using Zenject;
 
 namespace EditorEnhanced.UI;
 
-public class DraggableEventBoxCell : IInitializable
+internal sealed class DraggableEventBoxCell : IInitializable
 {
    private readonly DiContainer _container;
-   private readonly EditBeatmapViewController _ebvc;
+   private readonly EditorViewLocator _viewLocator;
 
-   public DraggableEventBoxCell(DiContainer container, EditBeatmapViewController ebvc)
+   public DraggableEventBoxCell(DiContainer container, EditorViewLocator viewLocator)
    {
       _container = container;
-      _ebvc = ebvc;
+      _viewLocator = viewLocator;
    }
 
    public void Initialize()
    {
-      var ebv = _ebvc
-         ._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox)
-         .elements[0]
-         .GetComponent<EventBoxesView>();
+      if (!_viewLocator.TryGetEventBoxesView(out var ebv)) return;
 
       SegmentedControlCell[] prefabs =
       [

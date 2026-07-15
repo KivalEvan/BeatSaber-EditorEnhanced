@@ -5,6 +5,7 @@ using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
 using EditorEnhanced.Configuration;
+using EditorEnhanced.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -16,8 +17,8 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
    [Inject] private readonly BeatmapEventBoxGroupsDataModel _bebgdm = null!;
    [Inject] private readonly PluginConfig _config = null!;
    [Inject] private readonly EventBoxGroupsState _ebgs = null!;
-   [Inject] private readonly EditBeatmapViewController _ebvc = null!;
    [Inject] private readonly SignalBus _signalBus = null!;
+   [Inject] private readonly EditorViewLocator _viewLocator = null!;
    private Camera _camera;
    private EventBoxesView _eventBoxesView;
    private int _index;
@@ -29,11 +30,12 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
    private void Awake()
    {
       _camera = Camera.main;
-      _eventBoxesView = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
+      if (!_viewLocator.TryGetEventBoxesView(out _eventBoxesView)) enabled = false;
    }
 
    private void OnEnable()
    {
+      if (_eventBoxesView == null || _ebgs.eventBoxGroupContext == null) return;
       _index = _bebgdm.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id);
       _maxIndex = _bebgdm.GetEventBoxesByEventBoxGroupId(_ebgs.eventBoxGroupContext.id).Count;
       transform.position = new Vector3((_index - (_maxIndex - 1) / 2f) / 2f, -0.1f, 0f);
@@ -51,7 +53,7 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
 
    public void OnDrag()
    {
-      if (!_config.Gizmo.Swappable && !IsDragging) return;
+      if (_camera == null || (!_config.Gizmo.Swappable && !IsDragging)) return;
       var screenPosition = GetScreenPosition();
       var worldPosition = _camera.ScreenToWorldPoint(screenPosition);
       if (Math.Abs(_initialPosition.x - worldPosition.x) < 0.5f)
@@ -69,7 +71,7 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput
 
    public void OnMouseClick()
    {
-      if (!_config.Gizmo.Swappable) return;
+      if (_eventBoxesView == null || !_config.Gizmo.Swappable) return;
       _startIndex = _index;
       _eventBoxesView.DisplayEventBoxes(_bebgdm.GetEventBoxIdxByEventBoxId(EventBoxEditorDataContext.id));
       _initialPosition = transform.position;

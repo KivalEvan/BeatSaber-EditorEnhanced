@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using BeatmapEditor3D;
 using EditorEnhanced.UI.Interfaces;
 using HMUI;
 using IPA.Utilities;
@@ -15,22 +14,20 @@ namespace EditorEnhanced.UI.Tags;
 
 public class EditorCheckboxTag : IEditorTag, IUIToggle, IUIText
 {
-   private readonly EditBeatmapNavigationViewController _ebnvc;
+   private readonly Toggle _prefabToggle;
    private readonly TimeTweeningManager _twm;
 
-   public EditorCheckboxTag(EditBeatmapNavigationViewController ebnvc, TimeTweeningManager twm)
+   public EditorCheckboxTag(Toggle prefabToggle, TimeTweeningManager twm)
    {
-      _ebnvc = ebnvc;
+      _prefabToggle = prefabToggle;
       _twm = twm;
    }
-
-   private Toggle PrefabToggle => _ebnvc._eventBoxGroupsToolbarView._extensionToggle;
 
    public string Name { get; set; } = "EEEditorCheckbox";
 
    public GameObject Create(Transform parent)
    {
-      var toggle = (NoTransitionsToggle)Object.Instantiate(PrefabToggle, parent, false);
+      var toggle = (NoTransitionsToggle)Object.Instantiate(_prefabToggle, parent, false);
       toggle.name = Name;
       toggle.interactable = true;
       toggle.isOn = Bool ?? toggle.isOn;

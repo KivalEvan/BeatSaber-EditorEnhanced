@@ -1,4 +1,3 @@
-using System;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
@@ -9,9 +8,9 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class SortEventBoxView : IInitializable, IDisposable
+internal class SortEventBoxView : IInitializable
 {
-   private readonly EditBeatmapViewController _ebvc;
+   private readonly EditorViewLocator _viewLocator;
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
 
@@ -19,24 +18,21 @@ internal class SortEventBoxView : IInitializable, IDisposable
 
    public SortEventBoxView(
       SignalBus signalBus,
-      EditBeatmapViewController ebvc,
+      EditorViewLocator viewLocator,
       UIBuilder uiBuilder)
    {
       _signalBus = signalBus;
-      _ebvc = ebvc;
+      _viewLocator = viewLocator;
       _uiBuilder = uiBuilder;
-   }
-
-   public void Dispose()
-   {
    }
 
    public void Initialize()
    {
-      _ebv = _ebvc._editBeatmapRightPanelView._panels[2].elements[0].GetComponent<EventBoxesView>();
-      var target =
-         _ebv._eventBoxButtonsScrollView.transform.parent.parent.Find("ControlButtons/RemoveButtonsWrapper");
-      if (target == null) return;
+      if (!_viewLocator.TryGetEventBoxesView(out _ebv)) return;
+      var controls = _ebv._eventBoxButtonsScrollView == null
+         ? null
+         : _ebv._eventBoxButtonsScrollView.transform.parent?.parent;
+      if (!_viewLocator.TryFind(controls, "ControlButtons/RemoveButtonsWrapper", out var target)) return;
 
       // target.parent.parent.gameObject.AddComponent<VerticalLayoutGroup>();
       // var csf = target.parent.parent.gameObject.AddComponent<ContentSizeFitter>();

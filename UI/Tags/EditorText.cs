@@ -1,4 +1,3 @@
-using BeatmapEditor3D;
 using EditorEnhanced.UI.Interfaces;
 using HMUI;
 using JetBrains.Annotations;
@@ -9,14 +8,12 @@ namespace EditorEnhanced.UI.Tags;
 
 public class EditorTextTag : IEditorTag, IUIText, IUIRect
 {
-   private readonly EditBeatmapViewController _ebvc;
+   private readonly GameObject _prefabText;
 
-   public EditorTextTag(EditBeatmapViewController ebvc)
+   public EditorTextTag(GameObject prefabText)
    {
-      _ebvc = ebvc;
+      _prefabText = prefabText;
    }
-
-   private GameObject PrefabText => _ebvc._activeSelectionView._arcsCountText.gameObject;
 
    public string Name { get; set; } = "EEEditorText";
 
@@ -30,7 +27,7 @@ public class EditorTextTag : IEditorTag, IUIText, IUIRect
       go.transform.SetParent(parent, false);
 
       var ctmp = go.AddComponent<CurvedTextMeshPro>();
-      var prefabCtmp = PrefabText.GetComponent<CurvedTextMeshPro>();
+      var prefabCtmp = _prefabText.GetComponent<CurvedTextMeshPro>();
       ctmp.font = prefabCtmp.font;
       ctmp.fontSharedMaterial = prefabCtmp.fontSharedMaterial;
       ctmp.color = Color ?? prefabCtmp.color;

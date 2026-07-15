@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using BeatmapEditor3D;
-using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.UI.Extensions;
 using UnityEngine;
@@ -9,32 +6,24 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-public class OffsetDurationDistributionView : IInitializable, IDisposable
+internal sealed class OffsetDurationDistributionView : IInitializable
 {
-   private readonly EditBeatmapViewController _ebvc;
    private readonly UIBuilder _uiBuilder;
+   private readonly EditorViewLocator _viewLocator;
 
    private EventBoxView _ebv;
 
    public OffsetDurationDistributionView(
-      EditBeatmapViewController ebvc,
+      EditorViewLocator viewLocator,
       UIBuilder uiBuilder)
    {
-      _ebvc = ebvc;
+      _viewLocator = viewLocator;
       _uiBuilder = uiBuilder;
-   }
-
-   public void Dispose()
-   {
    }
 
    public void Initialize()
    {
-      _ebv = _ebvc
-         ._editBeatmapRightPanelView._panels.First(p => p.panelType == BeatmapPanelType.EventBox)
-         .elements[0]
-         .GetComponent<EventBoxesView>()
-         ._eventBoxView;
+      if (!_viewLocator.TryGetEventBoxView(out _ebv)) return;
 
       var buttonTag = _uiBuilder.CreateButton()
          .SetFontSize(16);

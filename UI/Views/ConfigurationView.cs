@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.Types;
-using BeatmapEditor3D.Views;
 using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo;
 using EditorEnhanced.Gizmo.Commands;
 using EditorEnhanced.Misc;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
-using HarmonyLib;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,9 +20,9 @@ namespace EditorEnhanced.UI.Views;
 internal class ConfigurationView : IInitializable
 {
    private readonly PluginConfig _config;
-   private readonly EditBeatmapViewController _ebvc;
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
+   private readonly EditorViewLocator _viewLocator;
    private NumericControl _colorGradientControl;
    private NumericControl _colorIdControl;
    private NumericControl _globalScaleControl;
@@ -54,18 +51,20 @@ internal class ConfigurationView : IInitializable
    public ConfigurationView(
       SignalBus signalBus,
       PluginConfig config,
-      EditBeatmapViewController ebvc,
+      EditorViewLocator viewLocator,
       UIBuilder uiBuilder)
    {
       _signalBus = signalBus;
       _config = config;
-      _ebvc = ebvc;
+      _viewLocator = viewLocator;
       _uiBuilder = uiBuilder;
    }
 
    public void Initialize()
    {
-      var target = _ebvc._editBeatmapRightPanelView._scrollView.contentTransform;
+      if (!_viewLocator.TryGetRightPanelContent(out var target)
+          || !_viewLocator.TryGetNoteBackground(out var noteBackground))
+         return;
 
       var stackTag = _uiBuilder.CreateStackLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
@@ -109,7 +108,7 @@ internal class ConfigurationView : IInitializable
       mainContainer.name = "EditorEnhancedView";
       var container = stackTag.Create(mainContainer.transform);
       Object.Instantiate(
-         _ebvc._editBeatmapRightPanelView._editObjectView._noteDataView.transform.Find("Background4px"),
+         noteBackground,
          container.transform,
          false);
 
@@ -307,7 +306,7 @@ internal class ConfigurationView : IInitializable
 
       container = stackTag.Create(mainContainer.transform);
       Object.Instantiate(
-         _ebvc._editBeatmapRightPanelView._editObjectView._noteDataView.transform.Find("Background4px"),
+         noteBackground,
          container.transform,
          false);
       container = verticalTag.Create(container.transform);
@@ -406,19 +405,7 @@ internal class ConfigurationView : IInitializable
             _config.Precision.Percent[(int)key] = value;
          });
 
-      var configPanel = new EditBeatmapRightPanelView.PanelElement
-      {
-         name = "Editor Enhanced",
-         panelType = (BeatmapPanelType)(Enum.GetValues(typeof(BeatmapPanelType)).Length + 1),
-         elements = [mainContainer]
-      };
-      _ebvc._editBeatmapRightPanelView._panels = _ebvc._editBeatmapRightPanelView._panels.AddToArray(configPanel);
-      _ebvc._editBeatmapRightPanelView._dropdown.SetTexts(
-         _ebvc
-            ._editBeatmapRightPanelView._panels.Select(p => p.name)
-            .ToArray());
-      _ebvc._editBeatmapRightPanelView._dropdown._numberOfVisibleCell =
-         _ebvc._editBeatmapRightPanelView._panels.Length;
+      if (!_viewLocator.TryRegisterPanel("Editor Enhanced", mainContainer)) Object.Destroy(mainContainer);
    }
 
    private static NumericControl CreateNumericControl(

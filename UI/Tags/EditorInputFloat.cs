@@ -13,7 +13,7 @@ public class EditorInputFloatTag : EditorInputTag<float>
 {
    private readonly DiContainer _container;
 
-   public EditorInputFloatTag(EditBeatmapViewController ebvc, DiContainer container) : base(ebvc)
+   public EditorInputFloatTag(GameObject prefabInput, DiContainer container) : base(prefabInput)
    {
       _container = container;
    }
