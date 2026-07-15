@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Components;
@@ -7,8 +6,8 @@ public class GizmoMaterial : MonoBehaviour
 {
    private static readonly int ColorShaderId = Shader.PropertyToID("_Color");
    private readonly MaterialPropertyBlock _materialPropertyBlock = new();
-   private Renderer _renderer;
    private bool _init;
+   private Renderer _renderer;
 
    private void Awake()
    {

@@ -54,6 +54,7 @@ internal class GizmoAssets : IInitializable, IDisposable
          gizmos.ForEach(Object.Destroy);
          gizmos.Clear();
       }
+
       _leasedObjects.Clear();
 
       _signalBus.TryUnsubscribe<GizmoColliderConfigChangedSignal>(HandleColliderConfigChanged);
@@ -127,6 +128,7 @@ internal class GizmoAssets : IInitializable, IDisposable
          go = _diContainer.InstantiatePrefab(prefab);
          objects.Add(go);
       }
+
       _leasedObjects.Add(go);
 
       var gizmoMat = go.GetComponent<GizmoMaterial>();

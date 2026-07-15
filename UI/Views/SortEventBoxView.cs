@@ -10,9 +10,9 @@ namespace EditorEnhanced.UI.Views;
 
 internal class SortEventBoxView : IInitializable
 {
-   private readonly EditorViewLocator _viewLocator;
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
+   private readonly EditorViewLocator _viewLocator;
 
    private EventBoxesView _ebv;
 
@@ -52,7 +52,8 @@ internal class SortEventBoxView : IInitializable
       var behev = instance.GetComponent<BeatmapEditorHoverExpandView>();
       for (var i = behev._content.childCount - 1; i >= 0; i--) Object.Destroy(behev._content.GetChild(i).gameObject);
 
-      var btnTag = _uiBuilder.CreateButton()
+      var btnTag = _uiBuilder
+         .CreateButton()
          .SetSize(new Vector2(40f, 40f))
          .SetPadding(new RectOffset(0, 0, 0, 0))
          .SetChildForceExpandWidth(true)

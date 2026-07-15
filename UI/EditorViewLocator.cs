@@ -6,14 +6,15 @@ using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI;
 
 internal sealed class EditorViewLocator
 {
    private readonly EditBeatmapNavigationViewController _navigationViewController;
-   private readonly EditBeatmapViewController _viewController;
    private readonly HashSet<string> _reportedFailures = new();
+   private readonly EditBeatmapViewController _viewController;
 
    public EditorViewLocator(
       EditBeatmapViewController viewController,
@@ -113,8 +114,7 @@ internal sealed class EditorViewLocator
    {
       background = null;
       if (!TryGetEditObjectView(out var editObjectView)) return false;
-      if (editObjectView._noteDataView == null)
-         return ReportMissing("note-data-view", "the note editor data view");
+      if (editObjectView._noteDataView == null) return ReportMissing("note-data-view", "the note editor data view");
 
       background = editObjectView._noteDataView.transform.Find("Background4px");
       return background != null || ReportMissing("note-background", "the note editor background template");
@@ -175,7 +175,7 @@ internal sealed class EditorViewLocator
       return Require(_viewController, "editor-root", "the editor view controller").transform;
    }
 
-   private T Require<T>(T value, string key, string description) where T : UnityEngine.Object
+   private T Require<T>(T value, string key, string description) where T : Object
    {
       if (value != null) return value;
 

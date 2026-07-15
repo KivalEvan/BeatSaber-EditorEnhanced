@@ -20,11 +20,19 @@ public class ModifyHoveredLightEventDeltaIntensityCommandPatches : IAffinity
    [AffinityPatch(
       typeof(ModifyHoveredLightEventDeltaIntensityCommand),
       nameof(ModifyHoveredLightEventDeltaIntensityCommand.GetModifiedEventData))]
-   private void SomeReallyStupidWayToFix(
+   private void RestoreConfiguredIntensityPrecision(
       ModifyHoveredLightEventDeltaIntensityCommand __instance,
       BasicEventEditorData originalBasicEventData,
       ref BasicEventEditorData __result)
    {
+      if (__instance == null
+         || __instance._signal == null
+         || _beatmapState == null
+         || originalBasicEventData == null
+         || __result == null
+         || !LightColorEventHelper._precisions.ContainsKey(_beatmapState.scrollPrecision))
+         return;
+
       double floatValue = LightColorEventHelper.IncreaseBrightnessByPrecision(
          originalBasicEventData.floatValue,
          __instance._signal.newDeltaIntensity,

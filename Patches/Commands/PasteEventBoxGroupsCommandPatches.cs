@@ -21,9 +21,10 @@ public class PasteEventBoxGroupsCommandPatches : IAffinity
    private void RandomizeSeedOnPaste(PasteEventBoxGroupsCommand __instance)
    {
       if (!_rscm.RandomOnPaste) return;
+      if (__instance?._newEventBoxes == null) return;
 
       foreach (var boxEditorData in __instance._newEventBoxes.Values.SelectMany(eventBoxEditorData =>
-                  eventBoxEditorData))
+         eventBoxEditorData))
          boxEditorData.indexFilter.SetField(
             "seed",
             _rscm.UseClipboard ? _rscm.Seed : Random.Range(int.MinValue, int.MaxValue));

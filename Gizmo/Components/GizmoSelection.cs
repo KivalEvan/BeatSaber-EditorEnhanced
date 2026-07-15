@@ -1,4 +1,3 @@
-using BeatmapEditor3D;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Gizmo.Commands;
@@ -42,7 +41,6 @@ public class GizmoSelection : MonoBehaviour
       transform.position = new Vector3(
          (_index - _maxIndex / 2f) / 2f,
          -0.1f,
-         0f
-      );
+         0f);
    }
 }

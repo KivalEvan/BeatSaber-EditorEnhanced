@@ -8,14 +8,14 @@
         <PluginName>EditorEnhanced</PluginName>
         <Authors>Kival Evan</Authors>
         <Version>0.1.0</Version>
-        <GameVersion>1.42.0</GameVersion>
+        <GameVersion>1.44.0</GameVersion>
         <Description>yes.</Description>
     </PropertyGroup>
 
     <!-- Plugin Dependencies -->
     <ItemGroup>
         <DependsOn Include="BSIPA" Version="^4.3.7"/>
-        <DependsOn Include="SiraUtil" Version="^3.3.1"/>
+        <DependsOn Include="SiraUtil" Version="^3.4.0"/>
     </ItemGroup>
 
     <PropertyGroup>

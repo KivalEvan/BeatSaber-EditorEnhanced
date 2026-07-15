@@ -20,15 +20,58 @@ internal sealed class UIBuilder
       _tweeningManager = tweeningManager;
    }
 
-   public EditorButtonTag CreateButton() => new(_viewLocator.GetButtonPrefab(), _tweeningManager);
-   public EditorButtonWithIconTag CreateButtonWithIcon() => new(_viewLocator.GetButtonPrefab(), _tweeningManager);
-   public EditorCheckboxTag CreateCheckbox() => new(_viewLocator.GetTogglePrefab(), _tweeningManager);
-   public EditorInputFloatTag CreateFloatInput() => new(_viewLocator.GetInputPrefab(), _container);
-   public EditorInputIntTag CreateIntInput() => new(_viewLocator.GetInputPrefab(), _container);
-   public EditorInputStringTag CreateStringInput() => new(_viewLocator.GetInputPrefab());
-   public EditorLayoutHorizontalTag CreateHorizontalLayout() => new();
-   public EditorLayoutStackTag CreateStackLayout() => new();
-   public EditorLayoutVerticalTag CreateVerticalLayout() => new();
-   public EditorSliderTag CreateSlider() => new(_viewLocator.GetSliderPrefab());
-   public EditorTextTag CreateText() => new(_viewLocator.GetTextPrefab());
+   public EditorButtonTag CreateButton()
+   {
+      return new EditorButtonTag(_viewLocator.GetButtonPrefab(), _tweeningManager);
+   }
+
+   public EditorButtonWithIconTag CreateButtonWithIcon()
+   {
+      return new EditorButtonWithIconTag(_viewLocator.GetButtonPrefab(), _tweeningManager);
+   }
+
+   public EditorCheckboxTag CreateCheckbox()
+   {
+      return new EditorCheckboxTag(_viewLocator.GetTogglePrefab(), _tweeningManager);
+   }
+
+   public EditorInputFloatTag CreateFloatInput()
+   {
+      return new EditorInputFloatTag(_viewLocator.GetInputPrefab(), _container);
+   }
+
+   public EditorInputIntTag CreateIntInput()
+   {
+      return new EditorInputIntTag(_viewLocator.GetInputPrefab(), _container);
+   }
+
+   public EditorInputStringTag CreateStringInput()
+   {
+      return new EditorInputStringTag(_viewLocator.GetInputPrefab());
+   }
+
+   public EditorLayoutHorizontalTag CreateHorizontalLayout()
+   {
+      return new EditorLayoutHorizontalTag();
+   }
+
+   public EditorLayoutStackTag CreateStackLayout()
+   {
+      return new EditorLayoutStackTag();
+   }
+
+   public EditorLayoutVerticalTag CreateVerticalLayout()
+   {
+      return new EditorLayoutVerticalTag();
+   }
+
+   public EditorSliderTag CreateSlider()
+   {
+      return new EditorSliderTag(_viewLocator.GetSliderPrefab());
+   }
+
+   public EditorTextTag CreateText()
+   {
+      return new EditorTextTag(_viewLocator.GetTextPrefab());
+   }
 }

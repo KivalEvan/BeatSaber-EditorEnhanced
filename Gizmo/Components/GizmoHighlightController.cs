@@ -37,6 +37,17 @@ public class GizmoHighlightController : MonoBehaviour, IGizmoInput, IGizmoPoolab
       IsDragging = false;
    }
 
+   public void ResetForPool()
+   {
+      if (_highlights != null)
+         foreach (var highlight in _highlights)
+            if (highlight != null)
+               highlight.RemoveOutline();
+
+      _highlights = [];
+      IsDragging = false;
+   }
+
    public void Highlight()
    {
       if (!_config.Gizmo.Highlight) return;
@@ -64,16 +75,5 @@ public class GizmoHighlightController : MonoBehaviour, IGizmoInput, IGizmoPoolab
    public void Init()
    {
       _highlights = [];
-   }
-
-   public void ResetForPool()
-   {
-      if (_highlights != null)
-         foreach (var highlight in _highlights)
-            if (highlight != null)
-               highlight.RemoveOutline();
-
-      _highlights = [];
-      IsDragging = false;
    }
 }

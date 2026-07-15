@@ -13,7 +13,6 @@ using EditorEnhanced.Gizmo.Commands;
 using EditorEnhanced.UI.Extensions;
 using EditorEnhanced.UI.Tags;
 using EditorEnhanced.Utils;
-using HMUI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,22 +23,22 @@ namespace EditorEnhanced.UI.Views;
 
 internal class EventBoxIDVisualView : IInitializable, IDisposable
 {
-   private readonly EditorViewLocator _viewLocator;
+   private readonly List<GameObject> _instantiatedErrorText = new();
+
+   private readonly List<Image> _instantiatedImages = new();
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
+   private readonly EditorViewLocator _viewLocator;
 
    private EventBoxesView _ebv;
-
-   private EditorTextTag _textTag;
+   private Transform _errorTextTargetTransform;
+   private GameObject _imageContainer;
    private TMP_Text _maxDurationText;
-   private Button _setDurationButton;
    private float? _minimumDuration;
    private int _selectedIdCount;
-   private readonly List<GameObject> _instantiatedErrorText = new();
-   private Transform _errorTextTargetTransform;
+   private Button _setDurationButton;
 
-   private List<Image> _instantiatedImages = new();
-   private GameObject _imageContainer;
+   private EditorTextTag _textTag;
 
    public EventBoxIDVisualView(
       SignalBus signalBus,
@@ -51,10 +50,18 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       _uiBuilder = uiBuilder;
    }
 
+   public void Dispose()
+   {
+      _signalBus.TryUnsubscribe<BeatmapEditingModeSwitchedSignal>(HandleEditingEventBoxGroupChangedWithSignal);
+      _signalBus.TryUnsubscribe<EventBoxesUpdatedSignal>(HandleEditingEventBoxGroupChanged);
+      _signalBus.TryUnsubscribe<EventBoxModifiedSignal>(HandleEditingEventBoxGroupChanged);
+      _signalBus.TryUnsubscribe<EventBoxSelectedSignal>(HandleEditingEventBoxGroupChanged);
+   }
+
    public void Initialize()
    {
       if (!_viewLocator.TryGetEventBoxesView(out _ebv)
-          || !_viewLocator.TryGetEventBoxView(out var target))
+         || !_viewLocator.TryGetEventBoxView(out var target))
          return;
       if (!_viewLocator.TryFindRect(target.transform, "GroupInfoView", out var modification)) return;
       modification.GetComponent<LayoutElement>().preferredHeight = -1;
@@ -70,7 +77,8 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       vlg.childForceExpandWidth = true;
       vlg.spacing = 4f;
 
-      var horizontalTag = _uiBuilder.CreateHorizontalLayout()
+      var horizontalTag = _uiBuilder
+         .CreateHorizontalLayout()
          .SetChildAlignment(TextAnchor.LowerCenter)
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.Unconstrained);
@@ -78,13 +86,15 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       _imageContainer = horizontalTag.Create(modification.transform);
       horizontalTag.SetChildAlignment(TextAnchor.MiddleLeft);
       var durationContainer = horizontalTag.Create(modification.transform);
-      _maxDurationText = _uiBuilder.CreateText()
+      _maxDurationText = _uiBuilder
+         .CreateText()
          .SetText("Max Duration: ∞")
          .SetFontSize(16f)
          .SetTextAlignment(TextAlignmentOptions.Left)
          .Create(durationContainer.transform)
          .GetComponent<TMP_Text>();
-      _setDurationButton = _uiBuilder.CreateButton()
+      _setDurationButton = _uiBuilder
+         .CreateButton()
          .SetText("Set")
          .SetFontSize(16f)
          .SetSize(new Vector2(56f, 32f))
@@ -95,14 +105,6 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       _signalBus.Subscribe<EventBoxesUpdatedSignal>(HandleEditingEventBoxGroupChanged);
       _signalBus.Subscribe<EventBoxModifiedSignal>(HandleEditingEventBoxGroupChanged);
       _signalBus.Subscribe<EventBoxSelectedSignal>(HandleEditingEventBoxGroupChanged);
-   }
-
-   public void Dispose()
-   {
-      _signalBus.TryUnsubscribe<BeatmapEditingModeSwitchedSignal>(HandleEditingEventBoxGroupChangedWithSignal);
-      _signalBus.TryUnsubscribe<EventBoxesUpdatedSignal>(HandleEditingEventBoxGroupChanged);
-      _signalBus.TryUnsubscribe<EventBoxModifiedSignal>(HandleEditingEventBoxGroupChanged);
-      _signalBus.TryUnsubscribe<EventBoxSelectedSignal>(HandleEditingEventBoxGroupChanged);
    }
 
    private void HandleEditingEventBoxGroupChangedWithSignal(BeatmapEditingModeSwitchedSignal signal)
@@ -176,10 +178,8 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
             }
 
             if (affectedId.Add(element))
-            {
                _instantiatedImages[element].color =
                   b == box ? Color.green : currentBoxPassed ? Color.gray : Color.white;
-            }
             else if (b == box) _instantiatedImages[element].color = Color.red;
          }
       }
@@ -207,14 +207,15 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
       var eventBox = _ebv._eventBoxView._eventBox;
       var availableDuration = Mathf.Max(0f, _minimumDuration.Value - 0.001f);
       var limitRatio = eventBox.indexFilter.limitAlsoAffectType == IndexFilter.IndexFilterLimitAlsoAffectType.Duration
-                       && eventBox.indexFilter.limit > 0f
-         ? eventBox.indexFilter.limit
-         : 1f;
+         && eventBox.indexFilter.limit > 0f
+            ? eventBox.indexFilter.limit
+            : 1f;
 
       float distribution;
       if (eventBox.beatDistributionParamType == BeatmapEventDataBox.DistributionParamType.Step)
       {
-         var baseEvents = _ebv._beatmapEventBoxGroupsDataModel
+         var baseEvents = _ebv
+            ._beatmapEventBoxGroupsDataModel
             .GetBaseEventsListByEventBoxId(eventBox.id)
             .ToArray();
          var latestEventBeat = baseEvents.Length == 0 ? 0f : baseEvents.Max(baseEvent => baseEvent.beat);
@@ -224,9 +225,7 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
             : Mathf.Max(0f, availableDuration - latestEventBeat) / effectiveIdCount;
       }
       else
-      {
          distribution = availableDuration * limitRatio;
-      }
 
       _ebv._eventBoxView._beatDistributionInput.SetValue(distribution);
    }

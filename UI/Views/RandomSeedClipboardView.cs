@@ -39,7 +39,7 @@ internal sealed class RandomSeedClipboardView : IInitializable, IDisposable
    public void Initialize()
    {
       if (!_viewLocator.TryGetEventBoxView(out _eventBoxView)
-          || !_viewLocator.TryGetEventBoxToolbarInsertion(out var toolbar, out var siblingIndex))
+         || !_viewLocator.TryGetEventBoxToolbarInsertion(out var toolbar, out var siblingIndex))
          return;
 
       var verticalTag = _uiBuilder.CreateVerticalLayout();

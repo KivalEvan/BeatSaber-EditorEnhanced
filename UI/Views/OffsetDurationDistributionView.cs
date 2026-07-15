@@ -1,4 +1,3 @@
-using BeatmapEditor3D;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.UI.Extensions;
 using UnityEngine;
@@ -25,7 +24,8 @@ internal sealed class OffsetDurationDistributionView : IInitializable
    {
       if (!_viewLocator.TryGetEventBoxView(out _ebv)) return;
 
-      var buttonTag = _uiBuilder.CreateButton()
+      var buttonTag = _uiBuilder
+         .CreateButton()
          .SetFontSize(16);
 
       buttonTag

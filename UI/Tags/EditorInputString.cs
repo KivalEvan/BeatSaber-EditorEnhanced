@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
-using EditorEnhanced.UI.Interfaces;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;

@@ -11,15 +11,15 @@ namespace EditorEnhanced.UI.Views;
 
 internal class CopyEventBoxView : IInitializable
 {
-   private readonly EditorViewLocator _viewLocator;
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;
+   private readonly EditorViewLocator _viewLocator;
+   private bool _addValue;
 
    private bool _copyEvent;
    private EventBoxView _eventBoxView;
    private bool _increment;
    private bool _randomSeed;
-   private bool _addValue;
    private float _value;
 
    public CopyEventBoxView(
@@ -37,28 +37,34 @@ internal class CopyEventBoxView : IInitializable
       if (!_viewLocator.TryGetEventBoxView(out _eventBoxView)) return;
       var target = _eventBoxView;
       if (!_viewLocator.TryFind(target.transform, "EventBoxInfo", out var replacement)
-          || !_viewLocator.TryFind(target.transform, "GroupInfoView/Background4px", out var background))
+         || !_viewLocator.TryFind(target.transform, "GroupInfoView/Background4px", out var background))
          return;
       replacement.gameObject.SetActive(false);
 
-      var stackTag = _uiBuilder.CreateStackLayout()
+      var stackTag = _uiBuilder
+         .CreateStackLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize);
-      var verticalTag = _uiBuilder.CreateVerticalLayout()
+      var verticalTag = _uiBuilder
+         .CreateVerticalLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetPadding(new RectOffset(4, 4, 4, 4));
-      var horizontalTag = _uiBuilder.CreateHorizontalLayout()
+      var horizontalTag = _uiBuilder
+         .CreateHorizontalLayout()
          .SetChildAlignment(TextAnchor.LowerCenter)
          .SetChildControlWidth(true)
          .SetSpacing(8)
          .SetPadding(new RectOffset(4, 4, 2, 2));
-      var btnTag = _uiBuilder.CreateButton()
+      var btnTag = _uiBuilder
+         .CreateButton()
          .SetFontSize(16);
-      var checkboxTag = _uiBuilder.CreateCheckbox()
+      var checkboxTag = _uiBuilder
+         .CreateCheckbox()
          .SetSize(28)
          .SetFontSize(16);
-      var inputFloatTag = _uiBuilder.CreateFloatInput()
+      var inputFloatTag = _uiBuilder
+         .CreateFloatInput()
          .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetValidatorType(FloatInputFieldValidator.ValidatorType.None)

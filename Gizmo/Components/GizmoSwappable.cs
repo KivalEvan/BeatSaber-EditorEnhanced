@@ -1,6 +1,5 @@
 using System;
 using BeatmapEditor3D;
-using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Commands;
@@ -65,8 +64,7 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput, IGizmoPoolable
       transform.position = new Vector3(
          SnapPosition(worldPosition.x),
          0.05f,
-         0f
-      );
+         0f);
    }
 
    public void OnMouseClick()
@@ -94,6 +92,16 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput, IGizmoPoolable
       IsDragging = false;
    }
 
+   public void ResetForPool()
+   {
+      EventBoxEditorDataContext = null;
+      IsDragging = false;
+      _index = 0;
+      _maxIndex = 0;
+      _startIndex = 0;
+      _initialPosition = Vector3.zero;
+   }
+
    private int GetIndex(float v)
    {
       var t = Mathf.InverseLerp(-_maxIndex / 4f, _maxIndex / 4f, v + .25f);
@@ -112,15 +120,5 @@ public class GizmoSwappable : MonoBehaviour, IGizmoInput, IGizmoPoolable
          Mouse.current.position.x.value,
          Mouse.current.position.y.value,
          _camera.WorldToScreenPoint(transform.position).z);
-   }
-
-   public void ResetForPool()
-   {
-      EventBoxEditorDataContext = null;
-      IsDragging = false;
-      _index = 0;
-      _maxIndex = 0;
-      _startIndex = 0;
-      _initialPosition = Vector3.zero;
    }
 }

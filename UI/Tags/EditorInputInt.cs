@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
 using EditorEnhanced.UI.Components;
-using EditorEnhanced.UI.Interfaces;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -12,7 +11,7 @@ namespace EditorEnhanced.UI.Tags;
 public class EditorInputIntTag : EditorInputTag<int>
 {
    private readonly DiContainer _container;
-   
+
    public EditorInputIntTag(GameObject prefabInput, DiContainer container) : base(prefabInput)
    {
       _container = container;
@@ -40,7 +39,7 @@ public class EditorInputIntTag : EditorInputTag<int>
       OnValueChange.ForEach(ovc => { validator.onInputValidated += ovc; });
 
       _container.InstantiateComponent<ScrollableInputInt>(go);
-      
+
       go.SetActive(true);
       return go;
    }

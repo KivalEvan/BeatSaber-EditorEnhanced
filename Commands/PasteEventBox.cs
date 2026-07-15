@@ -36,8 +36,8 @@ internal sealed class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
    private readonly EventBoxGroupsState _eventBoxGroupsState;
    private readonly EventBoxGroupMutation _mutation;
    private readonly PasteEventBoxSignal _signal;
-   private EventBoxGroupSnapshot _newSnapshot;
    private int _newIdx;
+   private EventBoxGroupSnapshot _newSnapshot;
    private EventBoxGroupSnapshot _previousSnapshot;
 
    public PasteEventBoxCommand(

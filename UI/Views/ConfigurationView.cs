@@ -30,24 +30,6 @@ internal class ConfigurationView : IInitializable
    private NumericControl _sizeRotationControl;
    private NumericControl _sizeTranslationControl;
 
-   private sealed class NumericControl
-   {
-      private readonly FloatInputFieldValidator _input;
-      private readonly Slider _slider;
-
-      public NumericControl(Slider slider, FloatInputFieldValidator input)
-      {
-         _slider = slider;
-         _input = input;
-      }
-
-      public void SetValueWithoutNotify(float value)
-      {
-         _slider.SetValueWithoutNotify(value);
-         _input.SetValueWithoutNotify(value, true);
-      }
-   }
-
    public ConfigurationView(
       SignalBus signalBus,
       PluginConfig config,
@@ -63,43 +45,50 @@ internal class ConfigurationView : IInitializable
    public void Initialize()
    {
       if (!_viewLocator.TryGetRightPanelContent(out var target)
-          || !_viewLocator.TryGetNoteBackground(out var noteBackground))
+         || !_viewLocator.TryGetNoteBackground(out var noteBackground))
          return;
 
-      var stackTag = _uiBuilder.CreateStackLayout()
+      var stackTag = _uiBuilder
+         .CreateStackLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetChildAlignment(TextAnchor.MiddleCenter)
          .SetPadding(new RectOffset(4, 4, 4, 4));
-      var verticalTag = _uiBuilder.CreateVerticalLayout()
+      var verticalTag = _uiBuilder
+         .CreateVerticalLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetChildAlignment(TextAnchor.UpperLeft)
          .SetPadding(new RectOffset(4, 4, 4, 4));
-      var horizontalTag = _uiBuilder.CreateHorizontalLayout()
+      var horizontalTag = _uiBuilder
+         .CreateHorizontalLayout()
          .SetHorizontalFit(ContentSizeFitter.FitMode.Unconstrained)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetChildAlignment(TextAnchor.MiddleLeft)
          .SetSpacing(8)
          .SetPadding(new RectOffset(4, 4, 4, 4));
-      var checkboxTag = _uiBuilder.CreateCheckbox()
+      var checkboxTag = _uiBuilder
+         .CreateCheckbox()
          .SetTextAlignment(TextAlignmentOptions.Left)
          .SetSize(28)
          .SetFontSize(16);
-      var inputFloatTag = _uiBuilder.CreateFloatInput()
+      var inputFloatTag = _uiBuilder
+         .CreateFloatInput()
          .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetPreferredWidth(80)
          .SetMinValue(GizmoAssets.MinSize)
          .SetMaxValue(GizmoAssets.MaxSize)
          .SetValidatorType(FloatInputFieldValidator.ValidatorType.Clamp);
-      var sliderTag = _uiBuilder.CreateSlider()
+      var sliderTag = _uiBuilder
+         .CreateSlider()
          .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetPreferredWidth(260)
          .SetMinValue(GizmoAssets.MinSize)
          .SetMaxValue(GizmoAssets.MaxSize);
-      var textTag = _uiBuilder.CreateText()
+      var textTag = _uiBuilder
+         .CreateText()
          .SetFontSize(16);
 
       var mainContainer = verticalTag
@@ -331,7 +320,7 @@ internal class ConfigurationView : IInitializable
          (key, value) =>
          {
             LightColorEventHelper._precisions[key] = value;
-            _config.Precision.Color[(int)key] = value;
+            _config.Precision.Color[PrecisionDefaults.GetIndex(key)] = value;
          });
 
       layout = horizontalTag
@@ -345,7 +334,7 @@ internal class ConfigurationView : IInitializable
          (key, value) =>
          {
             ModifyHoveredLightRotationDeltaRotationCommand._precisions[key] = value;
-            _config.Precision.Rotation[(int)key] = value;
+            _config.Precision.Rotation[PrecisionDefaults.GetIndex(key)] = value;
          });
 
       layout = horizontalTag
@@ -359,7 +348,7 @@ internal class ConfigurationView : IInitializable
          (key, value) =>
          {
             ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[key] = value;
-            _config.Precision.Translation[(int)key] = value;
+            _config.Precision.Translation[PrecisionDefaults.GetIndex(key)] = value;
          });
 
       layout = horizontalTag
@@ -373,7 +362,7 @@ internal class ConfigurationView : IInitializable
          (key, value) =>
          {
             ModifyHoveredFloatFxDeltaValueCommand._precisions[key] = value;
-            _config.Precision.Fx[(int)key] = value;
+            _config.Precision.Fx[PrecisionDefaults.GetIndex(key)] = value;
          });
 
       layout = horizontalTag
@@ -387,7 +376,7 @@ internal class ConfigurationView : IInitializable
          (key, value) =>
          {
             CustomPrecisions.TimePrecisionFloat[key] = value;
-            _config.Precision.Time[(int)key] = value;
+            _config.Precision.Time[PrecisionDefaults.GetIndex(key)] = value;
          });
 
       layout = horizontalTag
@@ -401,8 +390,8 @@ internal class ConfigurationView : IInitializable
          (key, value) =>
          {
             CustomPrecisions.PercentPrecisionFloat[key] = value;
-            CustomPrecisions.PercentPrecisionInt[key] = (int)Math.Round(value);
-            _config.Precision.Percent[(int)key] = value;
+            CustomPrecisions.PercentPrecisionInt[key] = Math.Max(1, (int)Math.Round(value));
+            _config.Precision.Percent[PrecisionDefaults.GetIndex(key)] = value;
          });
 
       if (!_viewLocator.TryRegisterPanel("Editor Enhanced", mainContainer)) Object.Destroy(mainContainer);
@@ -437,13 +426,17 @@ internal class ConfigurationView : IInitializable
       return new NumericControl(slider, input);
    }
 
-   private void CreatePrecisionInputs<TKey>(
+   private void CreatePrecisionInputs(
       Transform parent,
-      IDictionary<TKey, float> values,
-      Action<TKey, float> onValueChange)
+      IDictionary<PrecisionType, float> values,
+      Action<PrecisionType, float> onValueChange)
    {
-      foreach (var key in values.Keys)
-         _uiBuilder.CreateFloatInput()
+      foreach (var key in PrecisionDefaults.SupportedTypes)
+      {
+         if (!values.ContainsKey(key)) continue;
+         FloatInputFieldValidator input = null;
+         input = _uiBuilder
+            .CreateFloatInput()
             .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
             .SetPreferredWidth(80)
@@ -451,8 +444,15 @@ internal class ConfigurationView : IInitializable
             .SetMaxValue(16)
             .SetValidatorType(FloatInputFieldValidator.ValidatorType.None)
             .SetValue(values[key])
-            .SetOnValueChange(value => onValueChange(key, value))
-            .Create(parent);
+            .SetOnValueChange(value =>
+            {
+               var normalized = PrecisionConfigurationInitializer.IsValid(value) ? value : values[key];
+               onValueChange(key, normalized);
+               if (!Mathf.Approximately(value, normalized)) input.SetValueWithoutNotify(normalized, true);
+            })
+            .Create(parent)
+            .GetComponent<FloatInputFieldValidator>();
+      }
    }
 
    private static void UpdateRoundedFloat(
@@ -609,5 +609,23 @@ internal class ConfigurationView : IInitializable
          normalized => _config.Gizmo.ColorGradientStep = normalized,
          _colorGradientControl,
          () => _signalBus.Fire<GizmoRefreshSignal>());
+   }
+
+   private sealed class NumericControl
+   {
+      private readonly FloatInputFieldValidator _input;
+      private readonly Slider _slider;
+
+      public NumericControl(Slider slider, FloatInputFieldValidator input)
+      {
+         _slider = slider;
+         _input = input;
+      }
+
+      public void SetValueWithoutNotify(float value)
+      {
+         _slider.SetValueWithoutNotify(value);
+         _input.SetValueWithoutNotify(value, true);
+      }
    }
 }

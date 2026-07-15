@@ -35,7 +35,8 @@ internal sealed class SortIdEventBoxGroupCommand : IBeatmapEditorCommandWithHist
       if (previousSnapshot.Count == 0) return;
 
       var newSnapshot = previousSnapshot.WithEventBoxes(
-         previousSnapshot.EventBoxes
+         previousSnapshot
+            .EventBoxes
             .OrderByDescending(item =>
                item.EventBox.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division
                   ? item.EventBox.indexFilter.param0

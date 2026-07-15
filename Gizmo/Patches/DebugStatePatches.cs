@@ -15,8 +15,8 @@ public class DebugStatePatches : IAffinity
 
    [AffinityPostfix]
    [AffinityPatch(typeof(DebugState), nameof(DebugState.ResetOnBeatmapExit))]
-   public void NoGizmoDefault(DebugState __instance)
+   private void DisableBuiltInLightGroupGizmoAfterReset(DebugState __instance)
    {
-      __instance.lightGroupGizmoType = LightGroupGizmoType.None;
+      if (__instance != null) __instance.lightGroupGizmoType = LightGroupGizmoType.None;
    }
 }

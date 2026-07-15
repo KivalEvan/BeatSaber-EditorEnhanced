@@ -35,14 +35,6 @@ internal sealed class GizmoManager : IInitializable, IDisposable
       _renderer = renderer;
    }
 
-   public void Initialize()
-   {
-      _signalBus.Subscribe<BeatmapEditingModeSwitchedSignal>(HandleEditingModeChanged);
-      _signalBus.Subscribe<EventBoxesUpdatedSignal>(Refresh);
-      _signalBus.Subscribe<EventBoxModifiedSignal>(Refresh);
-      _signalBus.Subscribe<GizmoRefreshSignal>(Refresh);
-   }
-
    public void Dispose()
    {
       _signalBus.TryUnsubscribe<BeatmapEditingModeSwitchedSignal>(HandleEditingModeChanged);
@@ -50,6 +42,14 @@ internal sealed class GizmoManager : IInitializable, IDisposable
       _signalBus.TryUnsubscribe<EventBoxModifiedSignal>(Refresh);
       _signalBus.TryUnsubscribe<GizmoRefreshSignal>(Refresh);
       _renderer.Clear();
+   }
+
+   public void Initialize()
+   {
+      _signalBus.Subscribe<BeatmapEditingModeSwitchedSignal>(HandleEditingModeChanged);
+      _signalBus.Subscribe<EventBoxesUpdatedSignal>(Refresh);
+      _signalBus.Subscribe<EventBoxModifiedSignal>(Refresh);
+      _signalBus.Subscribe<GizmoRefreshSignal>(Refresh);
    }
 
    private void HandleEditingModeChanged(BeatmapEditingModeSwitchedSignal signal)

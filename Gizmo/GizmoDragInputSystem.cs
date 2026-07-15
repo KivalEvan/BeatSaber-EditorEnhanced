@@ -66,6 +66,18 @@ public class GizmoDragInputSystem : MonoBehaviour
          HandleHover();
    }
 
+   private void OnDisable()
+   {
+      if (_currentGizmoDraggables != null)
+         foreach (var input in _currentGizmoDraggables)
+            input.IsDragging = false;
+
+      _currentGizmoDraggables = null;
+      _currentHoveredObject = null;
+      _isDragging = false;
+      _offset = Vector3.zero;
+   }
+
    private void OnDestroy()
    {
       if (_clickAction != null)
@@ -81,18 +93,6 @@ public class GizmoDragInputSystem : MonoBehaviour
          _pointerPositionAction.Disable();
          _pointerPositionAction.Dispose();
       }
-   }
-
-   private void OnDisable()
-   {
-      if (_currentGizmoDraggables != null)
-         foreach (var input in _currentGizmoDraggables)
-            input.IsDragging = false;
-
-      _currentGizmoDraggables = null;
-      _currentHoveredObject = null;
-      _isDragging = false;
-      _offset = Vector3.zero;
    }
 
    private void OnClickPerformed(InputAction.CallbackContext context)

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,7 +39,6 @@ public class GizmoInfo : MonoBehaviour
    {
       var sb = new StringBuilder();
       for (var i = 0; i < data.Count; i++)
-      {
          switch (_ebgs.eventBoxGroupContext.type)
          {
             case EventBoxGroupType.Rotation:
@@ -54,7 +52,6 @@ public class GizmoInfo : MonoBehaviour
             default:
                break;
          }
-      }
 
       tmp.SetText(sb.ToString());
    }

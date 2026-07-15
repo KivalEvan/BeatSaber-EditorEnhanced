@@ -45,7 +45,8 @@ internal sealed class GizmoTransformPlanner
       EventBoxGroupEditorData group,
       LightColorGroupEffectManager manager)
    {
-      var eventBoxes = _dataModel.GetEventBoxesByEventBoxGroupId(group.id)
+      var eventBoxes = _dataModel
+         .GetEventBoxesByEventBoxGroupId(group.id)
          .Cast<LightColorEventBoxEditorData>()
          .ToArray();
       var batches = new List<GizmoRenderBatch>();
@@ -57,7 +58,8 @@ internal sealed class GizmoTransformPlanner
          foreach (var item in marked[LightAxis.X]
             .Select(mark =>
             {
-               var lights = manager._lightColorGroupEffects
+               var lights = manager
+                  ._lightColorGroupEffects
                   .FirstOrDefault(effect => effect._lightId == lightGroup.startLightId + mark.Key)
                   ?._lightManager._lights.ElementAtOrDefault(lightGroup.startLightId + mark.Key);
                return (mark.Value, Lights: lights);
@@ -85,10 +87,12 @@ internal sealed class GizmoTransformPlanner
       EventBoxGroupEditorData group,
       LightRotationGroupEffectManager manager)
    {
-      var eventBoxes = _dataModel.GetEventBoxesByEventBoxGroupId(group.id)
+      var eventBoxes = _dataModel
+         .GetEventBoxesByEventBoxGroupId(group.id)
          .Cast<LightRotationEventBoxEditorData>()
          .ToArray();
-      return manager._lightRotationGroups
+      return manager
+         ._lightRotationGroups
          .Where(item => item.groupId == group.groupId)
          .SelectMany(item => PlanAxisGroups(
             group.type,
@@ -104,10 +108,12 @@ internal sealed class GizmoTransformPlanner
       EventBoxGroupEditorData group,
       LightTranslationGroupEffectManager manager)
    {
-      var eventBoxes = _dataModel.GetEventBoxesByEventBoxGroupId(group.id)
+      var eventBoxes = _dataModel
+         .GetEventBoxesByEventBoxGroupId(group.id)
          .Cast<LightTranslationEventBoxEditorData>()
          .ToArray();
-      return manager._lightTranslationGroups
+      return manager
+         ._lightTranslationGroups
          .Where(item => item.groupId == group.groupId)
          .SelectMany(item => PlanAxisGroups(
             group.type,
@@ -121,7 +127,8 @@ internal sealed class GizmoTransformPlanner
 
    private List<GizmoRenderBatch> PlanFx(EventBoxGroupEditorData group, FloatFxGroupEffectManager manager)
    {
-      var eventBoxes = _dataModel.GetEventBoxesByEventBoxGroupId(group.id)
+      var eventBoxes = _dataModel
+         .GetEventBoxesByEventBoxGroupId(group.id)
          .Cast<FxEventBoxEditorData>()
          .ToArray();
       var batches = new List<GizmoRenderBatch>();
@@ -155,11 +162,7 @@ internal sealed class GizmoTransformPlanner
       {
          var transforms = getTransforms(axis);
          var data = marked[axis]
-            .Select(item => item.Value with
-            {
-               Index = item.Key,
-               Transform = transforms.ElementAtOrDefault(item.Key)
-            })
+            .Select(item => item.Value with { Index = item.Key, Transform = transforms.ElementAtOrDefault(item.Key) })
             .ToArray();
          yield return new GizmoRenderBatch(groupType, axis, subsystem, data);
       }
@@ -184,16 +187,16 @@ internal sealed class GizmoTransformPlanner
          foreach (var (index, chunkIndex) in IndexFilterHelpers
             .GetIndexFilterRange(eventBox.indexFilter, elementCount)
             .Where(element => !axisElements.ContainsKey(element.index)))
-         {
-            axisElements.Add(index, new LightTransformData
-            {
-               GlobalBoxIndex = boxIndex,
-               AxisBoxIndex = axisCounts[axis],
-               ChunkIndex = chunkIndex,
-               EventBoxContext = eventBox,
-               Distributed = distributed
-            });
-         }
+            axisElements.Add(
+               index,
+               new LightTransformData
+               {
+                  GlobalBoxIndex = boxIndex,
+                  AxisBoxIndex = axisCounts[axis],
+                  ChunkIndex = chunkIndex,
+                  EventBoxContext = eventBox,
+                  Distributed = distributed
+               });
 
          axisCounts[axis]++;
       }

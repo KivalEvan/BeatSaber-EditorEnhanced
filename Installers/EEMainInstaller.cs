@@ -1,3 +1,4 @@
+using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo.Patches;
 using EditorEnhanced.Patches;
 using Zenject;
@@ -8,21 +9,21 @@ public class EEMainInstaller : Installer
 {
    public override void InstallBindings()
    {
-      Container.BindInterfacesTo<PrecisionConfigPatches>().AsSingle();
+      Container.Bind<PrecisionDefaults>().AsSingle();
+      Container.BindInterfacesTo<PrecisionConfigurationInitializer>().AsSingle();
 
-      // Fixes
-      Container.BindInterfacesTo<EditObjectViewPatches>().AsSingle();
+      // Event data compatibility
       Container.BindInterfacesTo<LightColorDataViewPatches>().AsSingle();
       Container.BindInterfacesTo<FxEventBoxEditorDataPatches>().AsSingle();
 
-      // Command
+      // Command behavior and precision
       Container.BindInterfacesTo<MoveEventBoxPatches>().AsSingle();
       Container.BindInterfacesTo<LightEventsPayloadPatches>().AsSingle();
       Container.BindInterfacesTo<ModifyHoveredLightEventDeltaIntensityCommandPatches>().AsSingle();
       Container.BindInterfacesTo<ModifyHoveredLightTranslationDeltaTranslationCommandPatches>().AsSingle();
       Container.BindInterfacesTo<PasteEventBoxGroupsCommandPatches>().AsSingle();
 
-      // UI
+      // Editor UI integration
       Container.BindInterfacesTo<EventBoxesViewPatches>().AsSingle();
       Container.BindInterfacesTo<FloatInputFieldValidatorPatches>().AsSingle();
       Container.BindInterfacesTo<IntInputFieldValidatorPatches>().AsSingle();

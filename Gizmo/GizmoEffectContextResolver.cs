@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using BeatmapEditor3D;
 using UnityEngine;
 using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupType;
 using Object = UnityEngine.Object;
@@ -40,14 +39,15 @@ internal sealed class GizmoEffectContextResolver
       ResolveManagers();
       context = null;
 
-      var available = _colorManager != null && groupType switch
-      {
-         EventBoxGroupType.Color => true,
-         EventBoxGroupType.Rotation => _rotationManager != null,
-         EventBoxGroupType.Translation => _translationManager != null,
-         EventBoxGroupType.FloatFx => _fxManager != null,
-         _ => false
-      };
+      var available = _colorManager != null
+         && groupType switch
+         {
+            EventBoxGroupType.Color => true,
+            EventBoxGroupType.Rotation => _rotationManager != null,
+            EventBoxGroupType.Translation => _translationManager != null,
+            EventBoxGroupType.FloatFx => _fxManager != null,
+            _ => false
+         };
       if (!available)
       {
          if (_reportedMissingTypes.Add(groupType))

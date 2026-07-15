@@ -60,18 +60,15 @@ public class GizmoDraggableTranslation : GizmoDraggable
          LightAxis.X => new Vector3(
             SnapPosition(origin.localPosition.x, TargetTransform.parent.lossyScale.x),
             0,
-            0
-         ),
+            0),
          LightAxis.Y => new Vector3(
             0,
             SnapPosition(origin.localPosition.y, TargetTransform.parent.lossyScale.y),
-            0
-         ),
+            0),
          LightAxis.Z => new Vector3(
             0,
             0,
-            SnapPosition(origin.localPosition.z, TargetTransform.parent.lossyScale.z)
-         ),
+            SnapPosition(origin.localPosition.z, TargetTransform.parent.lossyScale.z)),
          _ => throw new ArgumentOutOfRangeException()
       };
    }

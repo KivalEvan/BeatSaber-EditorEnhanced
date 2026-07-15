@@ -52,8 +52,7 @@ public class EditorButtonWithIconTag : IEditorTag, IUIButton
       var image = (Image)new GameObject("Icon").AddComponent<ImageView>();
       image.rectTransform.SetParent(contentWrapper.transform, false);
       image.preserveAspect = true;
-      image.sprite = TextureLoader.LoadSpriteRaw(
-         AssetLoader.GetResource(Assembly.GetExecutingAssembly(), ImagePath));
+      image.sprite = TextureLoader.LoadSpriteRaw(AssetLoader.GetResource(Assembly.GetExecutingAssembly(), ImagePath));
       image.sprite.texture.wrapMode = TextureWrapMode.Clamp;
       btnObject.transform.localScale = new Vector2(64f / 100f, 64f / 100f);
 

@@ -38,7 +38,7 @@ internal static class SphereGizmo
 
       go.AddComponent<PositionConstraint>().constraintActive = true;
       go.AddComponent<RotationConstraint>().constraintActive = true;
-      
+
       mesh.AddComponent<GizmoMaterial>();
       mesh.AddComponent<GizmoHighlight>();
       mesh.AddComponent<GizmoHighlightController>();

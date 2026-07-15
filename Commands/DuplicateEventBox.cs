@@ -6,8 +6,8 @@ namespace EditorEnhanced.Commands;
 
 public class DuplicateEventBoxSignal
 {
-   public readonly BeatmapEditorObjectId EventBoxId;
    public readonly bool CopyEvent;
+   public readonly BeatmapEditorObjectId EventBoxId;
    public readonly bool Increment;
    public readonly bool RandomSeed;
    public readonly float Value;

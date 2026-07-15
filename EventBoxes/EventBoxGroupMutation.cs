@@ -22,7 +22,8 @@ internal sealed class EventBoxGroupMutation
    {
       return new EventBoxGroupSnapshot(
          groupId,
-         _dataModel.GetEventBoxesByEventBoxGroupId(groupId)
+         _dataModel
+            .GetEventBoxesByEventBoxGroupId(groupId)
             .Select(Capture));
    }
 

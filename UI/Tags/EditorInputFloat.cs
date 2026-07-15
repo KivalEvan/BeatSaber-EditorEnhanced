@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
 using EditorEnhanced.UI.Components;
-using EditorEnhanced.UI.Interfaces;
 using TMPro;
 using UnityEngine;
 using Zenject;

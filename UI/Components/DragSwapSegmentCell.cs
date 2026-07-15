@@ -1,4 +1,3 @@
-using BeatmapEditor3D.Commands;
 using EditorEnhanced.Commands;
 using HMUI;
 using UnityEngine;
@@ -11,10 +10,10 @@ public class DragSwapSegmentCell : MonoBehaviour, IBeginDragHandler, IDragHandle
 {
    [Inject] private readonly SignalBus _signalBus = null!;
    private SegmentedControlCell _currentCell;
+   private int _newIndex;
    private RectTransform _rectTransform;
    private SegmentedControl _segmentedControl;
    private Vector2 _startPos;
-   private int _newIndex;
 
    private void Awake()
    {

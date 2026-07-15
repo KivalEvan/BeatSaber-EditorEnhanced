@@ -19,10 +19,7 @@ public class EditorTextTag : IEditorTag, IUIText, IUIRect
 
    public GameObject Create(Transform parent)
    {
-      var go = new GameObject(Name)
-      {
-         layer = 5
-      };
+      var go = new GameObject(Name) { layer = 5 };
       go.SetActive(false);
       go.transform.SetParent(parent, false);
 

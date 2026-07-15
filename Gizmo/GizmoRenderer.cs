@@ -18,8 +18,8 @@ namespace EditorEnhanced.Gizmo;
 internal sealed class GizmoRenderer : IInitializable, IDisposable
 {
    private readonly List<GameObject> _activeGizmos = [];
-   private readonly DiContainer _container;
    private readonly PluginConfig _config;
+   private readonly DiContainer _container;
    private readonly GizmoAssets _gizmoAssets;
    private readonly UIBuilder _uiBuilder;
    private readonly EditorViewLocator _viewLocator;
@@ -41,13 +41,21 @@ internal sealed class GizmoRenderer : IInitializable, IDisposable
       _viewLocator = viewLocator;
    }
 
+   public void Dispose()
+   {
+      Clear();
+      if (_gizmoInfo != null) Object.Destroy(_gizmoInfo.gameObject);
+      if (_dragInputSystem != null) Object.Destroy(_dragInputSystem.gameObject);
+   }
+
    public void Initialize()
    {
       var dragInputObject = new GameObject("GizmoDragInputSystem");
       dragInputObject.SetActive(false);
       _dragInputSystem = dragInputObject.AddComponent<GizmoDragInputSystem>();
 
-      var infoObject = _uiBuilder.CreateStackLayout()
+      var infoObject = _uiBuilder
+         .CreateStackLayout()
          .SetName("GizmoInfo")
          .SetPreferredWidth(0)
          .SetPreferredHeight(0)
@@ -56,19 +64,13 @@ internal sealed class GizmoRenderer : IInitializable, IDisposable
          .Create(_viewLocator.GetEditorRoot());
       infoObject.SetActive(false);
       _gizmoInfo = _container.InstantiateComponent<GizmoInfo>(infoObject);
-      _uiBuilder.CreateText()
+      _uiBuilder
+         .CreateText()
          .SetColor(Color.white)
          .SetTextAlignment(TextAlignmentOptions.TopLeft)
          .SetFontSize(12f)
          .SetCharacterSpacing(16f)
          .Create(infoObject.transform);
-   }
-
-   public void Dispose()
-   {
-      Clear();
-      if (_gizmoInfo != null) Object.Destroy(_gizmoInfo.gameObject);
-      if (_dragInputSystem != null) Object.Destroy(_dragInputSystem.gameObject);
    }
 
    public void Render(GizmoPlan plan)
@@ -187,21 +189,17 @@ internal sealed class GizmoRenderer : IInitializable, IDisposable
 
    private static void SetConstraints(GameObject gizmo, Transform target, LightGroupSubsystem subsystem)
    {
-      gizmo.GetComponentInChildren<PositionConstraint>().SetSources(
-      [
-         new ConstraintSource
-         {
-            sourceTransform = target,
-            weight = 1f
-         }
-      ]);
-      gizmo.GetComponentInChildren<RotationConstraint>().SetSources(
-      [
-         new ConstraintSource
-         {
-            sourceTransform = subsystem is LightTranslationGroup ? target.parent : target,
-            weight = 1f
-         }
-      ]);
+      gizmo
+         .GetComponentInChildren<PositionConstraint>()
+         .SetSources([new ConstraintSource { sourceTransform = target, weight = 1f }]);
+      gizmo
+         .GetComponentInChildren<RotationConstraint>()
+         .SetSources(
+         [
+            new ConstraintSource
+            {
+               sourceTransform = subsystem is LightTranslationGroup ? target.parent : target, weight = 1f
+            }
+         ]);
    }
 }

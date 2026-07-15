@@ -9,8 +9,20 @@ public class LightColorDataViewPatches : IAffinity
 {
    [AffinityPrefix]
    [AffinityPatch(typeof(LightColorDataView), nameof(LightColorDataView.UpdateData))]
-   private bool FixStrobeBrightness(LightColorDataView __instance)
+   private bool SubmitNormalizedStrobeBrightness(LightColorDataView __instance)
    {
+      if (__instance == null
+         || __instance.signalBus == null
+         || __instance._easeTypeDropdown == null
+         || __instance._beatInputFieldValidator == null
+         || __instance._colorTypeToggleGroup == null
+         || __instance._valueInput == null
+         || __instance._strobeFrequencyInput == null
+         || __instance._strobeBrightnessInput == null
+         || __instance._strobeFadeToggle == null
+         || __instance._extensionToggle == null)
+         return true;
+
       var tuple = EaseTypeHelpers.ConvertFromEaseType((EaseType)__instance._easeTypeDropdown.selectedIndex);
       __instance.signalBus.Fire(
          new ModifyFullLightColorSignal(

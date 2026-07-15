@@ -7,8 +7,10 @@ public class FxEventBoxEditorDataPatches : IAffinity
 {
    [AffinityPrefix]
    [AffinityPatch(typeof(FxEventBoxEditorData), nameof(FxEventBoxEditorData.CopyWithoutId))]
-   private bool FixIndexFilterCopy(FxEventBoxEditorData original, ref FxEventBoxEditorData __result)
+   private bool CopyIndexFilterInsteadOfSharingIt(FxEventBoxEditorData original, ref FxEventBoxEditorData __result)
    {
+      if (original?.indexFilter == null) return true;
+
       __result = FxEventBoxEditorData.CreateNew(
          IndexFilterEditorData.Copy(original.indexFilter),
          original.beatDistributionParamType,

@@ -69,6 +69,20 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput, IGizmoPoolabl
    public abstract void OnMouseClick();
    public abstract void OnMouseRelease();
 
+   public void ResetForPool()
+   {
+      IsDragging = false;
+      EventBoxEditorDataContext = null;
+      LightGroupSubsystemContext = null;
+      TargetTransform = null;
+      Mirror = false;
+      if (transform.parent != null)
+      {
+         transform.parent.localPosition = Vector3.zero;
+         transform.parent.localRotation = Quaternion.identity;
+      }
+   }
+
    protected abstract float GetSize();
 
    protected void AdjustSize()
@@ -83,19 +97,5 @@ public abstract class GizmoDraggable : MonoBehaviour, IGizmoInput, IGizmoPoolabl
    public void RefreshSize()
    {
       AdjustSize();
-   }
-
-   public void ResetForPool()
-   {
-      IsDragging = false;
-      EventBoxEditorDataContext = null;
-      LightGroupSubsystemContext = null;
-      TargetTransform = null;
-      Mirror = false;
-      if (transform.parent != null)
-      {
-         transform.parent.localPosition = Vector3.zero;
-         transform.parent.localRotation = Quaternion.identity;
-      }
    }
 }

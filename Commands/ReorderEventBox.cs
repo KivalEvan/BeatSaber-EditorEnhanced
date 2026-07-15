@@ -23,8 +23,8 @@ internal sealed class ReorderEventBoxCommand : IBeatmapEditorCommandWithHistory
    private readonly EventBoxGroupsState _eventBoxGroupsState;
    private readonly EventBoxGroupMutation _mutation;
    private readonly ReorderEventBoxSignal _signal;
-   private EventBoxGroupSnapshot _newSnapshot;
    private int _newIdx;
+   private EventBoxGroupSnapshot _newSnapshot;
    private EventBoxGroupSnapshot _previousSnapshot;
 
    public ReorderEventBoxCommand(

@@ -42,7 +42,8 @@ internal sealed class EventBoxGroupSnapshot
 
    public bool HasSameOrder(EventBoxGroupSnapshot other)
    {
-      return _eventBoxes.Select(item => item.EventBox.id)
+      return _eventBoxes
+         .Select(item => item.EventBox.id)
          .SequenceEqual(other._eventBoxes.Select(item => item.EventBox.id));
    }
 
