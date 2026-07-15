@@ -70,8 +70,9 @@ internal class GizmoManager : IInitializable, IDisposable
       _signalBus.TryUnsubscribe<EventBoxModifiedSignal>(HandleGizmoSignal);
       _signalBus.TryUnsubscribe<GizmoRefreshSignal>(HandleGizmoSignal);
 
-      Object.Destroy(_gizmoInfo);
-      Object.Destroy(_gizmoDragInputSystem);
+      RemoveGizmo();
+      if (_gizmoInfo != null) Object.Destroy(_gizmoInfo.gameObject);
+      if (_gizmoDragInputSystem != null) Object.Destroy(_gizmoDragInputSystem.gameObject);
       _activeGizmos.Clear();
       _colorManager = null;
       _rotationManager = null;
@@ -104,13 +105,7 @@ internal class GizmoManager : IInitializable, IDisposable
          .SetCharacterSpacing(16f)
          .Create(go.transform);
 
-      _colorManager = Object.FindAnyObjectByType<LightColorGroupEffectManager>();
-      _rotationManager =
-         Object.FindAnyObjectByType<LightRotationGroupEffectManager>();
-      _translationManager =
-         Object.FindAnyObjectByType<LightTranslationGroupEffectManager>();
-      _fxManager =
-         Object.FindAnyObjectByType<FloatFxGroupEffectManager>();
+      ResolveEffectManagers();
 
       _signalBus.Subscribe<BeatmapEditingModeSwitchedSignal>(HandleGizmoSignalWithSignal);
       _signalBus.Subscribe<EventBoxesUpdatedSignal>(HandleGizmoSignal);
@@ -120,10 +115,9 @@ internal class GizmoManager : IInitializable, IDisposable
 
    private void HandleGizmoSignalWithSignal(BeatmapEditingModeSwitchedSignal signal)
    {
+      RemoveGizmo();
       if (_config.Gizmo.Enabled && signal.mode == BeatmapEditingMode.EventBoxes)
          AddGizmo();
-      else
-         RemoveGizmo();
    }
 
    private void HandleGizmoSignal()
@@ -135,22 +129,47 @@ internal class GizmoManager : IInitializable, IDisposable
 
    private void AddGizmo()
    {
-      switch (_ebgs.eventBoxGroupContext.type)
+      var context = _ebgs.eventBoxGroupContext;
+      if (context == null) return;
+
+      ResolveEffectManagers();
+      if (_colorManager == null)
+      {
+         Plugin.Log.Warn("Cannot create gizmos: light color effect manager was not found.");
+         return;
+      }
+      switch (context.type)
       {
          case EventBoxGroupType.Color:
             AddColorGizmo();
             break;
          case EventBoxGroupType.Rotation:
+            if (_rotationManager == null)
+            {
+               Plugin.Log.Warn("Cannot create rotation gizmos: light rotation effect manager was not found.");
+               return;
+            }
             AddRotationGizmo();
             break;
          case EventBoxGroupType.Translation:
+            if (_translationManager == null)
+            {
+               Plugin.Log.Warn("Cannot create translation gizmos: light translation effect manager was not found.");
+               return;
+            }
             AddTranslationGizmo();
             break;
          case EventBoxGroupType.FloatFx:
+            if (_fxManager == null)
+            {
+               Plugin.Log.Warn("Cannot create FX gizmos: float FX effect manager was not found.");
+               return;
+            }
             AddFxGizmo();
             break;
          default:
-            throw new ArgumentOutOfRangeException();
+            Plugin.Log.Warn($"Cannot create gizmos for unsupported event box group type {context.type}.");
+            return;
       }
 
       _gizmoInfo.gameObject.SetActive(_config.Gizmo.ShowInfo);
@@ -159,11 +178,25 @@ internal class GizmoManager : IInitializable, IDisposable
 
    private void RemoveGizmo()
    {
-      foreach (var gizmo in _activeGizmos) gizmo.SetActive(false);
+      foreach (var gizmo in _activeGizmos)
+         if (gizmo != null)
+            gizmo.SetActive(false);
       _activeGizmos.Clear();
-      _gizmoInfo.gameObject.SetActive(false);
-      _gizmoInfo.Clear();
-      _gizmoDragInputSystem.gameObject.SetActive(false);
+      if (_gizmoInfo != null)
+      {
+         _gizmoInfo.gameObject.SetActive(false);
+         _gizmoInfo.Clear();
+      }
+      if (_gizmoDragInputSystem != null) _gizmoDragInputSystem.gameObject.SetActive(false);
+   }
+
+   private void ResolveEffectManagers()
+   {
+      if (_colorManager == null) _colorManager = Object.FindAnyObjectByType<LightColorGroupEffectManager>();
+      if (_rotationManager == null) _rotationManager = Object.FindAnyObjectByType<LightRotationGroupEffectManager>();
+      if (_translationManager == null)
+         _translationManager = Object.FindAnyObjectByType<LightTranslationGroupEffectManager>();
+      if (_fxManager == null) _fxManager = Object.FindAnyObjectByType<FloatFxGroupEffectManager>();
    }
 
    private void DistributeGizmo(
@@ -339,7 +372,7 @@ internal class GizmoManager : IInitializable, IDisposable
                return (i.Value, _colorManager
                   ._lightColorGroupEffects
                   .FirstOrDefault(x => x._lightId == l.startLightId + i.Key)
-                  ?._lightManager._lights.ElementAt(l.startLightId + i.Key));
+                  ?._lightManager._lights.ElementAtOrDefault(l.startLightId + i.Key));
             })
             .Where(item => item.Item2 != null)
             .Select((item, i) =>

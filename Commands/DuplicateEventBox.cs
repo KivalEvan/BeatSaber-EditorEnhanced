@@ -59,12 +59,21 @@ public class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
 
    public void Execute()
    {
-      _eventBoxGroupId = _eventBoxGroupsState.eventBoxGroupContext.id;
-      _newIdx = _beatmapEventBoxGroupsDataModel.GetEventBoxIdxByEventBoxId(_signal.EventBoxId) + 1;
+      var context = _eventBoxGroupsState.eventBoxGroupContext;
+      if (context == null) return;
+
+      _eventBoxGroupId = context.id;
+      var sourceIndex = _beatmapEventBoxGroupsDataModel.GetEventBoxIdxByEventBoxId(_signal.EventBoxId);
+      var eventBoxCollection = _beatmapEventBoxGroupsDataModel
+         .GetEventBoxesCollectionByEventBoxGroupId(_eventBoxGroupId);
+      if (eventBoxCollection == null) return;
+
+      var eventBoxes = eventBoxCollection.eventBoxes;
+      if (sourceIndex < 0 || sourceIndex >= eventBoxes.Count) return;
+
+      _newIdx = sourceIndex + 1;
       var newEventBox = EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(
-         _beatmapEventBoxGroupsDataModel
-            .GetEventBoxesCollectionByEventBoxGroupId(_eventBoxGroupId)
-            .eventBoxes[_newIdx - 1]);
+         eventBoxes[sourceIndex]);
 
       if (_signal.Increment)
       {

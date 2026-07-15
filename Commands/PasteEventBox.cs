@@ -66,8 +66,17 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
    public void Execute()
    {
       var selectedEventBox = _signal.EventBoxEditorData;
+      if (selectedEventBox == null) return;
 
-      var newItem = _clipboardManager.Paste(_eventBoxGroupsState.eventBoxGroupContext.type);
+      var context = _eventBoxGroupsState.eventBoxGroupContext;
+      if (context == null) return;
+
+      var eventBoxGroupId = context.id;
+      var byEventBoxGroupId = _beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);
+      if (byEventBoxGroupId.Count == 0 || byEventBoxGroupId.All(eventBox => eventBox.id != selectedEventBox.id))
+         return;
+
+      var newItem = _clipboardManager.Paste(context.type);
       if (!newItem.HasValue) return;
       var newEventBox = EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(newItem.Value.box);
       var toReplace = (newEventBox,
@@ -110,9 +119,6 @@ public class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
          && newEventBox.indexFilter.randomType.HasFlag(IndexFilter.IndexFilterRandomType.RandomElements))
          newEventBox.indexFilter.SetField("seed", Random.Range(int.MinValue, int.MaxValue));
 
-      var eventBoxGroupId = _eventBoxGroupsState.eventBoxGroupContext.id;
-      var byEventBoxGroupId = _beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);
-      if (byEventBoxGroupId.Count == 0) return;
       var previousEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>(byEventBoxGroupId.Count);
       var newEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>();
 

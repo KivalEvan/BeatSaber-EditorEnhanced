@@ -35,7 +35,10 @@ public class SortAxisEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
 
    public void Execute()
    {
-      var eventBoxGroupId = _eventBoxGroupsState.eventBoxGroupContext.id;
+      var context = _eventBoxGroupsState.eventBoxGroupContext;
+      if (context == null) return;
+
+      var eventBoxGroupId = context.id;
       var byEventBoxGroupId = _beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);
       if (byEventBoxGroupId.Count == 0) return;
       var previousEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>(byEventBoxGroupId.Count);
@@ -59,6 +62,10 @@ public class SortAxisEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
             };
          })
          .ToList();
+
+      if (newEventBoxes.Select(item => item.Item1.id)
+         .SequenceEqual(previousEventBoxes.Select(item => item.Item1.id)))
+         return;
 
       _eventBoxGroupId = eventBoxGroupId;
       _previousEventBoxes = previousEventBoxes;

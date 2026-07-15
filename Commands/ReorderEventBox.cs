@@ -50,12 +50,15 @@ public class ReorderEventBoxCommand : IBeatmapEditorCommandWithHistory
    {
       if (_signal.CurrentIndex == _signal.MoveToIndex) return;
 
-      var eventBoxGroupId = _eventBoxGroupsState.eventBoxGroupContext.id;
-      var byEventBoxGroupId = _beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);
-      var selectedEventBox = byEventBoxGroupId[_signal.CurrentIndex];
+      var context = _eventBoxGroupsState.eventBoxGroupContext;
+      if (context == null) return;
 
+      var eventBoxGroupId = context.id;
+      var byEventBoxGroupId = _beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);
       if (byEventBoxGroupId.Count == 0) return;
-      var originalIndex = _beatmapEventBoxGroupsDataModel.GetEventBoxIdxByEventBoxId(eventBoxGroupId);
+      if (_signal.CurrentIndex < 0 || _signal.CurrentIndex >= byEventBoxGroupId.Count) return;
+
+      var selectedEventBox = byEventBoxGroupId[_signal.CurrentIndex];
       var previousEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>(byEventBoxGroupId.Count);
       var newEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>();
 
@@ -79,7 +82,7 @@ public class ReorderEventBoxCommand : IBeatmapEditorCommandWithHistory
 
       newEventBoxes.Insert(newIdx, toMove);
 
-      if (newIdx == originalIndex) return;
+      if (newIdx == _signal.CurrentIndex) return;
 
       _eventBoxGroupId = eventBoxGroupId;
       _newIdx = newIdx;

@@ -249,19 +249,19 @@ public class ScrollableYourInput : IInitializable
          ebv._brightnessDistributionView._brightnessDistributionParamInput,
          LightColorEventHelper._precisions);
 
-      ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
+      ebv._rotationDistributionView._rotationDistributionParamInput._validatorType =
          FloatInputFieldValidator.ValidatorType.None;
       ApplyScrollableFloatInput(
          ebv._rotationDistributionView._rotationDistributionParamInput,
          ModifyHoveredLightRotationDeltaRotationCommand._precisions);
 
-      ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
+      ebv._gapDistributionView._translationDistributionParamInput._validatorType =
          FloatInputFieldValidator.ValidatorType.None;
       ApplyScrollableFloatInput(
          ebv._gapDistributionView._translationDistributionParamInput,
          ModifyHoveredLightTranslationDeltaTranslationCommand._precisions);
 
-      ebv._brightnessDistributionView._brightnessDistributionParamInput._validatorType =
+      ebv._fxDistributionView._fxDistributionParamInput._validatorType =
          FloatInputFieldValidator.ValidatorType.None;
       ApplyScrollableFloatInput(
          ebv._fxDistributionView._fxDistributionParamInput,

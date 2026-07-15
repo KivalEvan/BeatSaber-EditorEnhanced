@@ -35,7 +35,10 @@ public class SortIdEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
 
    public void Execute()
    {
-      var eventBoxGroupId = _eventBoxGroupsState.eventBoxGroupContext.id;
+      var context = _eventBoxGroupsState.eventBoxGroupContext;
+      if (context == null) return;
+
+      var eventBoxGroupId = context.id;
       var byEventBoxGroupId = _beatmapEventBoxGroupsDataModel.GetEventBoxesByEventBoxGroupId(eventBoxGroupId);
       if (byEventBoxGroupId.Count == 0) return;
       var previousEventBoxes = new List<(EventBoxEditorData, List<BaseEditorData>)>(byEventBoxGroupId.Count);
@@ -58,6 +61,10 @@ public class SortIdEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
                ? eventBox.Item1.indexFilter.param1
                : eventBox.Item1.indexFilter.param0)
          .ToList();
+
+      if (newEventBoxes.Select(item => item.Item1.id)
+         .SequenceEqual(previousEventBoxes.Select(item => item.Item1.id)))
+         return;
 
       _eventBoxGroupId = eventBoxGroupId;
       _previousEventBoxes = previousEventBoxes;

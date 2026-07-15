@@ -32,6 +32,7 @@ public class GizmoDragInputSystem : MonoBehaviour
       if (_mainCamera == null)
       {
          Plugin.Log.Error("Main Camera not found.");
+         enabled = false;
          return;
       }
 
@@ -72,9 +73,14 @@ public class GizmoDragInputSystem : MonoBehaviour
          _clickAction.performed -= OnClickPerformed;
          _clickAction.canceled -= OnClickCanceled;
          _clickAction.Disable();
+         _clickAction.Dispose();
       }
 
-      if (_pointerPositionAction != null) _pointerPositionAction.Disable();
+      if (_pointerPositionAction != null)
+      {
+         _pointerPositionAction.Disable();
+         _pointerPositionAction.Dispose();
+      }
    }
 
    private void OnClickPerformed(InputAction.CallbackContext context)

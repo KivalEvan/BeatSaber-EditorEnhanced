@@ -48,6 +48,7 @@ internal class GizmoAssets : IInitializable, IDisposable
    {
       foreach (var gizmos in _gizmoObjects)
       {
+         if (gizmos == null) continue;
          gizmos.ForEach(Object.Destroy);
          gizmos.Clear();
       }
