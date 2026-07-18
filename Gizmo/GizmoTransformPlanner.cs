@@ -69,11 +69,8 @@ internal sealed class GizmoTransformPlanner
          foreach (var light in item.Lights)
             switch (light)
             {
-               case MaterialLightWithId materialLight:
-                  transforms.Add(item.Item1 with { Transform = materialLight.transform });
-                  break;
-               case TubeBloomPrePassLightWithId tubeLight:
-                  transforms.Add(item.Item1 with { Transform = tubeLight.transform });
+               case MonoBehaviour mb:
+                  transforms.Add(item.Item1 with { Transform = mb.transform });
                   break;
             }
 

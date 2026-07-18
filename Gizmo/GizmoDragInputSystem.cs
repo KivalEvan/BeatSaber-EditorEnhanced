@@ -14,10 +14,16 @@ internal interface IGizmoInput
    public void OnMouseRelease();
 }
 
+internal interface IGizmoScrollInput
+{
+   public void OnScroll(float delta);
+}
+
 public class GizmoDragInputSystem : MonoBehaviour
 {
    private InputAction _clickAction;
    private IGizmoInput[] _currentGizmoDraggables;
+   private IGizmoScrollInput[] _currentGizmoScrollables;
    private GameObject _currentHoveredObject;
    private LayerMask _draggableLayer;
    private Plane _dragPlane;
@@ -25,6 +31,7 @@ public class GizmoDragInputSystem : MonoBehaviour
    private Camera _mainCamera;
    private Vector3 _offset;
    private InputAction _pointerPositionAction;
+   private InputAction _scrollAction;
 
    private void Awake()
    {
@@ -48,6 +55,13 @@ public class GizmoDragInputSystem : MonoBehaviour
          type: InputActionType.Value,
          expectedControlType: "Vector2");
       _pointerPositionAction.Enable();
+
+      _scrollAction = new InputAction(
+         binding: "<Mouse>/scroll",
+         type: InputActionType.Value,
+         expectedControlType: "Vector2");
+      _scrollAction.performed += OnScrollPerformed;
+      _scrollAction.Enable();
    }
 
    private void Update()
@@ -73,6 +87,7 @@ public class GizmoDragInputSystem : MonoBehaviour
             input.IsDragging = false;
 
       _currentGizmoDraggables = null;
+      _currentGizmoScrollables = null;
       _currentHoveredObject = null;
       _isDragging = false;
       _offset = Vector3.zero;
@@ -92,6 +107,13 @@ public class GizmoDragInputSystem : MonoBehaviour
       {
          _pointerPositionAction.Disable();
          _pointerPositionAction.Dispose();
+      }
+
+      if (_scrollAction != null)
+      {
+         _scrollAction.performed -= OnScrollPerformed;
+         _scrollAction.Disable();
+         _scrollAction.Dispose();
       }
    }
 
@@ -119,6 +141,14 @@ public class GizmoDragInputSystem : MonoBehaviour
       foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnMouseRelease();
    }
 
+   private void OnScrollPerformed(InputAction.CallbackContext context)
+   {
+      if (_isDragging || _currentGizmoScrollables == null) return;
+      var delta = context.ReadValue<Vector2>().y;
+      if (Mathf.Approximately(delta, 0f)) return;
+      foreach (var scrollable in _currentGizmoScrollables) scrollable.OnScroll(delta);
+   }
+
    private void HandleHover()
    {
       var mouseScreenPos = _pointerPositionAction.ReadValue<Vector2>();
@@ -134,6 +164,7 @@ public class GizmoDragInputSystem : MonoBehaviour
 
          _currentHoveredObject = hit.collider.gameObject;
          _currentGizmoDraggables = _currentHoveredObject.GetComponents<IGizmoInput>();
+         _currentGizmoScrollables = _currentHoveredObject.GetComponents<IGizmoScrollInput>();
          foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnPointerEnter();
       }
       else
@@ -141,6 +172,7 @@ public class GizmoDragInputSystem : MonoBehaviour
          if (_currentHoveredObject == null) return;
          foreach (var currentGizmoDraggable in _currentGizmoDraggables) currentGizmoDraggable.OnPointerExit();
          _currentHoveredObject = null;
+         _currentGizmoScrollables = null;
       }
    }
 }

@@ -118,6 +118,7 @@ internal sealed class GizmoRenderer : IInitializable, IDisposable
             var laneGizmo = _gizmoAssets.GetOrCreate(GizmoType.Lane, colorIndex);
             laneGizmo.transform.SetParent(root, false);
             laneGizmo.GetComponent<GizmoSwappable>().EventBoxEditorDataContext = data.EventBoxContext;
+            laneGizmo.GetComponent<GizmoLaneScrollable>().EventBoxEditorDataContext = data.EventBoxContext;
 
             var highlightController = laneGizmo.GetComponent<GizmoHighlightController>();
             highlightController.Init();

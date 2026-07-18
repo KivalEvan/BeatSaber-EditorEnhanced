@@ -10,6 +10,7 @@ For level designer, by level designer, to improve your workflow with various QOL
     * Draggable gizmo
         * Create event based on event box context, cursor time and event box state
     * Clickable to select event box
+    * Scroll lane gizmo to adjust the value of entire lane
 * Better Event Box Reordering
     * Drag the tab to reorder them than using button
     * Lane gizmo can also be dragged to reorder
@@ -48,5 +49,4 @@ Simply place `EditorEnhanced.dll` onto `Plugins` folder.
 
 ## Known Issue
 
-* Drag rotation gizmo may not work as intended when angled
 * Certain UI does not have audio feedback

@@ -18,6 +18,7 @@ public class EECommandInstaller : Installer
       InstallCommands<SortIdEventBoxGroupSignal, SortIdEventBoxGroupCommand>();
       InstallCommands<DragGizmoLightTranslationEventBoxSignal, DragGizmoLightTranslationEventBoxCommand>();
       InstallCommands<DragGizmoLightRotationEventBoxSignal, DragGizmoLightRotationEventBoxCommand>();
+      InstallCommands<ScrollGizmoEventBoxLaneSignal, ScrollGizmoEventBoxLaneCommand>();
       InstallCommands<ReorderEventBoxSignal, ReorderEventBoxCommand>();
       InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>();
       InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>();
@@ -54,6 +55,7 @@ public class CommandFactoryInitializer : IInitializable
       BindFactory<SortIdEventBoxGroupCommand>();
       BindFactory<DragGizmoLightTranslationEventBoxCommand>();
       BindFactory<DragGizmoLightRotationEventBoxCommand>();
+      BindFactory<ScrollGizmoEventBoxLaneCommand>();
       BindFactory<ReorderEventBoxCommand>();
       BindFactory<CopyEventBoxCommand>();
       BindFactory<PasteEventBoxCommand>();

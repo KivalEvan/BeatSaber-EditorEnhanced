@@ -37,6 +37,7 @@ internal static class LaneGizmo
       go.AddComponent<GizmoHighlight>();
       go.AddComponent<GizmoHighlightController>();
       go.AddComponent<GizmoSwappable>();
+      go.AddComponent<GizmoLaneScrollable>();
 
       return go;
    }
