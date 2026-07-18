@@ -17,6 +17,7 @@ For level designer, by level designer, to improve your workflow with various QOL
 * Sort Event Box
 * Improved Event Box Duplicate & Copy
     * Ability to copy events, randomise seed, increment ID and add value to existing events.
+    * Replace event box with parameter
 * Simple Offset Button for Beat Distribution
 * Random Seed Clipboard
 * Randomise Seed on Paste

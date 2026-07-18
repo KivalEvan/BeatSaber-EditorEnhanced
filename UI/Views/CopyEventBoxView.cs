@@ -90,7 +90,11 @@ internal class CopyEventBoxView : IInitializable
          .Create(layout.transform);
       btnTag
          .SetText("Duplicate")
-         .SetOnClick(DuplicateEventBox)
+         .SetOnClick(() => DuplicateEventBox(false))
+         .Create(layout.transform);
+      btnTag
+         .SetText("Replace")
+         .SetOnClick(() => DuplicateEventBox(true))
          .Create(layout.transform);
       layout = horizontalTag.Create(container.transform);
       checkboxTag
@@ -135,7 +139,7 @@ internal class CopyEventBoxView : IInitializable
             _addValue ? _value : 0f));
    }
 
-   private void DuplicateEventBox()
+   private void DuplicateEventBox(bool replaceOriginal)
    {
       _signalBus.Fire(
          new DuplicateEventBoxSignal(
@@ -143,6 +147,7 @@ internal class CopyEventBoxView : IInitializable
             _copyEvent,
             _randomSeed,
             _increment,
-            _addValue ? _value : 0f));
+            _addValue ? _value : 0f,
+            replaceOriginal));
    }
 }

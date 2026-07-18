@@ -44,6 +44,19 @@ internal sealed class EventBoxGroupMutation
       NotifyChanged(selectedIndex);
    }
 
+   public void Replace(
+      BeatmapEditorObjectId groupId,
+      EventBoxSnapshot current,
+      EventBoxSnapshot replacement,
+      int index)
+   {
+      _dataModel.RemoveBaseEditorDataList(current.EventBox.id, current.BaseEvents);
+      _dataModel.RemoveEventBox(groupId, current.EventBox);
+      _dataModel.InsertEventBox(groupId, replacement.EventBox, index);
+      _dataModel.InsertBaseEditorDataList(replacement.EventBox.id, replacement.BaseEvents);
+      NotifyChanged(index);
+   }
+
    public void Insert(
       BeatmapEditorObjectId groupId,
       EventBoxSnapshot eventBox,

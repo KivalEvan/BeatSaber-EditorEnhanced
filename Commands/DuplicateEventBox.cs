@@ -10,6 +10,7 @@ public class DuplicateEventBoxSignal
    public readonly BeatmapEditorObjectId EventBoxId;
    public readonly bool Increment;
    public readonly bool RandomSeed;
+   public readonly bool ReplaceOriginal;
    public readonly float Value;
 
    public DuplicateEventBoxSignal(
@@ -17,13 +18,15 @@ public class DuplicateEventBoxSignal
       bool copyEvent,
       bool randomSeed,
       bool increment,
-      float value)
+      float value,
+      bool replaceOriginal)
    {
       EventBoxId = eventBoxId;
       CopyEvent = copyEvent;
       RandomSeed = randomSeed;
       Increment = increment;
       Value = value;
+      ReplaceOriginal = replaceOriginal;
    }
 }
 
@@ -36,6 +39,7 @@ internal sealed class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistor
    private BeatmapEditorObjectId _eventBoxGroupId;
    private EventBoxSnapshot _newEventBox;
    private int _newIdx;
+   private EventBoxSnapshot _sourceEventBox;
 
    public DuplicateEventBoxCommand(
       DuplicateEventBoxSignal signal,
@@ -61,9 +65,10 @@ internal sealed class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistor
       var sourceIndex = snapshot.IndexOf(_signal.EventBoxId);
       if (sourceIndex < 0) return;
 
-      _newIdx = sourceIndex + 1;
+      _sourceEventBox = snapshot.EventBoxes[sourceIndex];
+      _newIdx = sourceIndex + (_signal.ReplaceOriginal ? 0 : 1);
       _newEventBox = _cloneService.Clone(
-         snapshot.EventBoxes[sourceIndex],
+         _sourceEventBox,
          _signal.CopyEvent,
          _signal.Increment,
          _signal.RandomSeed,
@@ -74,11 +79,17 @@ internal sealed class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistor
 
    public void Undo()
    {
-      _mutation.Remove(_eventBoxGroupId, _newEventBox, _newIdx - 1);
+      if (_signal.ReplaceOriginal)
+         _mutation.Replace(_eventBoxGroupId, _newEventBox, _sourceEventBox, _newIdx);
+      else
+         _mutation.Remove(_eventBoxGroupId, _newEventBox, _newIdx - 1);
    }
 
    public void Redo()
    {
-      _mutation.Insert(_eventBoxGroupId, _newEventBox, _newIdx, _newIdx);
+      if (_signal.ReplaceOriginal)
+         _mutation.Replace(_eventBoxGroupId, _sourceEventBox, _newEventBox, _newIdx);
+      else
+         _mutation.Insert(_eventBoxGroupId, _newEventBox, _newIdx, _newIdx);
    }
 }
