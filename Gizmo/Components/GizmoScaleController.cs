@@ -9,6 +9,12 @@ public class GizmoScaleController : MonoBehaviour
 {
    [Inject] private readonly PluginConfig _config = null!;
    [Inject] private readonly SignalBus _signalBus = null!;
+   private GizmoDraggable _draggable;
+
+   public void SetDraggable(GizmoDraggable draggable)
+   {
+      _draggable = draggable;
+   }
 
    private void OnEnable()
    {
@@ -25,8 +31,7 @@ public class GizmoScaleController : MonoBehaviour
    private void UpdateSize()
    {
       AdjustSize();
-      var draggable = GetComponentInChildren<GizmoDraggable>(true);
-      if (draggable != null) draggable.RefreshSize();
+      if (_draggable != null) _draggable.RefreshSize();
    }
 
    private void AdjustSize()

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using EditorEnhanced.Configuration;
 using EditorEnhanced.Gizmo.Components;
 using EditorEnhanced.UI;
@@ -17,10 +16,11 @@ namespace EditorEnhanced.Gizmo;
 
 public sealed class GizmoRenderer : IInitializable, IDisposable
 {
-   private readonly List<GameObject> _activeGizmos = [];
+   private readonly List<GizmoInstance> _activeGizmos = [];
    private readonly PluginConfig _config;
    private readonly DiContainer _container;
    private readonly GizmoAssets _gizmoAssets;
+   private readonly Dictionary<int, GizmoHighlightController> _highlighterMap = [];
    private readonly UIBuilder _uiBuilder;
    private readonly EditorViewLocator _viewLocator;
 
@@ -86,6 +86,7 @@ public sealed class GizmoRenderer : IInitializable, IDisposable
    {
       foreach (var gizmo in _activeGizmos) _gizmoAssets.Release(gizmo);
       _activeGizmos.Clear();
+      _highlighterMap.Clear();
 
       if (_gizmoInfo != null)
       {
@@ -99,8 +100,8 @@ public sealed class GizmoRenderer : IInitializable, IDisposable
    private void RenderBatch(Transform root, GizmoRenderBatch batch)
    {
       var transforms = batch.Transforms;
-      var onlyUnique = transforms.Select(data => data.AxisBoxIndex).ToHashSet().Count == 1;
-      var highlighterMap = new Dictionary<int, GizmoHighlightController>();
+      var onlyUnique = HasSingleAxisBoxIndex(transforms);
+      _highlighterMap.Clear();
 
       foreach (var data in transforms)
       {
@@ -113,19 +114,20 @@ public sealed class GizmoRenderer : IInitializable, IDisposable
                   data.Distributed)
                : ColorAssignment.WhiteIndex;
 
-         if (!highlighterMap.ContainsKey(data.GlobalBoxIndex))
+         if (!_highlighterMap.TryGetValue(data.GlobalBoxIndex, out var sharedHighlightController))
          {
             var laneGizmo = _gizmoAssets.GetOrCreate(GizmoType.Lane, colorIndex);
-            laneGizmo.transform.SetParent(root, false);
-            laneGizmo.GetComponent<GizmoSwappable>().EventBoxEditorDataContext = data.EventBoxContext;
-            laneGizmo.GetComponent<GizmoLaneScrollable>().EventBoxEditorDataContext = data.EventBoxContext;
+            laneGizmo.Transform.SetParent(root, false);
+            laneGizmo.Swappable.EventBoxEditorDataContext = data.EventBoxContext;
+            laneGizmo.LaneScrollable.EventBoxEditorDataContext = data.EventBoxContext;
 
-            var highlightController = laneGizmo.GetComponent<GizmoHighlightController>();
+            var highlightController = laneGizmo.HighlightController;
             highlightController.Init();
-            highlightController.Add(laneGizmo);
-            highlighterMap.Add(data.GlobalBoxIndex, highlightController);
+            highlightController.Add(laneGizmo.Highlight);
+            _highlighterMap.Add(data.GlobalBoxIndex, highlightController);
+            sharedHighlightController = highlightController;
 
-            laneGizmo.SetActive(_config.Gizmo.ShowLane);
+            laneGizmo.GameObject.SetActive(_config.Gizmo.ShowLane);
             _activeGizmos.Add(laneGizmo);
          }
 
@@ -136,42 +138,44 @@ public sealed class GizmoRenderer : IInitializable, IDisposable
          var baseGizmo = _gizmoAssets.GetOrCreate(
             _config.Gizmo.DistributeShape && data.Distributed ? GizmoType.Sphere : GizmoType.Cube,
             colorIndex);
-         var baseHighlightController = baseGizmo.GetComponentInChildren<GizmoHighlightController>();
-         baseHighlightController.SharedWith(highlighterMap[data.GlobalBoxIndex]);
-         baseHighlightController.Add(baseGizmo);
+         var baseHighlightController = baseGizmo.HighlightController;
+         baseHighlightController.SharedWith(sharedHighlightController);
+         baseHighlightController.Add(baseGizmo.Highlight);
          SetConstraints(baseGizmo, data.Transform, batch.Subsystem);
+         baseGizmo.ScaleController.SetDraggable(null);
 
          if (_config.Gizmo.ShowModifier)
          {
             var modifierGizmo = GetModifierGizmo(batch.GroupType, batch.Axis);
             if (modifierGizmo != null)
             {
-               modifierGizmo.transform.SetParent(baseGizmo.transform.GetChild(0), false);
-               var modifierHighlightController = modifierGizmo.GetComponent<GizmoHighlightController>();
-               modifierHighlightController.SharedWith(highlighterMap[data.GlobalBoxIndex]);
-               modifierHighlightController.Add(modifierGizmo);
+               modifierGizmo.Transform.SetParent(baseGizmo.Transform.GetChild(0), false);
+               var modifierHighlightController = modifierGizmo.HighlightController;
+               modifierHighlightController.SharedWith(sharedHighlightController);
+               modifierHighlightController.Add(modifierGizmo.Highlight);
 
-               var draggable = modifierGizmo.GetComponent<GizmoDraggable>();
+               var draggable = modifierGizmo.Draggable;
                draggable.EventBoxEditorDataContext = data.EventBoxContext;
                draggable.LightGroupSubsystemContext = batch.Subsystem;
                draggable.Axis = batch.Axis;
                draggable.TargetTransform = data.Transform;
+               baseGizmo.ScaleController.SetDraggable(draggable);
 
-               modifierGizmo.SetActive(true);
+               modifierGizmo.GameObject.SetActive(true);
                _activeGizmos.Add(modifierGizmo);
             }
          }
 
-         baseGizmo.SetActive(true);
+         baseGizmo.GameObject.SetActive(true);
          _activeGizmos.Add(baseGizmo);
       }
 
       var selection = _gizmoAssets.GetOrCreate(GizmoType.Selection, ColorAssignment.WhiteIndex);
-      selection.SetActive(_config.Gizmo.ShowLane);
+      selection.GameObject.SetActive(_config.Gizmo.ShowLane);
       _activeGizmos.Add(selection);
    }
 
-   private GameObject GetModifierGizmo(EventBoxGroupType groupType, LightAxis axis)
+   private GizmoInstance GetModifierGizmo(EventBoxGroupType groupType, LightAxis axis)
    {
       var axisColor = axis switch
       {
@@ -188,19 +192,27 @@ public sealed class GizmoRenderer : IInitializable, IDisposable
       };
    }
 
-   private static void SetConstraints(GameObject gizmo, Transform target, LightGroupSubsystem subsystem)
+   private static void SetConstraints(GizmoInstance gizmo, Transform target, LightGroupSubsystem subsystem)
    {
-      gizmo
-         .GetComponentInChildren<PositionConstraint>()
-         .SetSources([new ConstraintSource { sourceTransform = target, weight = 1f }]);
-      gizmo
-         .GetComponentInChildren<RotationConstraint>()
-         .SetSources(
+      gizmo.PositionConstraint.SetSources([new ConstraintSource { sourceTransform = target, weight = 1f }]);
+      gizmo.RotationConstraint.SetSources(
          [
             new ConstraintSource
             {
                sourceTransform = subsystem is LightTranslationGroup ? target.parent : target, weight = 1f
             }
          ]);
+   }
+
+   private static bool HasSingleAxisBoxIndex(LightTransformData[] transforms)
+   {
+      if (transforms.Length == 0) return false;
+
+      var axisBoxIndex = transforms[0].AxisBoxIndex;
+      for (var i = 1; i < transforms.Length; i++)
+         if (transforms[i].AxisBoxIndex != axisBoxIndex)
+            return false;
+
+      return true;
    }
 }

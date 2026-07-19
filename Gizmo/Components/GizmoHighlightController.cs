@@ -60,9 +60,8 @@ public class GizmoHighlightController : MonoBehaviour, IGizmoInput, IGizmoPoolab
       foreach (var highlight in _highlights) highlight.RemoveOutline();
    }
 
-   public void Add(GameObject gizmo)
+   public void Add(GizmoHighlight gizmoHighlight)
    {
-      var gizmoHighlight = gizmo.GetComponent<GizmoHighlight>() ?? gizmo.GetComponentInChildren<GizmoHighlight>();
       if (gizmoHighlight == null) return;
       _highlights.Add(gizmoHighlight);
    }
