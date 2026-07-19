@@ -47,7 +47,3 @@ Simply place `EditorEnhanced.dll` onto `Plugins` folder.
 * [ ] Selector plugin port
 * [ ] Redesign UI (for the mod, not the base game)
 * [ ] Optimisation for this mod
-
-## Known Issue
-
-* Certain UI does not have audio feedback

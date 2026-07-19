@@ -7,6 +7,7 @@ namespace EditorEnhanced.UI;
 internal sealed class UIBuilder
 {
    private readonly DiContainer _container;
+   private readonly UIButtonAudioFeedback _buttonAudioFeedback = new();
    private readonly TimeTweeningManager _tweeningManager;
    private readonly EditorViewLocator _viewLocator;
 
@@ -22,12 +23,12 @@ internal sealed class UIBuilder
 
    public EditorButtonTag CreateButton()
    {
-      return new EditorButtonTag(_viewLocator.GetButtonPrefab(), _tweeningManager);
+      return new EditorButtonTag(_viewLocator.GetButtonPrefab(), _tweeningManager, _buttonAudioFeedback);
    }
 
    public EditorButtonWithIconTag CreateButtonWithIcon()
    {
-      return new EditorButtonWithIconTag(_viewLocator.GetButtonPrefab(), _tweeningManager);
+      return new EditorButtonWithIconTag(_viewLocator.GetButtonPrefab(), _tweeningManager, _buttonAudioFeedback);
    }
 
    public EditorCheckboxTag CreateCheckbox()

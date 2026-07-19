@@ -16,12 +16,19 @@ public class EditorButtonWithIconTag : IEditorTag, IUIButton
 {
    private readonly Button _prefabButton;
    private readonly TimeTweeningManager _twm;
+   private readonly UIButtonAudioFeedback _audioFeedback;
    public string ImagePath;
 
    public EditorButtonWithIconTag(Button prefabButton, TimeTweeningManager twm)
+      : this(prefabButton, twm, new UIButtonAudioFeedback())
+   {
+   }
+
+   internal EditorButtonWithIconTag(Button prefabButton, TimeTweeningManager twm, UIButtonAudioFeedback audioFeedback)
    {
       _prefabButton = prefabButton;
       _twm = twm;
+      _audioFeedback = audioFeedback;
    }
 
    public string Name { get; set; } = "EEEditorButtonWithIcon";
@@ -31,6 +38,7 @@ public class EditorButtonWithIconTag : IEditorTag, IUIButton
       var button = (NoTransitionsButton)Object.Instantiate(_prefabButton, parent, false);
       button.name = Name;
       button.interactable = true;
+      _audioFeedback.Attach(button);
       OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
 
       var comp = button.GetComponent<NoTransitionButtonSelectableStateController>();

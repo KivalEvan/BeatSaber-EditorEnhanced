@@ -16,11 +16,18 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUIContainer
 {
    private readonly Button _prefabButton;
    private readonly TimeTweeningManager _twm;
+   private readonly UIButtonAudioFeedback _audioFeedback;
 
    public EditorButtonTag(Button prefabButton, TimeTweeningManager twm)
+      : this(prefabButton, twm, new UIButtonAudioFeedback())
+   {
+   }
+
+   internal EditorButtonTag(Button prefabButton, TimeTweeningManager twm, UIButtonAudioFeedback audioFeedback)
    {
       _prefabButton = prefabButton;
       _twm = twm;
+      _audioFeedback = audioFeedback;
    }
 
    public Vector2? Size { get; set; }
@@ -32,6 +39,7 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUIContainer
       var button = (NoTransitionsButton)Object.Instantiate(_prefabButton, parent, false);
       button.name = Name;
       button.interactable = true;
+      _audioFeedback.Attach(button);
       OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
 
       var comp = button.GetComponent<NoTransitionButtonSelectableStateController>();
