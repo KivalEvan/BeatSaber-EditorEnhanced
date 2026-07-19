@@ -14,9 +14,9 @@ namespace EditorEnhanced.UI.Tags;
 
 public class EditorButtonWithIconTag : IEditorTag, IUIButton
 {
+   private readonly UIButtonAudioFeedback _audioFeedback;
    private readonly Button _prefabButton;
    private readonly TimeTweeningManager _twm;
-   private readonly UIButtonAudioFeedback _audioFeedback;
    public string ImagePath;
 
    public EditorButtonWithIconTag(Button prefabButton, TimeTweeningManager twm)
@@ -24,7 +24,7 @@ public class EditorButtonWithIconTag : IEditorTag, IUIButton
    {
    }
 
-   internal EditorButtonWithIconTag(Button prefabButton, TimeTweeningManager twm, UIButtonAudioFeedback audioFeedback)
+   public EditorButtonWithIconTag(Button prefabButton, TimeTweeningManager twm, UIButtonAudioFeedback audioFeedback)
    {
       _prefabButton = prefabButton;
       _twm = twm;

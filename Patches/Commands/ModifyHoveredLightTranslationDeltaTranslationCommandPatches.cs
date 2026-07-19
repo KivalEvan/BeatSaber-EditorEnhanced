@@ -6,9 +6,10 @@ using UnityEngine;
 
 namespace EditorEnhanced.Patches;
 
-[HarmonyPatch(typeof(ModifyHoveredLightTranslationDeltaTranslationCommand),
+[HarmonyPatch(
+   typeof(ModifyHoveredLightTranslationDeltaTranslationCommand),
    nameof(ModifyHoveredLightTranslationDeltaTranslationCommand.GetModifiedEventData))]
-internal static class ModifyHoveredLightTranslationDeltaTranslationCommandPatches
+public static class ModifyHoveredLightTranslationDeltaTranslationCommandPatches
 {
    [HarmonyPostfix]
    private static void RestoreConfiguredTranslationPrecision(

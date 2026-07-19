@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace EditorEnhanced.EventBoxes;
 
-internal sealed class EventBoxCloneService
+public sealed class EventBoxCloneService
 {
    public EventBoxSnapshot Clone(
       EventBoxSnapshot source,

@@ -5,7 +5,7 @@ using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupTyp
 
 namespace EditorEnhanced.Gizmo;
 
-internal sealed class GizmoPlan
+public sealed class GizmoPlan
 {
    public GizmoPlan(Transform root, IReadOnlyList<GizmoRenderBatch> batches)
    {
@@ -17,7 +17,7 @@ internal sealed class GizmoPlan
    public IReadOnlyList<GizmoRenderBatch> Batches { get; }
 }
 
-internal readonly struct GizmoRenderBatch
+public readonly struct GizmoRenderBatch
 {
    public GizmoRenderBatch(
       EventBoxGroupType groupType,

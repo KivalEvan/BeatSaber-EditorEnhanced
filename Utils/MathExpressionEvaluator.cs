@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace EditorEnhanced.Utils;
 
-internal static class MathExpressionEvaluator
+public static class MathExpressionEvaluator
 {
    public static bool TryEvaluate(string input, out string result)
    {

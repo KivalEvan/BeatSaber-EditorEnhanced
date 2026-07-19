@@ -18,7 +18,7 @@ public class ReorderEventBoxSignal
    }
 }
 
-internal sealed class ReorderEventBoxCommand : IBeatmapEditorCommandWithHistory
+public sealed class ReorderEventBoxCommand : IBeatmapEditorCommandWithHistory
 {
    private readonly EventBoxGroupsState _eventBoxGroupsState;
    private readonly EventBoxGroupMutation _mutation;

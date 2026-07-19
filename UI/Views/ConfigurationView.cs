@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class ConfigurationView : IInitializable
+public class ConfigurationView : IInitializable
 {
    private readonly PluginConfig _config;
    private readonly SignalBus _signalBus;

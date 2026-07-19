@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace EditorEnhanced.Utils;
 
-internal static class IndexFilterHelpers
+public static class IndexFilterHelpers
 {
    public static IEnumerable<(int index, int chunkIndex)> GetIndexFilterRange(
       IndexFilterEditorData indexFilter,

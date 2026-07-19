@@ -5,7 +5,7 @@ using EditorEnhanced.EventBoxes;
 
 namespace EditorEnhanced.Managers;
 
-internal sealed class EventBoxClipboardManager
+public sealed class EventBoxClipboardManager
 {
    private readonly EventBoxGroupMutation _mutation;
    private EventBoxSnapshot _fxEventBoxClipboard;

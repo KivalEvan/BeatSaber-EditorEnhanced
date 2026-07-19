@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.Gizmo;
 
-internal sealed class GizmoRenderer : IInitializable, IDisposable
+public sealed class GizmoRenderer : IInitializable, IDisposable
 {
    private readonly List<GameObject> _activeGizmos = [];
    private readonly PluginConfig _config;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Drawers;
 
-internal static class TranslationGizmo
+public static class TranslationGizmo
 {
    public static GameObject SObject;
 

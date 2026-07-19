@@ -9,7 +9,7 @@ public class SortIdEventBoxGroupSignal
 {
 }
 
-internal sealed class SortIdEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
+public sealed class SortIdEventBoxGroupCommand : IBeatmapEditorCommandWithHistory
 {
    private readonly EventBoxGroupsState _eventBoxGroupsState;
    private readonly EventBoxGroupMutation _mutation;

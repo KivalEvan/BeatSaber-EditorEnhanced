@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Drawers;
 
-internal static class LaneGizmo
+public static class LaneGizmo
 {
    public static GameObject SObject;
 

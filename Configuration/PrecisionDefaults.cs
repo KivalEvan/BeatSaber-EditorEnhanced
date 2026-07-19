@@ -8,7 +8,7 @@ using EditorEnhanced.Misc;
 
 namespace EditorEnhanced.Configuration;
 
-internal sealed class PrecisionDefaults
+public sealed class PrecisionDefaults
 {
    public static readonly PrecisionType[] SupportedTypes =
    [

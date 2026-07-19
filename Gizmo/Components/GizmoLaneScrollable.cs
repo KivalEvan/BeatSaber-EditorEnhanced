@@ -11,14 +11,14 @@ public class GizmoLaneScrollable : MonoBehaviour, IGizmoScrollInput, IGizmoPoola
 
    public EventBoxEditorData EventBoxEditorDataContext;
 
+   public void ResetForPool()
+   {
+      EventBoxEditorDataContext = null;
+   }
+
    public void OnScroll(float delta)
    {
       if (EventBoxEditorDataContext == null) return;
       _signalBus.Fire(new ScrollGizmoEventBoxLaneSignal(EventBoxEditorDataContext, delta));
-   }
-
-   public void ResetForPool()
-   {
-      EventBoxEditorDataContext = null;
    }
 }

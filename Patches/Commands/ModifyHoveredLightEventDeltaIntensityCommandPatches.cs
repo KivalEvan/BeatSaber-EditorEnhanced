@@ -8,12 +8,13 @@ using IPA.Utilities;
 
 namespace EditorEnhanced.Patches;
 
-[HarmonyPatch(typeof(ModifyHoveredLightEventDeltaIntensityCommand),
+[HarmonyPatch(
+   typeof(ModifyHoveredLightEventDeltaIntensityCommand),
    nameof(ModifyHoveredLightEventDeltaIntensityCommand.GetModifiedEventData))]
 public class ModifyHoveredLightEventDeltaIntensityCommandPatches : IDisposable
 {
-   private readonly BeatmapState _injectedBeatmapState;
    private static BeatmapState _beatmapState;
+   private readonly BeatmapState _injectedBeatmapState;
 
    public ModifyHoveredLightEventDeltaIntensityCommandPatches(BeatmapState beatmapState)
    {

@@ -9,7 +9,7 @@ using EventBoxGroupType = BeatSaber.TrackDefinitions.DataModels.EventBoxGroupTyp
 
 namespace EditorEnhanced.Gizmo;
 
-internal sealed class GizmoTransformPlanner
+public sealed class GizmoTransformPlanner
 {
    private static readonly LightAxis[] Axes = [LightAxis.X, LightAxis.Y, LightAxis.Z];
 

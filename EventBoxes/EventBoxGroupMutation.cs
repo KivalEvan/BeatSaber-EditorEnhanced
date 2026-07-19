@@ -7,7 +7,7 @@ using Zenject;
 
 namespace EditorEnhanced.EventBoxes;
 
-internal sealed class EventBoxGroupMutation
+public sealed class EventBoxGroupMutation
 {
    private readonly BeatmapEventBoxGroupsDataModel _dataModel;
    private readonly SignalBus _signalBus;

@@ -5,7 +5,7 @@ using Zenject;
 
 namespace EditorEnhanced.UI.Views;
 
-internal sealed class OffsetDurationDistributionView : IInitializable
+public sealed class OffsetDurationDistributionView : IInitializable
 {
    private readonly UIBuilder _uiBuilder;
    private readonly EditorViewLocator _viewLocator;

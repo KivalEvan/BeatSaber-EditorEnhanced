@@ -5,7 +5,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.Gizmo;
 
-internal sealed class GizmoEffectContext
+public sealed class GizmoEffectContext
 {
    public GizmoEffectContext(
       LightColorGroupEffectManager colorManager,
@@ -26,7 +26,7 @@ internal sealed class GizmoEffectContext
    public Transform Root => ColorManager.transform.root;
 }
 
-internal sealed class GizmoEffectContextResolver
+public sealed class GizmoEffectContextResolver
 {
    private readonly HashSet<EventBoxGroupType> _reportedMissingTypes = [];
    private LightColorGroupEffectManager _colorManager;

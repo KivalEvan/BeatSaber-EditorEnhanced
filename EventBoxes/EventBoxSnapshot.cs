@@ -5,7 +5,7 @@ using BeatmapEditor3D.DataModels;
 
 namespace EditorEnhanced.EventBoxes;
 
-internal sealed class EventBoxSnapshot
+public sealed class EventBoxSnapshot
 {
    public EventBoxSnapshot(EventBoxEditorData eventBox, List<BaseEditorData> baseEvents)
    {
@@ -17,7 +17,7 @@ internal sealed class EventBoxSnapshot
    public List<BaseEditorData> BaseEvents { get; }
 }
 
-internal sealed class EventBoxGroupSnapshot
+public sealed class EventBoxGroupSnapshot
 {
    private readonly List<EventBoxSnapshot> _eventBoxes;
 

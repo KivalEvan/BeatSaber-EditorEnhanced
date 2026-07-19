@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Drawers;
 
-internal static class SelectionGizmo
+public static class SelectionGizmo
 {
    public static GameObject SObject;
 

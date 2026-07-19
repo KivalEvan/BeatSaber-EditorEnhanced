@@ -6,7 +6,7 @@ using BeatmapEditor3D.DataModels;
 
 namespace EditorEnhanced.Utils;
 
-internal static class EventBoxDurationHelpers
+public static class EventBoxDurationHelpers
 {
    public static IReadOnlyDictionary<int, float> GetNextEventBoxGroupDurationById(
       BeatmapEventBoxGroupsDataModel dataModel,

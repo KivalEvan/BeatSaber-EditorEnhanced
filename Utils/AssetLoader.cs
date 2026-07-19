@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace EditorEnhanced.Utils;
 
-internal static class AssetLoader
+public static class AssetLoader
 {
    private static readonly Dictionary<string, AssetBundle> _loaded = new();
 

@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class SortEventBoxView : IInitializable
+public class SortEventBoxView : IInitializable
 {
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;

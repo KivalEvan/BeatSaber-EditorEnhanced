@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI;
 
-internal sealed class ScrollableYourInput : IInitializable
+public sealed class ScrollableYourInput : IInitializable
 {
    private readonly DiContainer _container;
    private readonly EditorViewLocator _viewLocator;

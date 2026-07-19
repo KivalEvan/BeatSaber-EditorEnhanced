@@ -4,7 +4,7 @@ using Zenject;
 
 namespace EditorEnhanced.UI;
 
-internal sealed class DraggableEventBoxCell : IInitializable
+public sealed class DraggableEventBoxCell : IInitializable
 {
    private readonly DiContainer _container;
    private readonly EditorViewLocator _viewLocator;

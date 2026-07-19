@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.Gizmo;
 
-internal enum GizmoType
+public enum GizmoType
 {
    Cube,
    Rotation,
@@ -23,7 +23,7 @@ internal enum GizmoType
    Selection
 }
 
-internal class GizmoAssets : IInitializable, IDisposable
+public class GizmoAssets : IInitializable, IDisposable
 {
    public const float MinSize = 0.1f;
    public const float MaxSize = 10f;

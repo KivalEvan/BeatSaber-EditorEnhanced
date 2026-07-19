@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using BeatmapEditor3D;
 using EditorEnhanced.Configuration;
 using HarmonyLib;
 using IPA;
@@ -12,7 +11,7 @@ namespace EditorEnhanced;
 
 [Plugin(RuntimeOptions.SingleStartInit)]
 [NoEnableDisable]
-internal class Plugin
+public class Plugin
 {
    [Init]
    public Plugin(IPALogger ipaLogger, IPAConfig ipaConfig, PluginMetadata pluginMetadata)
@@ -26,6 +25,6 @@ internal class Plugin
       Log.Info($"{pluginMetadata.Name} {pluginMetadata.HVersion} initialized.");
    }
 
-   internal static PluginConfig Config { get; private set; }
-   internal static IPALogger Log { get; private set; }
+   public static PluginConfig Config { get; private set; }
+   public static IPALogger Log { get; private set; }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace EditorEnhanced.Patches;
 
 [HarmonyPatch(typeof(LightEventsPayload), nameof(LightEventsPayload.ToAltValue))]
-internal static class LightEventsPayloadPatches
+public static class LightEventsPayloadPatches
 {
    [HarmonyPrefix]
    private static bool PreserveIntensityAboveBaseGameLimit(LightEventsPayload __instance, ref float __result)

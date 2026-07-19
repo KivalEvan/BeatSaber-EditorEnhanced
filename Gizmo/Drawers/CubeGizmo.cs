@@ -4,7 +4,7 @@ using UnityEngine.Animations;
 
 namespace EditorEnhanced.Gizmo.Drawers;
 
-internal static class CubeGizmo
+public static class CubeGizmo
 {
    public static GameObject SObject;
 

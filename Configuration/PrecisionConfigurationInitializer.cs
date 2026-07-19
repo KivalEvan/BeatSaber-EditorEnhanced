@@ -8,7 +8,7 @@ using Zenject;
 
 namespace EditorEnhanced.Configuration;
 
-internal sealed class PrecisionConfigurationInitializer : IInitializable
+public sealed class PrecisionConfigurationInitializer : IInitializable
 {
    private readonly PrecisionDefaults _defaults;
    private readonly PluginConfig _pluginConfig;
@@ -73,7 +73,7 @@ internal sealed class PrecisionConfigurationInitializer : IInitializable
          target[PrecisionDefaults.SupportedTypes[i]] = values[i];
    }
 
-   internal static bool IsValid(float value)
+   public static bool IsValid(float value)
    {
       return !float.IsNaN(value) && !float.IsInfinity(value) && value > 0f;
    }

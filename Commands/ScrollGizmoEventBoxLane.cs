@@ -24,8 +24,8 @@ public class ScrollGizmoEventBoxLaneSignal
 
 public class ScrollGizmoEventBoxLaneCommand : IBeatmapEditorCommandWithHistory
 {
-   private readonly BeatmapEventBoxGroupsDataModel _dataModel;
    private readonly BeatmapState _beatmapState;
+   private readonly BeatmapEventBoxGroupsDataModel _dataModel;
    private readonly ScrollGizmoEventBoxLaneSignal _signal;
    private readonly SignalBus _signalBus;
    private BeatmapEditorObjectId _eventBoxId;
@@ -86,19 +86,22 @@ public class ScrollGizmoEventBoxLaneCommand : IBeatmapEditorCommandWithHistory
             break;
          case LightRotationBaseEditorData rotation:
             var rotationDelta = ModifyHoveredLightRotationDeltaRotationCommand._precisions[
-               _beatmapState.scrollPrecision] * direction;
+                  _beatmapState.scrollPrecision]
+               * direction;
             rotation.SetField("rotation", Mathf.Repeat(rotation.rotation + rotationDelta, 360f));
             break;
          case LightTranslationBaseEditorData translation:
             var translationDelta = ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[
-               _beatmapState.scrollPrecision] * direction;
+                  _beatmapState.scrollPrecision]
+               * direction;
             translation.SetField(
                "translation",
                Mathf.Round(translation.translation * 1_000f + translationDelta * 10f) / 1_000f);
             break;
          case FloatFxBaseEditorData fx:
             var fxDelta = ModifyHoveredFloatFxDeltaValueCommand._precisions[
-               _beatmapState.scrollPrecision] * direction;
+                  _beatmapState.scrollPrecision]
+               * direction;
             fx.SetField("value", Mathf.Round(fx.value * 100f + fxDelta) / 100f);
             break;
       }

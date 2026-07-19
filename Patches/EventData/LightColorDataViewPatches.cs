@@ -6,7 +6,7 @@ using HarmonyLib;
 namespace EditorEnhanced.Patches;
 
 [HarmonyPatch(typeof(LightColorDataView), nameof(LightColorDataView.UpdateData))]
-internal static class LightColorDataViewPatches
+public static class LightColorDataViewPatches
 {
    [HarmonyPrefix]
    private static bool SubmitNormalizedStrobeBrightness(LightColorDataView __instance)

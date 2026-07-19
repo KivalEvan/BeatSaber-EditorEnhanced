@@ -4,7 +4,7 @@ using UnityEngine.Animations;
 
 namespace EditorEnhanced.Gizmo.Drawers;
 
-internal static class SphereGizmo
+public static class SphereGizmo
 {
    public static GameObject SObject;
 

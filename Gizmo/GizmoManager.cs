@@ -10,7 +10,7 @@ using Zenject;
 
 namespace EditorEnhanced.Gizmo;
 
-internal sealed class GizmoManager : IInitializable, IDisposable
+public sealed class GizmoManager : IInitializable, IDisposable
 {
    private readonly BeatmapState _beatmapState;
    private readonly PluginConfig _config;

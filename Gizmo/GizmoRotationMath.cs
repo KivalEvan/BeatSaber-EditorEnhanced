@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EditorEnhanced.Gizmo;
 
-internal static class GizmoRotationMath
+public static class GizmoRotationMath
 {
    public static Vector3 GetAxisNormal(Transform reference, LightAxis axis)
    {

@@ -4,10 +4,10 @@ using Zenject;
 
 namespace EditorEnhanced.UI;
 
-internal sealed class UIBuilder
+public sealed class UIBuilder
 {
-   private readonly DiContainer _container;
    private readonly UIButtonAudioFeedback _buttonAudioFeedback = new();
+   private readonly DiContainer _container;
    private readonly TimeTweeningManager _tweeningManager;
    private readonly EditorViewLocator _viewLocator;
 

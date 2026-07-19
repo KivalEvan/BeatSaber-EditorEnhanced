@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class CopyEventBoxView : IInitializable
+public class CopyEventBoxView : IInitializable
 {
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;

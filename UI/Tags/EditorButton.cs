@@ -14,16 +14,16 @@ namespace EditorEnhanced.UI.Tags;
 
 public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUIContainer
 {
+   private readonly UIButtonAudioFeedback _audioFeedback;
    private readonly Button _prefabButton;
    private readonly TimeTweeningManager _twm;
-   private readonly UIButtonAudioFeedback _audioFeedback;
 
    public EditorButtonTag(Button prefabButton, TimeTweeningManager twm)
       : this(prefabButton, twm, new UIButtonAudioFeedback())
    {
    }
 
-   internal EditorButtonTag(Button prefabButton, TimeTweeningManager twm, UIButtonAudioFeedback audioFeedback)
+   public EditorButtonTag(Button prefabButton, TimeTweeningManager twm, UIButtonAudioFeedback audioFeedback)
    {
       _prefabButton = prefabButton;
       _twm = twm;

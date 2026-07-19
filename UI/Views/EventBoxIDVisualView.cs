@@ -21,11 +21,10 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal class EventBoxIDVisualView : IInitializable, IDisposable
+public class EventBoxIDVisualView : IInitializable, IDisposable
 {
-   private readonly List<GameObject> _instantiatedErrorText = new();
-
    private readonly List<GameObject> _instantiatedChunkContainers = new();
+   private readonly List<GameObject> _instantiatedErrorText = new();
    private readonly List<Image> _instantiatedImages = new();
    private readonly SignalBus _signalBus;
    private readonly UIBuilder _uiBuilder;

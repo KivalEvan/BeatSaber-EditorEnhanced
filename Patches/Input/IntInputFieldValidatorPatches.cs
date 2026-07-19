@@ -5,7 +5,7 @@ using HarmonyLib;
 namespace EditorEnhanced.Patches;
 
 [HarmonyPatch(typeof(IntInputFieldValidator), nameof(IntInputFieldValidator.ParseInput))]
-internal static class IntInputFieldValidatorPatches
+public static class IntInputFieldValidatorPatches
 {
    [HarmonyPrefix]
    private static void EvaluateMathExpression(ref string input)
@@ -13,7 +13,7 @@ internal static class IntInputFieldValidatorPatches
       if (int.TryParse(input, NumberStyles.Integer, CultureInfo.InvariantCulture, out _)) return;
 
       if (MathExpressionEvaluator.TryEvaluate(input, out var result)
-          && int.TryParse(result, NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
+         && int.TryParse(result, NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
          input = result;
    }
 }

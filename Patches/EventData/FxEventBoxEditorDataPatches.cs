@@ -4,10 +4,12 @@ using HarmonyLib;
 namespace EditorEnhanced.Patches;
 
 [HarmonyPatch(typeof(FxEventBoxEditorData), nameof(FxEventBoxEditorData.CopyWithoutId))]
-internal static class FxEventBoxEditorDataPatches
+public static class FxEventBoxEditorDataPatches
 {
    [HarmonyPrefix]
-   private static bool CopyIndexFilterInsteadOfSharingIt(FxEventBoxEditorData original, ref FxEventBoxEditorData __result)
+   private static bool CopyIndexFilterInsteadOfSharingIt(
+      FxEventBoxEditorData original,
+      ref FxEventBoxEditorData __result)
    {
       if (original?.indexFilter == null) return true;
 

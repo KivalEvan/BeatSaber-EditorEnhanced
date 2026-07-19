@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI.Views;
 
-internal sealed class RandomSeedClipboardView : IInitializable, IDisposable
+public sealed class RandomSeedClipboardView : IInitializable, IDisposable
 {
    private readonly RandomSeedClipboardManager _rscm;
 

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace EditorEnhanced.UI;
 
-internal sealed class UIButtonAudioFeedback
+public sealed class UIButtonAudioFeedback
 {
    private Signal _buttonClickSignal;
 

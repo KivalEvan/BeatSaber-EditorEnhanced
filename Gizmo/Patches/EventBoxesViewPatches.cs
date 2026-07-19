@@ -9,8 +9,8 @@ namespace EditorEnhanced.Gizmo.Patches;
 [HarmonyPatch(typeof(EventBoxesView), nameof(EventBoxesView.SetEventBoxData))]
 public class EventBoxesViewPatches : IDisposable
 {
-   private readonly SignalBus _injectedSignalBus;
    private static SignalBus _signalBus;
+   private readonly SignalBus _injectedSignalBus;
 
    public EventBoxesViewPatches(SignalBus signalBus)
    {

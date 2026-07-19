@@ -29,7 +29,7 @@ public class PasteEventBoxSignal
    }
 }
 
-internal sealed class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
+public sealed class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
 {
    private readonly EventBoxClipboardManager _clipboardManager;
    private readonly EventBoxCloneService _cloneService;

@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorEnhanced.UI;
 
-internal sealed class EditorViewLocator
+public sealed class EditorViewLocator
 {
    private readonly EditBeatmapNavigationViewController _navigationViewController;
    private readonly HashSet<string> _reportedFailures = new();

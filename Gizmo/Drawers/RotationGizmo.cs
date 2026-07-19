@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace EditorEnhanced.Gizmo.Drawers;
 
-internal static class RotationGizmo
+public static class RotationGizmo
 {
    public static GameObject SObject;
 

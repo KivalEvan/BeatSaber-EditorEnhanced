@@ -4,7 +4,7 @@ using InputAction = UnityEngine.InputSystem.InputAction;
 
 namespace EditorEnhanced.Gizmo;
 
-internal interface IGizmoInput
+public interface IGizmoInput
 {
    public bool IsDragging { get; set; }
    public void OnPointerEnter();
@@ -14,7 +14,7 @@ internal interface IGizmoInput
    public void OnMouseRelease();
 }
 
-internal interface IGizmoScrollInput
+public interface IGizmoScrollInput
 {
    public void OnScroll(float delta);
 }

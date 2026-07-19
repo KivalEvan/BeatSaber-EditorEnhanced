@@ -4,15 +4,15 @@ using BeatmapEditor3D.Commands;
 using EditorEnhanced.Managers;
 using HarmonyLib;
 using IPA.Utilities;
-using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace EditorEnhanced.Patches;
 
 [HarmonyPatch(typeof(PasteEventBoxGroupsCommand), nameof(PasteEventBoxGroupsCommand.Redo))]
 public class PasteEventBoxGroupsCommandPatches : IDisposable
 {
-   private readonly RandomSeedClipboardManager _injectedRandomSeedClipboardManager;
    private static RandomSeedClipboardManager _randomSeedClipboardManager;
+   private readonly RandomSeedClipboardManager _injectedRandomSeedClipboardManager;
 
    public PasteEventBoxGroupsCommandPatches(RandomSeedClipboardManager randomSeedClipboardManager)
    {
@@ -38,6 +38,6 @@ public class PasteEventBoxGroupsCommandPatches : IDisposable
             "seed",
             _randomSeedClipboardManager.UseClipboard
                ? _randomSeedClipboardManager.Seed
-               : UnityEngine.Random.Range(int.MinValue, int.MaxValue));
+               : Random.Range(int.MinValue, int.MaxValue));
    }
 }

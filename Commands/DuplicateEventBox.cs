@@ -30,7 +30,7 @@ public class DuplicateEventBoxSignal
    }
 }
 
-internal sealed class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
+public sealed class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
 {
    private readonly EventBoxCloneService _cloneService;
    private readonly EventBoxGroupsState _eventBoxGroupsState;

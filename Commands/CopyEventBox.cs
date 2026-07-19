@@ -13,7 +13,7 @@ public class CopyEventBoxSignal
    }
 }
 
-internal sealed class CopyEventBoxCommand : IBeatmapEditorCommand
+public sealed class CopyEventBoxCommand : IBeatmapEditorCommand
 {
    private readonly EventBoxClipboardManager _clipboardManager;
    private readonly CopyEventBoxSignal _signal;

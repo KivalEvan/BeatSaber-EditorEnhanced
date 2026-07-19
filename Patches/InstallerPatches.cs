@@ -7,7 +7,7 @@ using Zenject;
 
 namespace EditorEnhanced.Patches;
 
-internal static class InstallerPatches
+public static class InstallerPatches
 {
    private static readonly PropertyInfo ContainerProperty =
       AccessTools.Property(typeof(MonoInstallerBase), "Container");
@@ -33,7 +33,8 @@ internal static class InstallerPatches
       }
    }
 
-   [HarmonyPatch(typeof(BeatmapEditorViewControllersInstaller),
+   [HarmonyPatch(
+      typeof(BeatmapEditorViewControllersInstaller),
       nameof(BeatmapEditorViewControllersInstaller.InstallBindings))]
    private static class BeatmapEditorViewControllersInstallerPatch
    {
