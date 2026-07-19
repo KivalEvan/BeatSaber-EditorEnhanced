@@ -43,25 +43,10 @@ public sealed class ScrollableYourInput : IInitializable
 
    private void ConfigureBaseObject(BaseBeatmapObjectView view)
    {
+      Configure(CreateBeatRegistration(view._beatInputFieldValidator));
       Configure(
-         new FloatInputRegistration(
-            view._beatInputFieldValidator,
-            CustomPrecisions.TimePrecisionFloat,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f));
-      Configure(
-         new IntInputRegistration(
-            view._columnInputFieldValidator,
-            CustomPrecisions.NoPrecisionInt,
-            IntInputFieldValidator.ValidatorType.Clamp,
-            0,
-            3),
-         new IntInputRegistration(
-            view._rowInputFieldValidator,
-            CustomPrecisions.NoPrecisionInt,
-            IntInputFieldValidator.ValidatorType.Clamp,
-            0,
-            2));
+         CreateColumnRegistration(view._columnInputFieldValidator),
+         CreateRowRegistration(view._rowInputFieldValidator));
    }
 
    private void ConfigureObstacle(ObstacleDataView view)
@@ -94,29 +79,15 @@ public sealed class ScrollableYourInput : IInitializable
             CustomPrecisions.PercentPrecisionFloat,
             0.01f));
       Configure(
-         new IntInputRegistration(
-            view._tailColumnInputField,
-            CustomPrecisions.NoPrecisionInt,
-            IntInputFieldValidator.ValidatorType.Clamp,
-            0,
-            3),
-         new IntInputRegistration(
-            view._tailRowInputField,
-            CustomPrecisions.NoPrecisionInt,
-            IntInputFieldValidator.ValidatorType.Clamp,
-            0,
-            2));
+         CreateColumnRegistration(view._tailColumnInputField),
+         CreateRowRegistration(view._tailRowInputField));
    }
 
    private void ConfigureChain(ChainDataView view)
    {
       ConfigureBaseObject(view);
       Configure(
-         new FloatInputRegistration(
-            view._tailBeatInputField,
-            CustomPrecisions.TimePrecisionFloat,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f),
+         CreateBeatRegistration(view._tailBeatInputField),
          new FloatInputRegistration(
             view._squishInputField,
             CustomPrecisions.PercentPrecisionFloat,
@@ -124,18 +95,8 @@ public sealed class ScrollableYourInput : IInitializable
             FloatInputFieldValidator.ValidatorType.Max,
             max: Mathf.Epsilon));
       Configure(
-         new IntInputRegistration(
-            view._tailColumnInputField,
-            CustomPrecisions.NoPrecisionInt,
-            IntInputFieldValidator.ValidatorType.Clamp,
-            0,
-            3),
-         new IntInputRegistration(
-            view._tailRowInputField,
-            CustomPrecisions.NoPrecisionInt,
-            IntInputFieldValidator.ValidatorType.Clamp,
-            0,
-            2),
+         CreateColumnRegistration(view._tailColumnInputField),
+         CreateRowRegistration(view._tailRowInputField),
          new IntInputRegistration(
             view._slicesInputField,
             CustomPrecisions.NoPrecisionInt,
@@ -146,86 +107,40 @@ public sealed class ScrollableYourInput : IInitializable
    private void ConfigureBasicEvent(BasicEventDataView view)
    {
       Configure(
-         new FloatInputRegistration(
-            view._beatInputFieldValidator,
-            CustomPrecisions.TimePrecisionFloat,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f),
-         new FloatInputRegistration(
+         CreateBeatRegistration(view._beatInputFieldValidator),
+         CreateNonNegativeFloatRegistration(
             view._floatValueInput,
             LightColorEventHelper._precisions,
-            0.1f,
-            FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f));
-      Configure(
-         new IntInputRegistration(
-            view._intValueInput,
-            CustomPrecisions.NoPrecisionInt,
-            IntInputFieldValidator.ValidatorType.Max,
-            max: 0));
+            0.1f));
+      Configure(CreateNonNegativeIntRegistration(view._intValueInput));
    }
 
    private void ConfigureEventBoxGroup(EventBoxGroupDataView view)
    {
-      Configure(
-         new FloatInputRegistration(
-            view._beatInputFieldValidator,
-            CustomPrecisions.TimePrecisionFloat,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f));
+      Configure(CreateBeatRegistration(view._beatInputFieldValidator));
    }
 
    private void ConfigureLightColor(LightColorDataView view)
    {
       Configure(
-         new FloatInputRegistration(
-            view._beatInputFieldValidator,
-            CustomPrecisions.TimePrecisionFloat,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f),
-         new FloatInputRegistration(
-            view._valueInput,
-            LightColorEventHelper._precisions,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f),
-         new FloatInputRegistration(
-            view._strobeBrightnessInput,
-            LightColorEventHelper._precisions,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f));
-      Configure(
-         new IntInputRegistration(
-            view._strobeFrequencyInput,
-            CustomPrecisions.NoPrecisionInt,
-            IntInputFieldValidator.ValidatorType.Max,
-            max: 0));
+         CreateBeatRegistration(view._beatInputFieldValidator),
+         CreateNonNegativeFloatRegistration(view._valueInput, LightColorEventHelper._precisions),
+         CreateNonNegativeFloatRegistration(view._strobeBrightnessInput, LightColorEventHelper._precisions));
+      Configure(CreateNonNegativeIntRegistration(view._strobeFrequencyInput));
    }
 
    private void ConfigureLightRotation(LightRotationDataView view)
    {
       Configure(
-         new FloatInputRegistration(
-            view._beatInputFieldValidator,
-            CustomPrecisions.TimePrecisionFloat,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f),
+         CreateBeatRegistration(view._beatInputFieldValidator),
          new FloatInputRegistration(view._valueInput, ModifyHoveredLightRotationDeltaRotationCommand._precisions));
-      Configure(
-         new IntInputRegistration(
-            view._loopsInput,
-            CustomPrecisions.NoPrecisionInt,
-            IntInputFieldValidator.ValidatorType.Max,
-            max: 0));
+      Configure(CreateNonNegativeIntRegistration(view._loopsInput));
    }
 
    private void ConfigureLightTranslation(LightTranslationDataView view)
    {
       Configure(
-         new FloatInputRegistration(
-            view._beatInputFieldValidator,
-            CustomPrecisions.TimePrecisionFloat,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f),
+         CreateBeatRegistration(view._beatInputFieldValidator),
          new FloatInputRegistration(
             view._valueInput,
             ModifyHoveredLightTranslationDeltaTranslationCommand._precisions));
@@ -234,11 +149,7 @@ public sealed class ScrollableYourInput : IInitializable
    private void ConfigureFloatFx(FloatFxDataView view)
    {
       Configure(
-         new FloatInputRegistration(
-            view._beatInputFieldValidator,
-            CustomPrecisions.TimePrecisionFloat,
-            validatorType: FloatInputFieldValidator.ValidatorType.Max,
-            max: 0f),
+         CreateBeatRegistration(view._beatInputFieldValidator),
          new FloatInputRegistration(view._valueInput, ModifyHoveredFloatFxDeltaValueCommand._precisions));
    }
 
@@ -283,6 +194,53 @@ public sealed class ScrollableYourInput : IInitializable
             IntInputFieldValidator.ValidatorType.Clamp,
             0,
             100));
+   }
+
+   private static FloatInputRegistration CreateBeatRegistration(FloatInputFieldValidator component)
+   {
+      return CreateNonNegativeFloatRegistration(component, CustomPrecisions.TimePrecisionFloat);
+   }
+
+   private static FloatInputRegistration CreateNonNegativeFloatRegistration(
+      FloatInputFieldValidator component,
+      Dictionary<PrecisionType, float> precision,
+      float multiplier = 1f)
+   {
+      return new FloatInputRegistration(
+         component,
+         precision,
+         multiplier,
+         FloatInputFieldValidator.ValidatorType.Max,
+         max: 0f);
+   }
+
+   private static IntInputRegistration CreateNonNegativeIntRegistration(IntInputFieldValidator component)
+   {
+      return new IntInputRegistration(
+         component,
+         CustomPrecisions.NoPrecisionInt,
+         IntInputFieldValidator.ValidatorType.Max,
+         max: 0);
+   }
+
+   private static IntInputRegistration CreateColumnRegistration(IntInputFieldValidator component)
+   {
+      return new IntInputRegistration(
+         component,
+         CustomPrecisions.NoPrecisionInt,
+         IntInputFieldValidator.ValidatorType.Clamp,
+         0,
+         3);
+   }
+
+   private static IntInputRegistration CreateRowRegistration(IntInputFieldValidator component)
+   {
+      return new IntInputRegistration(
+         component,
+         CustomPrecisions.NoPrecisionInt,
+         IntInputFieldValidator.ValidatorType.Clamp,
+         0,
+         2);
    }
 
    private void Configure(params IntInputRegistration[] registrations)

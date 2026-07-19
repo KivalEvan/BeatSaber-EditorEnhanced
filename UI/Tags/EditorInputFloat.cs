@@ -32,8 +32,8 @@ public class EditorInputFloatTag : EditorInputTag<float>
       var inputField = go.GetComponent<TMP_InputField>();
       var validator = go.AddComponent<FloatInputFieldValidator>();
       validator._inputField = inputField;
-      if (MinValue != null) validator._min = (int)MinValue;
-      if (MaxValue != null) validator._max = (int)MaxValue;
+      if (MinValue != null) validator._min = MinValue.Value;
+      if (MaxValue != null) validator._max = MaxValue.Value;
       if (ValidatorType != null) validator._validatorType = (FloatInputFieldValidator.ValidatorType)ValidatorType;
       if (Value != null) validator.SetValueWithoutNotify((float)Value, false);
       OnValueChange.ForEach(ovc => { validator.onInputValidated += ovc; });
