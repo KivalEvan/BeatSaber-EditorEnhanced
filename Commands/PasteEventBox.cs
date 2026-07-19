@@ -33,6 +33,7 @@ public sealed class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
 {
    private readonly EventBoxClipboardManager _clipboardManager;
    private readonly EventBoxCloneService _cloneService;
+   private readonly BeatmapEventBoxGroupsDataModel _dataModel;
    private readonly EventBoxGroupsState _eventBoxGroupsState;
    private readonly EventBoxGroupMutation _mutation;
    private readonly PasteEventBoxSignal _signal;
@@ -42,12 +43,14 @@ public sealed class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
 
    public PasteEventBoxCommand(
       PasteEventBoxSignal signal,
+      BeatmapEventBoxGroupsDataModel dataModel,
       EventBoxClipboardManager clipboardManager,
       EventBoxGroupsState eventBoxGroupsState,
       EventBoxGroupMutation mutation,
       EventBoxCloneService cloneService)
    {
       _signal = signal;
+      _dataModel = dataModel;
       _clipboardManager = clipboardManager;
       _eventBoxGroupsState = eventBoxGroupsState;
       _mutation = mutation;
@@ -70,13 +73,21 @@ public sealed class PasteEventBoxCommand : IBeatmapEditorCommandWithHistory
 
       var clipboardItem = _clipboardManager.Get(context.type);
       if (clipboardItem == null) return;
+      var maxId = int.MaxValue;
+      if (_signal.Increment)
+      {
+         if (!_dataModel.TryGetGroupSizeByEventBoxGroupId(context.groupId, out var groupSize) || groupSize <= 0)
+            return;
+         maxId = groupSize - 1;
+      }
 
       var replacement = _cloneService.Clone(
          clipboardItem,
          _signal.CopyEvent,
          _signal.Increment,
          _signal.RandomSeed,
-         _signal.Value);
+         _signal.Value,
+         maxId);
       var eventBoxes = previousSnapshot.EventBoxes.ToList();
       eventBoxes[selectedIndex] = replacement;
 

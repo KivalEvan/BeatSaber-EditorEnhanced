@@ -14,10 +14,11 @@ public sealed class EventBoxCloneService
       bool copyBaseEvents,
       bool incrementFilter,
       bool randomizeSeed,
-      float valueOffset)
+      float valueOffset,
+      int maxId)
    {
       var eventBox = EventBoxGroupsClipboardHelper.CopyEventBoxEditorDataWithoutId(source.EventBox);
-      if (incrementFilter) IncrementFilter(eventBox);
+      if (incrementFilter) IncrementFilter(eventBox, maxId);
       if (randomizeSeed) RandomizeSeed(eventBox);
 
       var baseEvents = copyBaseEvents
@@ -49,12 +50,17 @@ public sealed class EventBoxCloneService
       return clone;
    }
 
-   private static void IncrementFilter(EventBoxEditorData eventBox)
+   private static void IncrementFilter(EventBoxEditorData eventBox, int maxId)
    {
       if (eventBox.indexFilter.type == IndexFilterEditorData.IndexFilterType.Division)
-         eventBox.indexFilter.SetField("param1", eventBox.indexFilter.param1 + 1);
+         eventBox.indexFilter.SetField("param1", IncrementId(eventBox.indexFilter.param1, maxId));
       else
-         eventBox.indexFilter.SetField("param0", eventBox.indexFilter.param0 + 1);
+         eventBox.indexFilter.SetField("param0", IncrementId(eventBox.indexFilter.param0, maxId));
+   }
+
+   private static int IncrementId(int id, int maxId)
+   {
+      return id >= maxId ? maxId : id + 1;
    }
 
    private static void RandomizeSeed(EventBoxEditorData eventBox)

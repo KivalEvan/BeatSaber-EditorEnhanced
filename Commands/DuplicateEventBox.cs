@@ -33,6 +33,7 @@ public class DuplicateEventBoxSignal
 public sealed class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
 {
    private readonly EventBoxCloneService _cloneService;
+   private readonly BeatmapEventBoxGroupsDataModel _dataModel;
    private readonly EventBoxGroupsState _eventBoxGroupsState;
    private readonly EventBoxGroupMutation _mutation;
    private readonly DuplicateEventBoxSignal _signal;
@@ -43,11 +44,13 @@ public sealed class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
 
    public DuplicateEventBoxCommand(
       DuplicateEventBoxSignal signal,
+      BeatmapEventBoxGroupsDataModel dataModel,
       EventBoxGroupsState eventBoxGroupsState,
       EventBoxGroupMutation mutation,
       EventBoxCloneService cloneService)
    {
       _signal = signal;
+      _dataModel = dataModel;
       _eventBoxGroupsState = eventBoxGroupsState;
       _mutation = mutation;
       _cloneService = cloneService;
@@ -67,12 +70,20 @@ public sealed class DuplicateEventBoxCommand : IBeatmapEditorCommandWithHistory
 
       _sourceEventBox = snapshot.EventBoxes[sourceIndex];
       _newIdx = sourceIndex + (_signal.ReplaceOriginal ? 0 : 1);
+      var maxId = int.MaxValue;
+      if (_signal.Increment)
+      {
+         if (!_dataModel.TryGetGroupSizeByEventBoxGroupId(context.groupId, out var groupSize) || groupSize <= 0)
+            return;
+         maxId = groupSize - 1;
+      }
       _newEventBox = _cloneService.Clone(
          _sourceEventBox,
          _signal.CopyEvent,
          _signal.Increment,
          _signal.RandomSeed,
-         _signal.Value);
+         _signal.Value,
+         maxId);
       shouldAddToHistory = true;
       Redo();
    }
