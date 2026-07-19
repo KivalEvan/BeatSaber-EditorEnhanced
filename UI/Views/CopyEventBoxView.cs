@@ -58,7 +58,8 @@ internal class CopyEventBoxView : IInitializable
          .SetPadding(new RectOffset(4, 4, 2, 2));
       var btnTag = _uiBuilder
          .CreateButton()
-         .SetFontSize(16);
+         .SetFontSize(16)
+         .SetAudioFeedback();
       var checkboxTag = _uiBuilder
          .CreateCheckbox()
          .SetSize(28)

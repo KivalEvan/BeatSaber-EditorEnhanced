@@ -100,6 +100,7 @@ internal class EventBoxIDVisualView : IInitializable, IDisposable
          .SetText("Set")
          .SetFontSize(16f)
          .SetSize(new Vector2(56f, 32f))
+         .SetAudioFeedback()
          .SetOnClick(SetMinimumDuration)
          .Create(durationContainer.transform)
          .GetComponent<Button>();

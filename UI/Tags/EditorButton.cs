@@ -39,7 +39,7 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUIContainer
       var button = (NoTransitionsButton)Object.Instantiate(_prefabButton, parent, false);
       button.name = Name;
       button.interactable = true;
-      _audioFeedback.Attach(button);
+      if (AudioFeedback) _audioFeedback.Attach(button);
       OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
 
       var comp = button.GetComponent<NoTransitionButtonSelectableStateController>();
@@ -90,6 +90,7 @@ public class EditorButtonTag : IEditorTag, IUIButton, IUIText, IUIContainer
       return btnObject;
    }
 
+   public bool AudioFeedback { get; set; }
    [CanBeNull] public List<Action> OnClick { get; set; } = [];
    public RectOffset Padding { get; set; }
    public bool? ChildForceExpandWidth { get; set; }

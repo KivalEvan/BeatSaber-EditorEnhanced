@@ -26,7 +26,8 @@ internal sealed class OffsetDurationDistributionView : IInitializable
 
       var buttonTag = _uiBuilder
          .CreateButton()
-         .SetFontSize(16);
+         .SetFontSize(16)
+         .SetAudioFeedback();
 
       buttonTag
          .SetText("-0.001")

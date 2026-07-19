@@ -38,7 +38,7 @@ public class EditorButtonWithIconTag : IEditorTag, IUIButton
       var button = (NoTransitionsButton)Object.Instantiate(_prefabButton, parent, false);
       button.name = Name;
       button.interactable = true;
-      _audioFeedback.Attach(button);
+      if (AudioFeedback) _audioFeedback.Attach(button);
       OnClick.ForEach(x => button.onClick.AddListener(x.Invoke));
 
       var comp = button.GetComponent<NoTransitionButtonSelectableStateController>();
@@ -72,6 +72,7 @@ public class EditorButtonWithIconTag : IEditorTag, IUIButton
       return btnObject;
    }
 
+   public bool AudioFeedback { get; set; }
    public List<Action> OnClick { get; set; } = [];
 
    public EditorButtonWithIconTag SetImage(string path)

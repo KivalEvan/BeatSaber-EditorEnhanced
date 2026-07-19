@@ -46,7 +46,10 @@ internal sealed class RandomSeedClipboardView : IInitializable, IDisposable
       var horizontalTag = _uiBuilder.CreateHorizontalLayout();
       var textTag = _uiBuilder.CreateText();
       var checkboxTag = _uiBuilder.CreateCheckbox().SetFontSize(10f);
-      var buttonTag = _uiBuilder.CreateButton().SetFontSize(10f);
+      var buttonTag = _uiBuilder
+         .CreateButton()
+         .SetFontSize(10f)
+         .SetAudioFeedback();
 
       var vt = verticalTag
          .SetChildControlWidth(true)

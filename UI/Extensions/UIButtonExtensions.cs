@@ -5,6 +5,12 @@ namespace EditorEnhanced.UI.Extensions;
 
 public static class UIButtonExtensions
 {
+   public static T SetAudioFeedback<T>(this T self, bool enabled = true) where T : IUIButton
+   {
+      self.AudioFeedback = enabled;
+      return self;
+   }
+
    public static T ResetOnClick<T>(this T self) where T : IUIButton
    {
       self.OnClick.Clear();
