@@ -1,21 +1,19 @@
 using System.Globalization;
 using EditorEnhanced.Utils;
-using SiraUtil.Affinity;
+using HarmonyLib;
 
 namespace EditorEnhanced.Patches;
 
-public class IntInputFieldValidatorPatches : IAffinity
+[HarmonyPatch(typeof(IntInputFieldValidator), nameof(IntInputFieldValidator.ParseInput))]
+internal static class IntInputFieldValidatorPatches
 {
-   [AffinityPrefix]
-   [AffinityPatch(typeof(IntInputFieldValidator), nameof(IntInputFieldValidator.ParseInput))]
-   private bool EvaluateMathExpression(ref string input)
+   [HarmonyPrefix]
+   private static void EvaluateMathExpression(ref string input)
    {
-      if (int.TryParse(input, NumberStyles.Integer, CultureInfo.InvariantCulture, out _)) return true;
+      if (int.TryParse(input, NumberStyles.Integer, CultureInfo.InvariantCulture, out _)) return;
 
       if (MathExpressionEvaluator.TryEvaluate(input, out var result)
-         && int.TryParse(result, NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
+          && int.TryParse(result, NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
          input = result;
-
-      return true;
    }
 }

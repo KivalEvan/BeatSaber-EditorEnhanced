@@ -1,14 +1,14 @@
 using BeatmapEditor3D.Views;
-using SiraUtil.Affinity;
+using HarmonyLib;
 using UnityEngine;
 
 namespace EditorEnhanced.Patches;
 
-public class LightEventsPayloadPatches : IAffinity
+[HarmonyPatch(typeof(LightEventsPayload), nameof(LightEventsPayload.ToAltValue))]
+internal static class LightEventsPayloadPatches
 {
-   [AffinityPrefix]
-   [AffinityPatch(typeof(LightEventsPayload), nameof(LightEventsPayload.ToAltValue))]
-   private bool PreserveIntensityAboveBaseGameLimit(LightEventsPayload __instance, ref float __result)
+   [HarmonyPrefix]
+   private static bool PreserveIntensityAboveBaseGameLimit(LightEventsPayload __instance, ref float __result)
    {
       if (__instance == null) return true;
 

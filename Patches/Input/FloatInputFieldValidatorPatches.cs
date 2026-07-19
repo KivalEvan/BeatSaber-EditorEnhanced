@@ -1,22 +1,20 @@
 using System.Globalization;
 using BeatmapEditor3D;
 using EditorEnhanced.Utils;
-using SiraUtil.Affinity;
+using HarmonyLib;
 
 namespace EditorEnhanced.Patches;
 
-public class FloatInputFieldValidatorPatches : IAffinity
+[HarmonyPatch(typeof(FloatInputFieldValidator), nameof(FloatInputFieldValidator.ParseInput))]
+internal static class FloatInputFieldValidatorPatches
 {
-   [AffinityPrefix]
-   [AffinityPatch(typeof(FloatInputFieldValidator), nameof(FloatInputFieldValidator.ParseInput))]
-   private bool EvaluateMathExpression(ref string input)
+   [HarmonyPrefix]
+   private static void EvaluateMathExpression(ref string input)
    {
-      if (float.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out _)) return true;
+      if (float.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out _)) return;
 
       if (MathExpressionEvaluator.TryEvaluate(input, out var result)
-         && float.TryParse(result, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+          && float.TryParse(result, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
          input = result;
-
-      return true;
    }
 }

@@ -1,13 +1,13 @@
 using BeatmapEditor3D.Commands;
-using SiraUtil.Affinity;
+using HarmonyLib;
 
 namespace EditorEnhanced.Patches;
 
-public class MoveEventBoxPatches : IAffinity
+[HarmonyPatch(typeof(MoveEventBoxCommand), nameof(MoveEventBoxCommand.ShouldMergeWith))]
+internal static class MoveEventBoxPatches
 {
-   [AffinityPrefix]
-   [AffinityPatch(typeof(MoveEventBoxCommand), nameof(MoveEventBoxCommand.ShouldMergeWith))]
-   private bool KeepMovesAsSeparateUndoSteps(ref bool __result)
+   [HarmonyPrefix]
+   private static bool KeepMovesAsSeparateUndoSteps(ref bool __result)
    {
       __result = false;
       return false;

@@ -1,15 +1,15 @@
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.Views;
-using SiraUtil.Affinity;
+using HarmonyLib;
 
 namespace EditorEnhanced.Patches;
 
-public class LightColorDataViewPatches : IAffinity
+[HarmonyPatch(typeof(LightColorDataView), nameof(LightColorDataView.UpdateData))]
+internal static class LightColorDataViewPatches
 {
-   [AffinityPrefix]
-   [AffinityPatch(typeof(LightColorDataView), nameof(LightColorDataView.UpdateData))]
-   private bool SubmitNormalizedStrobeBrightness(LightColorDataView __instance)
+   [HarmonyPrefix]
+   private static bool SubmitNormalizedStrobeBrightness(LightColorDataView __instance)
    {
       if (__instance == null
          || __instance.signalBus == null

@@ -36,7 +36,6 @@ Simply place `EditorEnhanced.dll` onto `Plugins` folder.
 ### Mods Required
 
 * BSIPA
-* SiraUtil
 
 ## To-do
 

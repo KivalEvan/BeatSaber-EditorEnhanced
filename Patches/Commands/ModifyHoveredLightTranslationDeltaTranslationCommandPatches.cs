@@ -1,18 +1,17 @@
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
+using HarmonyLib;
 using IPA.Utilities;
-using SiraUtil.Affinity;
 using UnityEngine;
 
 namespace EditorEnhanced.Patches;
 
-public class ModifyHoveredLightTranslationDeltaTranslationCommandPatches : IAffinity
+[HarmonyPatch(typeof(ModifyHoveredLightTranslationDeltaTranslationCommand),
+   nameof(ModifyHoveredLightTranslationDeltaTranslationCommand.GetModifiedEventData))]
+internal static class ModifyHoveredLightTranslationDeltaTranslationCommandPatches
 {
-   [AffinityPostfix]
-   [AffinityPatch(
-      typeof(ModifyHoveredLightTranslationDeltaTranslationCommand),
-      nameof(ModifyHoveredLightTranslationDeltaTranslationCommand.GetModifiedEventData))]
-   private void RestoreConfiguredTranslationPrecision(
+   [HarmonyPostfix]
+   private static void RestoreConfiguredTranslationPrecision(
       ModifyHoveredLightTranslationDeltaTranslationCommand __instance,
       ref LightTranslationBaseEditorData __result)
    {

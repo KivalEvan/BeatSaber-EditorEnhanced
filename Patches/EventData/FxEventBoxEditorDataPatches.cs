@@ -1,13 +1,13 @@
 using BeatmapEditor3D.DataModels;
-using SiraUtil.Affinity;
+using HarmonyLib;
 
 namespace EditorEnhanced.Patches;
 
-public class FxEventBoxEditorDataPatches : IAffinity
+[HarmonyPatch(typeof(FxEventBoxEditorData), nameof(FxEventBoxEditorData.CopyWithoutId))]
+internal static class FxEventBoxEditorDataPatches
 {
-   [AffinityPrefix]
-   [AffinityPatch(typeof(FxEventBoxEditorData), nameof(FxEventBoxEditorData.CopyWithoutId))]
-   private bool CopyIndexFilterInsteadOfSharingIt(FxEventBoxEditorData original, ref FxEventBoxEditorData __result)
+   [HarmonyPrefix]
+   private static bool CopyIndexFilterInsteadOfSharingIt(FxEventBoxEditorData original, ref FxEventBoxEditorData __result)
    {
       if (original?.indexFilter == null) return true;
 

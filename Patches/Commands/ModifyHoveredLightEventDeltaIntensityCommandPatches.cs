@@ -1,26 +1,33 @@
+using System;
 using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Views;
+using HarmonyLib;
 using IPA.Utilities;
-using SiraUtil.Affinity;
 
 namespace EditorEnhanced.Patches;
 
-public class ModifyHoveredLightEventDeltaIntensityCommandPatches : IAffinity
+[HarmonyPatch(typeof(ModifyHoveredLightEventDeltaIntensityCommand),
+   nameof(ModifyHoveredLightEventDeltaIntensityCommand.GetModifiedEventData))]
+public class ModifyHoveredLightEventDeltaIntensityCommandPatches : IDisposable
 {
-   private readonly BeatmapState _beatmapState;
+   private readonly BeatmapState _injectedBeatmapState;
+   private static BeatmapState _beatmapState;
 
    public ModifyHoveredLightEventDeltaIntensityCommandPatches(BeatmapState beatmapState)
    {
+      _injectedBeatmapState = beatmapState;
       _beatmapState = beatmapState;
    }
 
-   [AffinityPostfix]
-   [AffinityPatch(
-      typeof(ModifyHoveredLightEventDeltaIntensityCommand),
-      nameof(ModifyHoveredLightEventDeltaIntensityCommand.GetModifiedEventData))]
-   private void RestoreConfiguredIntensityPrecision(
+   public void Dispose()
+   {
+      if (ReferenceEquals(_beatmapState, _injectedBeatmapState)) _beatmapState = null;
+   }
+
+   [HarmonyPostfix]
+   private static void RestoreConfiguredIntensityPrecision(
       ModifyHoveredLightEventDeltaIntensityCommand __instance,
       BasicEventEditorData originalBasicEventData,
       ref BasicEventEditorData __result)
