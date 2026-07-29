@@ -3,10 +3,11 @@
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
         <!-- It is safe to use 'latest' LangVersion, but Unity's officially supported version is 8. Change as required. -->
-        <LangVersion>13</LangVersion>
+        <LangVersion>latest</LangVersion>
         <Nullable>disable</Nullable>
         <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <RootNamespace>EditorEnhanced</RootNamespace>
+        <Version>0.2.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
