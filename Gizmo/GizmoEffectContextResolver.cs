@@ -23,7 +23,11 @@ public sealed class GizmoEffectContext
    public LightRotationGroupEffectManager RotationManager { get; }
    public LightTranslationGroupEffectManager TranslationManager { get; }
    public FloatFxGroupEffectManager FxManager { get; }
-   public Transform Root => ColorManager.transform.root;
+   public Transform Root => (ColorManager != null
+      ? ColorManager.transform
+      : RotationManager != null
+         ? RotationManager.transform
+         : TranslationManager.transform).root;
 }
 
 public sealed class GizmoEffectContextResolver

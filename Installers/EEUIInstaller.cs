@@ -19,6 +19,8 @@ public class EEUIInstaller : Installer
       Container.BindInterfacesTo<CopyEventBoxView>().AsSingle();
       Container.BindInterfacesTo<EventBoxIDVisualView>().AsSingle();
       Container.Bind<EventBoxClipboardManager>().AsSingle();
+      Container.BindInterfacesTo<EventBoxGroupPresetView>().AsSingle();
+      Container.Bind<EventBoxGroupPresetManager>().AsSingle();
 
       // Mixed
       Container.BindInterfacesTo<RandomSeedClipboardView>().AsSingle();

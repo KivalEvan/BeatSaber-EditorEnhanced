@@ -1,4 +1,5 @@
 using EditorEnhanced.Gizmo;
+using EditorEnhanced.MotionPath;
 using Zenject;
 
 namespace EditorEnhanced.Installers;
@@ -12,5 +13,11 @@ public class EELevelEditorInstaller : Installer
       Container.Bind<GizmoTransformPlanner>().AsSingle();
       Container.BindInterfacesAndSelfTo<GizmoRenderer>().AsSingle();
       Container.BindInterfacesTo<GizmoManager>().AsSingle();
+      Container.Bind<MotionPathEventCommitter>().AsSingle();
+      Container.Bind<MotionPathEventSourceResolver>().AsSingle();
+      Container.BindInterfacesAndSelfTo<MotionPathEventGizmoController>().AsSingle();
+      Container.Bind<MotionPathTransformPlanner>().AsSingle();
+      Container.BindInterfacesAndSelfTo<MotionPathRenderer>().AsSingle();
+      Container.BindInterfacesTo<MotionPathManager>().AsSingle();
    }
 }

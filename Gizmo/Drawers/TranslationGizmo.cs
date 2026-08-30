@@ -11,7 +11,7 @@ public static class TranslationGizmo
    public static GameObject Create()
    {
       if (SObject != null) return SObject;
-      var bundle = AssetLoader.LoadFromResource(nameof(EditorEnhanced) + ".model");
+      var bundle = AssetLoader.LoadFromResource(AssetLoader.ModelResourcePath);
       var go = bundle.LoadAsset<GameObject>("Assets/translation.prefab");
       go.name = "TranslationGizmo";
       go.layer = 22;

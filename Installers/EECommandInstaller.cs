@@ -2,6 +2,7 @@ using BeatmapEditor3D;
 using EditorEnhanced.Commands;
 using EditorEnhanced.EventBoxes;
 using EditorEnhanced.Gizmo.Commands;
+using EditorEnhanced.MotionPath;
 using Zenject;
 
 namespace EditorEnhanced.Installers;
@@ -23,10 +24,12 @@ public class EECommandInstaller : Installer
       InstallCommands<CopyEventBoxSignal, CopyEventBoxCommand>();
       InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>();
       InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>();
+      InstallCommands<ApplyEventBoxGroupPresetSignal, ApplyEventBoxGroupPresetCommand>();
 
       // Gizmo Listener
       Container.DeclareSignal<EventBoxSelectedSignal>().OptionalSubscriber();
       Container.DeclareSignal<GizmoRefreshSignal>().OptionalSubscriber();
+      Container.DeclareSignal<MotionPathRefreshSignal>().OptionalSubscriber();
 
       // Gizmo Config
       Container.DeclareSignal<GizmoColliderConfigChangedSignal>().OptionalSubscriber();
@@ -60,6 +63,7 @@ public class CommandFactoryInitializer : IInitializable
       BindFactory<CopyEventBoxCommand>();
       BindFactory<PasteEventBoxCommand>();
       BindFactory<DuplicateEventBoxCommand>();
+      BindFactory<ApplyEventBoxGroupPresetCommand>();
    }
 
    private void BindFactory<TCommand>() where TCommand : IBeatmapEditorCommand

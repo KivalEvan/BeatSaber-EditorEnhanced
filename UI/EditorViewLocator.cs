@@ -39,15 +39,15 @@ public sealed class EditorViewLocator
       return editObjectView != null || ReportMissing("edit-object-view", "the edit object view");
    }
 
-   public bool TryGetRightPanelContent(out Transform content)
+   public bool TryGetRightPanelContent(out RectTransform content)
    {
       content = null;
       if (!TryGetRightPanel(out var rightPanel)) return false;
       if (rightPanel._scrollView == null)
          return ReportMissing("right-panel-scroll", "the editor right panel scroll view");
 
-      content = rightPanel._scrollView.contentTransform;
-      return content != null || ReportMissing("right-panel-content", "the editor right panel content");
+      content = rightPanel._scrollView.contentTransform as RectTransform;
+      return content != null || ReportMissing("right-panel-content", "the editor right panel content RectTransform");
    }
 
    public bool TryRegisterPanel(string name, GameObject content)
@@ -64,6 +64,7 @@ public sealed class EditorViewLocator
          panelType = (BeatmapPanelType)(Enum.GetValues(typeof(BeatmapPanelType)).Length + 1),
          elements = [content]
       };
+      content.SetActive(false);
       rightPanel._panels = panels.Append(panel).ToArray();
       rightPanel._dropdown.SetTexts(rightPanel._panels.Select(item => item.name).ToArray());
       rightPanel._dropdown._numberOfVisibleCell = rightPanel._panels.Length;

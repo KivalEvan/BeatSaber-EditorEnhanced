@@ -116,7 +116,7 @@ public class GizmoAssets : IInitializable, IDisposable
 
    private static Material FetchMaterial(string path)
    {
-      var bundle = AssetLoader.LoadFromResource(nameof(EditorEnhanced) + ".model");
+      var bundle = AssetLoader.LoadFromResource(AssetLoader.ModelResourcePath);
       return bundle.LoadAsset<Material>(path);
    }
 
@@ -164,6 +164,12 @@ public class GizmoAssets : IInitializable, IDisposable
       if (gizmo == null) return;
 
       if (!_leasedObjects.Remove(gizmo)) return;
+
+      if (gizmo.GameObject == null)
+      {
+         _gizmoObjects[(int)gizmo.Type].Remove(gizmo);
+         return;
+      }
 
       gizmo.GameObject.SetActive(false);
       foreach (var poolable in gizmo.Poolables) poolable.ResetForPool();

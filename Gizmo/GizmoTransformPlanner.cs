@@ -50,6 +50,10 @@ public sealed class GizmoTransformPlanner
          .Cast<LightColorEventBoxEditorData>()
          .ToArray();
       var batches = new List<GizmoRenderBatch>();
+      var registeredLights = UnityEngine.Object
+         .FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+         .OfType<ILightWithId>()
+         .ToArray();
 
       foreach (var lightGroup in manager.lightGroups.Where(item => item.groupId == group.groupId))
       {
@@ -58,13 +62,13 @@ public sealed class GizmoTransformPlanner
          foreach (var item in marked[LightAxis.X]
             .Select(mark =>
             {
-               var lights = manager
-                  ._lightColorGroupEffects
-                  .FirstOrDefault(effect => effect._lightId == lightGroup.startLightId + mark.Key)
-                  ?._lightManager._lights.ElementAtOrDefault(lightGroup.startLightId + mark.Key);
+               var lights = registeredLights.Where(light =>
+                     light.groupId == lightGroup.groupId && light.elementId == mark.Key
+                     || light.groupId == -1 && light.lightId == lightGroup.startLightId + mark.Key)
+                  .ToArray();
                return (mark.Value, Lights: lights);
             })
-            .Where(item => item.Lights != null)
+            .Where(item => item.Lights.Length > 0)
             .Select((item, index) => (item.Value with { Index = index }, item.Lights)))
          foreach (var light in item.Lights)
             switch (light)
