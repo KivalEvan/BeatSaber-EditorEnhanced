@@ -41,9 +41,13 @@ public sealed class EventBoxGroupPresetView : IInitializable
          : eventBoxesView._eventBoxButtonsScrollView.transform.parent?.parent;
       if (!_viewLocator.TryFind(controls, "ControlButtons/RemoveButtonsWrapper", out var target)) return;
 
+      var rect = (RectTransform)eventBoxesView._eventBoxButtonsScrollView.transform.parent;
+      rect.sizeDelta = new Vector2(40f, -170f);
+      rect.localPosition = new Vector3(-20f, -85f, 0f);
+
       var instance = Object.Instantiate(target.gameObject, target.parent);
       instance.name = "EventBoxGroupPresetButtonsWrapper";
-      instance.transform.localPosition = new Vector3(80f, -80f, 0f);
+      instance.transform.localPosition = new Vector3(40f, -120f, 0f);
       var hoverExpandView = instance.GetComponent<BeatmapEditorHoverExpandView>();
       for (var i = hoverExpandView._content.childCount - 1; i >= 0; i--)
          Object.Destroy(hoverExpandView._content.GetChild(i).gameObject);
@@ -56,10 +60,10 @@ public sealed class EventBoxGroupPresetView : IInitializable
          .SetChildForceExpandHeight(true)
          .SetFontSize(12f);
 
-      button.SetText("Copy").SetOnClick(Copy).Create(hoverExpandView._content);
-      button.SetText("Paste").SetOnClick(Paste).Create(hoverExpandView._content);
-      button.SetText("Save").SetOnClick(ShowSaveDialog).Create(hoverExpandView._content);
-      button.SetText("Load").SetOnClick(ShowLoadDialog).Create(hoverExpandView._content);
+      button.SetText("Copy\nPreset").SetOnClick(Copy).Create(hoverExpandView._content);
+      button.SetText("Paste\nPreset").SetOnClick(Paste).Create(hoverExpandView._content);
+      button.SetText("Save\nPreset").SetOnClick(ShowSaveDialog).Create(hoverExpandView._content);
+      button.SetText("Load\nPreset").SetOnClick(ShowLoadDialog).Create(hoverExpandView._content);
    }
 
    private void Copy()
