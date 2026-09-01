@@ -13,7 +13,6 @@ namespace EditorEnhanced.UI.Views;
 
 public partial class ConfigurationView
 {
-   private NumericControl _motionPathBakeBufferControl;
    private NumericControl _motionPathBeatLabelOffsetControl;
    private NumericControl _motionPathBeatLabelSizeControl;
    private NumericControl _motionPathBeatMarkerSizeControl;
@@ -308,20 +307,6 @@ public partial class ConfigurationView
          MotionPathConfig.MaximumSubBeatDivisions,
          true,
          HandleMotionPathSubBeatDivisions);
-      _motionPathBakeBufferControl = CreateMotionPathNumericRow(
-         container.transform,
-         numericRowTag,
-         numericControlsTag,
-         textTag,
-         sliderTag,
-         inputFloatTag,
-         "Bake buffer (beats)",
-         _config.MotionPath.GetBakeBufferInBeats(),
-         MotionPathConfig.MinimumBakeBufferInBeats,
-         MotionPathConfig.MaximumBakeBufferInBeats,
-         false,
-         HandleMotionPathBakeBuffer);
-
       horizontalTag.Create(container.transform);
       textTag
          .SetText("LIMITS")
@@ -515,12 +500,6 @@ public partial class ConfigurationView
       value => MotionPathConfig.ClampSubBeatDivisions(Mathf.RoundToInt(value)),
       normalized => _config.MotionPath.SubBeatDivisions = normalized,
       _motionPathSubBeatDivisionsControl);
-
-   private void HandleMotionPathBakeBuffer(float value) => UpdateMotionPathFloat(
-      value,
-      value => MotionPathConfig.ClampBakeBufferInBeats(Mathf.Round(value * 4f) / 4f),
-      normalized => _config.MotionPath.BakeBufferInBeats = normalized,
-      _motionPathBakeBufferControl);
 
    private void HandleMotionPathMaximumSelectedTargets(float value) => UpdateMotionPathInteger(
       value,

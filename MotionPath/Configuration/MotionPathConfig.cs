@@ -11,10 +11,8 @@ public class MotionPathConfig
    internal const float MaximumMarkerSize = 2f;
    internal const float MinimumBeatLabelOffset = 0f;
    internal const float MaximumBeatLabelOffset = 2f;
-   internal const float MinimumBakeBufferInBeats = 0.25f;
-   internal const float MaximumBakeBufferInBeats = 16f;
    internal const int MinimumSamplesPerBeat = 8;
-   internal const int MaximumSamplesPerBeat = 256;
+   internal const int MaximumSamplesPerBeat = 128;
    internal const int MinimumSubBeatDivisions = 1;
    internal const int MaximumSubBeatDivisions = 16;
    internal const int MinimumSelectedTargets = 1;
@@ -76,13 +74,10 @@ public class MotionPathConfig
    public virtual float BeatLabelOffset { get; set; } = 1f;
 
    /// <summary>Gets or sets the number of samples baked for each beat.</summary>
-   public virtual int SamplesPerBeat { get; set; } = 64;
+   public virtual int SamplesPerBeat { get; set; } = 48;
 
    /// <summary>Gets or sets the number of subdivisions between whole-beat markers.</summary>
    public virtual int SubBeatDivisions { get; set; } = 4;
-
-   /// <summary>Gets or sets the extra baked range on each side of the visible range, in beats.</summary>
-   public virtual float BakeBufferInBeats { get; set; } = 4f;
 
    /// <summary>Gets or sets the maximum number of selected target transforms to bake.</summary>
    public virtual int MaximumSelectedTargets { get; set; } = 64;
@@ -113,7 +108,6 @@ public class MotionPathConfig
    internal float GetBeatLabelOffset() => ClampBeatLabelOffset(BeatLabelOffset);
    internal int GetSamplesPerBeat() => ClampSamplesPerBeat(SamplesPerBeat);
    internal int GetSubBeatDivisions() => ClampSubBeatDivisions(SubBeatDivisions);
-   internal float GetBakeBufferInBeats() => ClampBakeBufferInBeats(BakeBufferInBeats);
    internal int GetMaximumSelectedTargets() => ClampMaximumSelectedTargets(MaximumSelectedTargets);
    internal int GetMaximumSelectedTracks() =>
       System.Math.Max(GetMaximumSelectedTargets(), ClampMaximumSelectedTracks(MaximumSelectedTracks));
@@ -129,8 +123,6 @@ public class MotionPathConfig
       UnityEngine.Mathf.Clamp(value, MinimumSamplesPerBeat, MaximumSamplesPerBeat);
    internal static int ClampSubBeatDivisions(int value) =>
       UnityEngine.Mathf.Clamp(value, MinimumSubBeatDivisions, MaximumSubBeatDivisions);
-   internal static float ClampBakeBufferInBeats(float value) =>
-      Clamp(value, MinimumBakeBufferInBeats, MaximumBakeBufferInBeats, 4f);
    internal static int ClampMaximumSelectedTargets(int value) =>
       UnityEngine.Mathf.Clamp(value, MinimumSelectedTargets, MaximumSelectedTargetCount);
    internal static int ClampMaximumSelectedTracks(int value) =>
