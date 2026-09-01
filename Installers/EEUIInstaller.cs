@@ -20,6 +20,7 @@ public class EEUIInstaller : Installer
       Container.BindInterfacesTo<EventBoxIDVisualView>().AsSingle();
       Container.Bind<EventBoxClipboardManager>().AsSingle();
       Container.BindInterfacesTo<EventBoxGroupPresetView>().AsSingle();
+      Container.BindInterfacesTo<MergeEventBoxGroupsView>().AsSingle();
       Container.Bind<EventBoxGroupPresetManager>().AsSingle();
 
       // Mixed

@@ -25,6 +25,7 @@ public class EECommandInstaller : Installer
       InstallCommands<PasteEventBoxSignal, PasteEventBoxCommand>();
       InstallCommands<DuplicateEventBoxSignal, DuplicateEventBoxCommand>();
       InstallCommands<ApplyEventBoxGroupPresetSignal, ApplyEventBoxGroupPresetCommand>();
+      InstallCommands<MergeSelectedEventBoxGroupsSignal, MergeSelectedEventBoxGroupsCommand>();
 
       // Gizmo Listener
       Container.DeclareSignal<EventBoxSelectedSignal>().OptionalSubscriber();
@@ -64,6 +65,7 @@ public class CommandFactoryInitializer : IInitializable
       BindFactory<PasteEventBoxCommand>();
       BindFactory<DuplicateEventBoxCommand>();
       BindFactory<ApplyEventBoxGroupPresetCommand>();
+      BindFactory<MergeSelectedEventBoxGroupsCommand>();
    }
 
    private void BindFactory<TCommand>() where TCommand : IBeatmapEditorCommand

@@ -39,6 +39,12 @@ public sealed class EditorViewLocator
       return editObjectView != null || ReportMissing("edit-object-view", "the edit object view");
    }
 
+   public bool TryGetActiveSelectionView(out ActiveSelectionView activeSelectionView)
+   {
+      activeSelectionView = _viewController._activeSelectionView;
+      return activeSelectionView != null || ReportMissing("active-selection-view", "the active selection view");
+   }
+
    public bool TryGetRightPanelContent(out RectTransform content)
    {
       content = null;
