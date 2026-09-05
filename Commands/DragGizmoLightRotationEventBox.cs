@@ -66,13 +66,19 @@ public class DragGizmoLightRotationEventBoxCommand : IBeatmapEditorCommand, IBea
    {
       if (_conflict != null) _beatmapEventBoxGroupsDataModel.RemoveBaseEditorData(_eventBoxId, _conflict);
       _beatmapEventBoxGroupsDataModel.InsertBaseEditorData(_eventBoxId, _event);
-      _signalBus.Fire<BeatmapLevelUpdatedSignal>();
+      NotifyChanged();
    }
 
    public void Undo()
    {
       _beatmapEventBoxGroupsDataModel.RemoveBaseEditorData(_eventBoxId, _event);
       if (_conflict != null) _beatmapEventBoxGroupsDataModel.InsertBaseEditorData(_eventBoxId, _conflict);
+      NotifyChanged();
+   }
+
+   private void NotifyChanged()
+   {
+      _signalBus.Fire<BeatmapEditor3D.Commands.LightRotationEventChangedSignal>();
       _signalBus.Fire<BeatmapLevelUpdatedSignal>();
    }
 }

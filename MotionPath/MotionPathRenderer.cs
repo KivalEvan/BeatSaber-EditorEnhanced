@@ -14,11 +14,8 @@ namespace EditorEnhanced.MotionPath;
 
 internal sealed class MotionPathRenderer : IDisposable
 {
-   private static readonly Color UnfocusedColor = new(1f, 1f, 1f, 0.42f);
    private static readonly Color CurrentMarkerColor = new(1f, 0.94f, 0.55f, 1f);
    private static readonly Color EventMarkerColor = new(1f, 0.72f, 0.12f, 1f);
-   private static readonly Color FutureColor = new(0.3f, 1f, 0.7f, 0.9f);
-   private static readonly Color PastColor = new(1f, 0.3f, 0.12f, 0.9f);
    private static readonly Color TimelineBeatColor = new(1f, 1f, 1f, 0.95f);
    private static readonly Color TimelineSubBeatColor = new(1f, 1f, 1f, 0.7f);
    private static readonly Color TimelineUnfocusedColor = new(1f, 1f, 1f, 0.9f);
@@ -498,7 +495,7 @@ internal sealed class MotionPathRenderer : IDisposable
                   splitBeat,
                   rangeMinBeat,
                   lineWidth,
-                  IsFocused ? PastColor : UnfocusedColor,
+                  IsFocused ? _config.MotionPath.GetPastLineColor() : _config.MotionPath.GetUnfocusedLineColor(),
                   sampleRangeIndex,
                   ref pastLineCount);
                SetLineSections(
@@ -508,7 +505,7 @@ internal sealed class MotionPathRenderer : IDisposable
                   splitBeat,
                   rangeMaxBeat,
                   lineWidth,
-                  IsFocused ? FutureColor : UnfocusedColor,
+                  IsFocused ? _config.MotionPath.GetFutureLineColor() : _config.MotionPath.GetUnfocusedLineColor(),
                   sampleRangeIndex,
                   ref futureLineCount);
             }

@@ -88,6 +88,13 @@ public partial class ConfigurationView
          .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
          .SetPreferredWidth(72)
          .SetValidatorType(FloatInputFieldValidator.ValidatorType.Clamp);
+      var inputStringTag = _uiBuilder
+         .CreateStringInput()
+         .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
+         .SetVerticalFit(ContentSizeFitter.FitMode.PreferredSize)
+         .SetPreferredWidth(104)
+         .SetTrimSpaces(true)
+         .SetAllowEmpty(false);
       var sliderTag = _uiBuilder
          .CreateSlider()
          .SetHorizontalFit(ContentSizeFitter.FitMode.PreferredSize)
@@ -137,6 +144,40 @@ public partial class ConfigurationView
          _config.MotionPath.ShowEventMarkers,
          HandleMotionPathShowEventMarkers);
       CreateCheckbox(layout.transform, checkboxTag, "Beat labels", _config.MotionPath.ShowBeatLabels, HandleMotionPathShowBeatLabels);
+
+      horizontalTag.Create(container.transform);
+      textTag
+         .SetText("COLOR")
+         .SetFontSize(20f)
+         .SetFontWeight(FontWeight.Bold)
+         .Create(container.transform);
+      CreateMotionPathColorRow(
+         container.transform,
+         numericRowTag,
+         numericControlsTag,
+         textTag,
+         inputStringTag,
+         "Past path line",
+         _config.MotionPath.GetPastLineColor(),
+         value => _config.MotionPath.PastLineColor = value);
+      CreateMotionPathColorRow(
+         container.transform,
+         numericRowTag,
+         numericControlsTag,
+         textTag,
+         inputStringTag,
+         "Future path line",
+         _config.MotionPath.GetFutureLineColor(),
+         value => _config.MotionPath.FutureLineColor = value);
+      CreateMotionPathColorRow(
+         container.transform,
+         numericRowTag,
+         numericControlsTag,
+         textTag,
+         inputStringTag,
+         "Unfocused path line",
+         _config.MotionPath.GetUnfocusedLineColor(),
+         value => _config.MotionPath.UnfocusedLineColor = value);
 
       horizontalTag.Create(container.transform);
       textTag
@@ -385,6 +426,79 @@ public partial class ConfigurationView
          wholeNumbers,
          onValueChange);
    }
+
+    private void CreateMotionPathColorRow(
+       Transform parent,
+       EditorLayoutVerticalTag rowTag,
+       EditorLayoutHorizontalTag controlsTag,
+       EditorTextTag textTag,
+       EditorInputStringTag inputTag,
+       string label,
+       Color value,
+       Action<string> updateConfig)
+    {
+       var row = rowTag.Create(parent);
+       textTag
+          .SetText(label)
+          .SetFontSize(16f)
+          .SetFontWeight(FontWeight.Regular)
+          .Create(row.transform);
+
+       var controls = controlsTag.Create(row.transform);
+       var input = inputTag.SetValue(ToMotionPathColorHex(value)).Create(controls.transform).GetComponent<TMP_InputField>();
+       var inputTextColor = input.textComponent.color;
+       var swatch = CreateMotionPathColorSwatch(controls.transform, value);
+       var hint = textTag
+          .SetText("#RRGGBB or #RRGGBBAA")
+          .SetFontSize(12f)
+          .SetFontWeight(FontWeight.Regular)
+          .Create(row.transform)
+          .GetComponent<TMP_Text>();
+
+       input.onEndEdit.AddListener(editedValue =>
+       {
+          if (!TryParseMotionPathColor(editedValue, out var color))
+          {
+             input.textComponent.color = Color.red;
+             hint.color = Color.red;
+             hint.text = "Use #RRGGBB or #RRGGBBAA.";
+             return;
+          }
+
+          var normalizedValue = ToMotionPathColorHex(color);
+          input.SetTextWithoutNotify(normalizedValue);
+          input.textComponent.color = inputTextColor;
+          hint.color = inputTextColor;
+          hint.text = "#RRGGBB or #RRGGBBAA";
+          swatch.color = color;
+          updateConfig(normalizedValue);
+          _signalBus.Fire<MotionPathRefreshSignal>();
+       });
+    }
+
+    private static Image CreateMotionPathColorSwatch(Transform parent, Color color)
+    {
+       var swatchObject = new GameObject("MotionPathColorSwatch") { layer = 5 };
+       swatchObject.transform.SetParent(parent, false);
+
+       var swatch = swatchObject.AddComponent<Image>();
+       swatch.color = color;
+       var layout = swatchObject.AddComponent<LayoutElement>();
+       layout.preferredWidth = 20f;
+       layout.preferredHeight = 20f;
+       return swatch;
+    }
+
+    private static bool TryParseMotionPathColor(string value, out Color color)
+    {
+       color = default;
+       return !string.IsNullOrEmpty(value)
+          && value[0] == '#'
+          && (value.Length == 7 || value.Length == 9)
+          && ColorUtility.TryParseHtmlString(value, out color);
+    }
+
+    private static string ToMotionPathColorHex(Color color) => $"#{ColorUtility.ToHtmlStringRGBA(color)}";
 
    private void HandleMotionPathEnable(bool value)
    {

@@ -159,7 +159,9 @@ public class EventBoxIDVisualView : IInitializable, IDisposable
       var currentBoxPassed = false;
       foreach (var (b, x) in boxes.Select((b, x) => (b, x)).Where(b => GetAxis(b.b) == GetAxis(box)))
       {
-         var ifh = IndexFilterConverter.Convert(LightshowSaver.ConvertIndexFilter(b.indexFilter), groupSize);
+         var ifh = IndexFilterConverter.Convert(
+            LightshowSaver.ConvertIndexFilter(b.indexFilter),
+            groupSize);
          if (ifh == null)
          {
             if (_instantiatedErrorText.Count > 10) continue;

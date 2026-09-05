@@ -1,8 +1,57 @@
+using UnityEngine;
+
 namespace EditorEnhanced.MotionPath.Configuration;
 
 /// <summary>Configures the experimental motion-path view.</summary>
 public class MotionPathConfig
 {
+   private string _pastLineColor = "#FF4C1FE6";
+   private string _futureLineColor = "#4DFFB3E6";
+   private string _unfocusedLineColor = "#FFFFFF6B";
+   private Color _parsedPastLineColor = new(1f, 0.3f, 0.12f, 0.9f);
+   private Color _parsedFutureLineColor = new(0.3f, 1f, 0.7f, 0.9f);
+   private Color _parsedUnfocusedLineColor = new(1f, 1f, 1f, 0.42f);
+
+   /// <summary>Gets or sets the focused past-line colour as #RRGGBB or #RRGGBBAA. Invalid values use the default colour.</summary>
+   public virtual string PastLineColor
+   {
+      get => _pastLineColor;
+      set => SetLineColor(value, "#FF4C1FE6", ref _pastLineColor, ref _parsedPastLineColor);
+   }
+
+   /// <summary>Gets or sets the focused future-line colour as #RRGGBB or #RRGGBBAA. Invalid values use the default colour.</summary>
+   public virtual string FutureLineColor
+   {
+      get => _futureLineColor;
+      set => SetLineColor(value, "#4DFFB3E6", ref _futureLineColor, ref _parsedFutureLineColor);
+   }
+
+   /// <summary>Gets or sets the unfocused line colour as #RRGGBB or #RRGGBBAA. Invalid values use the default colour.</summary>
+   public virtual string UnfocusedLineColor
+   {
+      get => _unfocusedLineColor;
+      set => SetLineColor(value, "#FFFFFF6B", ref _unfocusedLineColor, ref _parsedUnfocusedLineColor);
+   }
+
+   internal Color GetPastLineColor() => _parsedPastLineColor;
+   internal Color GetFutureLineColor() => _parsedFutureLineColor;
+   internal Color GetUnfocusedLineColor() => _parsedUnfocusedLineColor;
+
+   private static void SetLineColor(string value, string fallback, ref string stored, ref Color parsed)
+   {
+      value = value?.Trim();
+      if (string.IsNullOrEmpty(value)
+          || (value.Length != 7 && value.Length != 9)
+          || value[0] != '#'
+          || !ColorUtility.TryParseHtmlString(value, out parsed))
+      {
+         value = fallback;
+         ColorUtility.TryParseHtmlString(value, out parsed);
+      }
+
+      stored = value;
+   }
+
    internal const float MaximumRangeInBeats = 8f;
    internal const float MinimumRangeInBeats = 0f;
    internal const float MinimumLineWidth = 0.001f;
