@@ -38,6 +38,7 @@ public sealed class GizmoManager : IInitializable, IDisposable
    public void Dispose()
    {
       _signalBus.TryUnsubscribe<BeatmapEditingModeSwitchedSignal>(HandleEditingModeChanged);
+      _signalBus.TryUnsubscribe<EditingEventBoxGroupChangedSignal>(Refresh);
       _signalBus.TryUnsubscribe<EventBoxesUpdatedSignal>(Refresh);
       _signalBus.TryUnsubscribe<EventBoxModifiedSignal>(Refresh);
       _signalBus.TryUnsubscribe<GizmoRefreshSignal>(Refresh);
@@ -47,6 +48,7 @@ public sealed class GizmoManager : IInitializable, IDisposable
    public void Initialize()
    {
       _signalBus.Subscribe<BeatmapEditingModeSwitchedSignal>(HandleEditingModeChanged);
+      _signalBus.Subscribe<EditingEventBoxGroupChangedSignal>(Refresh);
       _signalBus.Subscribe<EventBoxesUpdatedSignal>(Refresh);
       _signalBus.Subscribe<EventBoxModifiedSignal>(Refresh);
       _signalBus.Subscribe<GizmoRefreshSignal>(Refresh);

@@ -155,6 +155,7 @@ public sealed class MergeSelectedEventBoxGroupsCommand : IBeatmapEditorCommandWi
       var leftFilter = left.indexFilter;
       var rightFilter = right.indexFilter;
       if (leftFilter.type != rightFilter.type
+          || leftFilter.reversed != rightFilter.reversed
           || leftFilter.param0 != rightFilter.param0
           || leftFilter.param1 != rightFilter.param1
           || leftFilter.chunks != rightFilter.chunks
