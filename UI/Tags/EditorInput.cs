@@ -23,8 +23,8 @@ public abstract class EditorInputTag<T> : IEditorTag, IUILayoutElement
       go.name = Name;
       go.SetActive(false);
 
-      Object.Destroy(go.GetComponent<FloatInputFieldValidator>());
-      Object.Destroy(go.GetComponent<FloatInputFieldValidatorChangeOnScroll>());
+      foreach (var validator in go.GetComponents<FloatInputFieldValidator>()) Object.Destroy(validator);
+      foreach (var handler in go.GetComponents<FloatInputFieldValidatorChangeOnScroll>()) Object.Destroy(handler);
 
       var le = go.AddComponent<LayoutElement>();
       le.flexibleWidth = FlexibleWidth ?? le.flexibleWidth;

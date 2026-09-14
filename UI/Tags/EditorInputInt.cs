@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
-using EditorEnhanced.UI.Components;
+using EditorEnhanced.Misc;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -38,7 +38,7 @@ public class EditorInputIntTag : EditorInputTag<int>
       if (Value != null) validator.SetValueWithoutNotify((int)Value, false);
       OnValueChange.ForEach(ovc => { validator.onInputValidated += ovc; });
 
-      _container.InstantiateComponent<ScrollableInputInt>(go);
+      ScrollableYourInput.ConfigureScrollHandler(validator, CustomPrecisions.NoPrecisionInt, 1f, _container);
 
       go.SetActive(true);
       return go;

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
-using EditorEnhanced.UI.Components;
+using EditorEnhanced.Misc;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -38,7 +38,7 @@ public class EditorInputFloatTag : EditorInputTag<float>
       if (Value != null) validator.SetValueWithoutNotify((float)Value, false);
       OnValueChange.ForEach(ovc => { validator.onInputValidated += ovc; });
 
-      _container.InstantiateComponent<ScrollableInputFloat>(go);
+      ScrollableYourInput.ConfigureScrollHandler(validator, CustomPrecisions.NoPrecisionFloat, 1f, _container);
 
       go.SetActive(true);
       return go;

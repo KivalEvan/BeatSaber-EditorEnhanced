@@ -25,8 +25,20 @@ public class EditorSliderTag : IEditorTag, IUISlider, IUILayoutElement
       go.name = Name;
       go.SetActive(false);
 
-      Object.Destroy(go.GetComponent<SliderChangeOnScroll>());
       var slider = go.GetComponent<Slider>();
+      SliderChangeOnScroll changeOnScroll = null;
+      foreach (var candidate in go.GetComponents<SliderChangeOnScroll>())
+      {
+         if (changeOnScroll == null)
+         {
+            changeOnScroll = candidate;
+            changeOnScroll._slider = slider;
+         }
+         else
+         {
+            Object.Destroy(candidate);
+         }
+      }
       slider.minValue = MinValue ?? slider.minValue;
       slider.maxValue = MaxValue ?? slider.maxValue;
       slider.wholeNumbers = WholeNumber ?? slider.wholeNumbers;

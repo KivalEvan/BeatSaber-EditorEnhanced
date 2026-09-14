@@ -4,7 +4,6 @@ using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.Types;
 using BeatmapEditor3D.Views;
 using EditorEnhanced.Misc;
-using EditorEnhanced.UI.Components;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -133,7 +132,7 @@ public sealed class ScrollableYourInput : IInitializable
    {
       Configure(
          CreateBeatRegistration(view._beatInputFieldValidator),
-         new FloatInputRegistration(view._valueInput, ModifyHoveredLightRotationDeltaRotationCommand._precisions));
+         new FloatInputRegistration(view._valueInput, CustomPrecisions.RotationPrecisionFloat));
       Configure(CreateNonNegativeIntRegistration(view._loopsInput));
    }
 
@@ -143,7 +142,7 @@ public sealed class ScrollableYourInput : IInitializable
          CreateBeatRegistration(view._beatInputFieldValidator),
          new FloatInputRegistration(
             view._valueInput,
-            ModifyHoveredLightTranslationDeltaTranslationCommand._precisions));
+            CustomPrecisions.TranslationPrecisionFloat));
    }
 
    private void ConfigureFloatFx(FloatFxDataView view)
@@ -166,11 +165,11 @@ public sealed class ScrollableYourInput : IInitializable
             validatorType: FloatInputFieldValidator.ValidatorType.None),
          new FloatInputRegistration(
             view._rotationDistributionView._rotationDistributionParamInput,
-            ModifyHoveredLightRotationDeltaRotationCommand._precisions,
+            CustomPrecisions.RotationPrecisionFloat,
             validatorType: FloatInputFieldValidator.ValidatorType.None),
          new FloatInputRegistration(
             view._gapDistributionView._translationDistributionParamInput,
-            ModifyHoveredLightTranslationDeltaTranslationCommand._precisions,
+            CustomPrecisions.TranslationPrecisionFloat,
             validatorType: FloatInputFieldValidator.ValidatorType.None),
          new FloatInputRegistration(
             view._fxDistributionView._fxDistributionParamInput,
@@ -248,10 +247,7 @@ public sealed class ScrollableYourInput : IInitializable
       foreach (var registration in registrations)
       {
          var component = registration.Component;
-         Object.Destroy(component.gameObject.GetComponent<IntInputFieldValidatorChangeOnScroll>());
-         var scrollable = _container.InstantiateComponent<ScrollableInputInt>(component.gameObject);
-         scrollable.PrecisionDelta = registration.Precision;
-         scrollable.multiplier = registration.Multiplier;
+         ConfigureScrollHandler(component, registration.Precision, registration.Multiplier, _container);
 
          if (registration.ValidatorType.HasValue) component._validatorType = registration.ValidatorType.Value;
          if (registration.Min.HasValue) component._min = registration.Min.Value;
@@ -264,15 +260,91 @@ public sealed class ScrollableYourInput : IInitializable
       foreach (var registration in registrations)
       {
          var component = registration.Component;
-         Object.Destroy(component.gameObject.GetComponent<FloatInputFieldValidatorChangeOnScroll>());
-         var scrollable = _container.InstantiateComponent<ScrollableInputFloat>(component.gameObject);
-         scrollable.PrecisionDelta = registration.Precision;
-         scrollable.multiplier = registration.Multiplier;
+         ConfigureScrollHandler(component, registration.Precision, registration.Multiplier, _container);
 
          if (registration.ValidatorType.HasValue) component._validatorType = registration.ValidatorType.Value;
          if (registration.Min.HasValue) component._min = registration.Min.Value;
          if (registration.Max.HasValue) component._max = registration.Max.Value;
       }
+   }
+
+   internal static void ConfigureScrollHandler(
+      IntInputFieldValidator validator,
+      Dictionary<PrecisionType, int> precision,
+      float multiplier,
+      DiContainer container)
+   {
+      IntInputFieldValidatorChangeOnScroll handler = null;
+      foreach (var candidate in validator.GetComponents<IntInputFieldValidatorChangeOnScroll>())
+      {
+         if (candidate._intInputFieldValidator != validator) continue;
+         if (handler == null)
+         {
+            handler = candidate;
+         }
+         else
+         {
+            Object.Destroy(candidate);
+         }
+      }
+
+      handler ??= container.InstantiateComponent<IntInputFieldValidatorChangeOnScroll>(validator.gameObject);
+      handler._intInputFieldValidator = validator;
+      handler._precisionData.low = Scale(precision[PrecisionType.Low], multiplier);
+      handler._precisionData.standard = Scale(precision[PrecisionType.Standard], multiplier);
+      handler._precisionData.high = Scale(precision[PrecisionType.High], multiplier);
+      handler._precisionData.ultra = Scale(precision[PrecisionType.Ultra], multiplier);
+      handler._precisionDelta = multiplier == 1f
+         ? precision
+         : new Dictionary<PrecisionType, int>
+         {
+            { PrecisionType.Low, handler._precisionData.low },
+            { PrecisionType.Standard, handler._precisionData.standard },
+            { PrecisionType.High, handler._precisionData.high },
+            { PrecisionType.Ultra, handler._precisionData.ultra }
+         };
+   }
+
+   internal static void ConfigureScrollHandler(
+      FloatInputFieldValidator validator,
+      Dictionary<PrecisionType, float> precision,
+      float multiplier,
+      DiContainer container)
+   {
+      FloatInputFieldValidatorChangeOnScroll handler = null;
+      foreach (var candidate in validator.GetComponents<FloatInputFieldValidatorChangeOnScroll>())
+      {
+         if (candidate._floatInputFieldValidator != validator) continue;
+         if (handler == null)
+         {
+            handler = candidate;
+         }
+         else
+         {
+            Object.Destroy(candidate);
+         }
+      }
+
+      handler ??= container.InstantiateComponent<FloatInputFieldValidatorChangeOnScroll>(validator.gameObject);
+      handler._floatInputFieldValidator = validator;
+      handler._precisionData.low = precision[PrecisionType.Low] * multiplier;
+      handler._precisionData.standard = precision[PrecisionType.Standard] * multiplier;
+      handler._precisionData.high = precision[PrecisionType.High] * multiplier;
+      handler._precisionData.ultra = precision[PrecisionType.Ultra] * multiplier;
+      handler._precisionDelta = multiplier == 1f
+         ? precision
+         : new Dictionary<PrecisionType, float>
+         {
+            { PrecisionType.Low, handler._precisionData.low },
+            { PrecisionType.Standard, handler._precisionData.standard },
+            { PrecisionType.High, handler._precisionData.high },
+            { PrecisionType.Ultra, handler._precisionData.ultra }
+         };
+   }
+
+   private static int Scale(int value, float multiplier)
+   {
+      return (int)(value * multiplier);
    }
 
    private readonly struct IntInputRegistration
