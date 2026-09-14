@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using BeatmapEditor3D;
-using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.Types;
 using EditorEnhanced.Gizmo;
 using EditorEnhanced.Gizmo.Components;
 using EditorEnhanced.Gizmo.Drawers;
+using EditorEnhanced.Misc;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -432,7 +432,7 @@ internal sealed class MotionPathEventGizmoController : IInitializable, ITickable
 
     private float SnapRotationDelta(float delta)
     {
-       if (!TryGetPrecision(ModifyHoveredLightRotationDeltaRotationCommand._precisions, out var precision))
+       if (!TryGetPrecision(CustomPrecisions.RotationPrecisionFloat, out var precision))
           return delta;
        var snapped = Mathf.Round(delta / precision) * precision;
        return IsFinite(snapped) ? snapped : delta;
@@ -440,7 +440,7 @@ internal sealed class MotionPathEventGizmoController : IInitializable, ITickable
 
     private float SnapTranslationValue(float authoredValue, float value)
     {
-       if (!TryGetPrecision(ModifyHoveredLightTranslationDeltaTranslationCommand._precisions, out var precision))
+       if (!TryGetPrecision(CustomPrecisions.TranslationPrecisionFloat, out var precision))
           return NormalizeValue(value);
        var snapped = authoredValue + Mathf.Round((value - authoredValue) * precision) / precision;
        return NormalizeValue(IsFinite(snapped) ? snapped : value);

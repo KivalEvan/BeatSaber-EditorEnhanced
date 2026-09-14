@@ -32,8 +32,8 @@ public sealed class PrecisionConfigurationInitializer : IInitializable
       config.Percent = Normalize("percent", config.Percent, _defaults.Percent);
 
       Apply(LightColorEventHelper._precisions, config.Color);
-      Apply(ModifyHoveredLightRotationDeltaRotationCommand._precisions, config.Rotation);
-      Apply(ModifyHoveredLightTranslationDeltaTranslationCommand._precisions, config.Translation);
+      Apply(CustomPrecisions.RotationPrecisionFloat, config.Rotation);
+      Apply(CustomPrecisions.TranslationPrecisionFloat, config.Translation);
       Apply(ModifyHoveredFloatFxDeltaValueCommand._precisions, config.Fx);
       Apply(CustomPrecisions.TimePrecisionFloat, config.Time);
       Apply(CustomPrecisions.PercentPrecisionFloat, config.Percent);

@@ -5,6 +5,22 @@ namespace EditorEnhanced.Misc;
 
 public static class CustomPrecisions
 {
+   public static readonly Dictionary<PrecisionType, float> RotationPrecisionFloat = new()
+   {
+      { PrecisionType.Ultra, 1f },
+      { PrecisionType.High, 5f },
+      { PrecisionType.Standard, 15f },
+      { PrecisionType.Low, 30f }
+   };
+
+   public static readonly Dictionary<PrecisionType, float> TranslationPrecisionFloat = new()
+   {
+      { PrecisionType.Ultra, 1f },
+      { PrecisionType.High, 2.5f },
+      { PrecisionType.Standard, 5f },
+      { PrecisionType.Low, 10f }
+   };
+
    public static readonly Dictionary<PrecisionType, float> NoPrecisionFloat = new()
    {
       { PrecisionType.Ultra, 1f },

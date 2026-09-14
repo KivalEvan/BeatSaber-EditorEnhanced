@@ -69,10 +69,10 @@ public partial class ConfigurationView
          horizontalTag,
          textTag,
          "Rotation",
-         ModifyHoveredLightRotationDeltaRotationCommand._precisions,
+         CustomPrecisions.RotationPrecisionFloat,
          (key, value) =>
          {
-            ModifyHoveredLightRotationDeltaRotationCommand._precisions[key] = value;
+            CustomPrecisions.RotationPrecisionFloat[key] = value;
             _config.Precision.Rotation[PrecisionDefaults.GetIndex(key)] = value;
          });
       CreatePrecisionRow(
@@ -80,10 +80,10 @@ public partial class ConfigurationView
          horizontalTag,
          textTag,
          "Translation",
-         ModifyHoveredLightTranslationDeltaTranslationCommand._precisions,
+         CustomPrecisions.TranslationPrecisionFloat,
          (key, value) =>
          {
-            ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[key] = value;
+            CustomPrecisions.TranslationPrecisionFloat[key] = value;
             _config.Precision.Translation[PrecisionDefaults.GetIndex(key)] = value;
          });
       CreatePrecisionRow(

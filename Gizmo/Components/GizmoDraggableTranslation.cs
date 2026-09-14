@@ -1,6 +1,6 @@
 using System;
-using BeatmapEditor3D.Commands;
 using EditorEnhanced.Commands;
+using EditorEnhanced.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -43,7 +43,7 @@ public class GizmoDraggableTranslation : GizmoDraggable
    {
       var precision = _limit
          * scale
-         / ModifyHoveredLightTranslationDeltaTranslationCommand._precisions
+         / CustomPrecisions.TranslationPrecisionFloat
             [_beatmapState.scrollPrecision];
       return
          Mathf.Round(v / precision) * precision;

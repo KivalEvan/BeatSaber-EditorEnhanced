@@ -18,8 +18,8 @@ public sealed class PrecisionDefaults
    public PrecisionDefaults()
    {
       Color = Capture(LightColorEventHelper._precisions);
-      Rotation = Capture(ModifyHoveredLightRotationDeltaRotationCommand._precisions);
-      Translation = Capture(ModifyHoveredLightTranslationDeltaTranslationCommand._precisions);
+      Rotation = Capture(CustomPrecisions.RotationPrecisionFloat);
+      Translation = Capture(CustomPrecisions.TranslationPrecisionFloat);
       Fx = Capture(ModifyHoveredFloatFxDeltaValueCommand._precisions);
       Time = Capture(CustomPrecisions.TimePrecisionFloat);
       Percent = Capture(CustomPrecisions.PercentPrecisionFloat);

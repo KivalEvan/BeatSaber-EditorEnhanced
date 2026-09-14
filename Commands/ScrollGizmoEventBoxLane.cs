@@ -4,6 +4,7 @@ using BeatmapEditor3D;
 using BeatmapEditor3D.Commands;
 using BeatmapEditor3D.DataModels;
 using BeatmapEditor3D.LevelEditor;
+using EditorEnhanced.Misc;
 using IPA.Utilities;
 using UnityEngine;
 using Zenject;
@@ -85,13 +86,13 @@ public class ScrollGizmoEventBoxLaneCommand : IBeatmapEditorCommandWithHistory
                   _beatmapState.scrollPrecision));
             break;
          case LightRotationBaseEditorData rotation:
-            var rotationDelta = ModifyHoveredLightRotationDeltaRotationCommand._precisions[
+            var rotationDelta = CustomPrecisions.RotationPrecisionFloat[
                   _beatmapState.scrollPrecision]
                * direction;
             rotation.SetField("rotation", Mathf.Repeat(rotation.rotation + rotationDelta, 360f));
             break;
          case LightTranslationBaseEditorData translation:
-            var translationDelta = ModifyHoveredLightTranslationDeltaTranslationCommand._precisions[
+            var translationDelta = CustomPrecisions.TranslationPrecisionFloat[
                   _beatmapState.scrollPrecision]
                * direction;
             translation.SetField(

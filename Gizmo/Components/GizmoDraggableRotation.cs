@@ -1,6 +1,6 @@
 using System;
-using BeatmapEditor3D.Commands;
 using EditorEnhanced.Commands;
+using EditorEnhanced.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,7 +21,7 @@ public class GizmoDraggableRotation : GizmoDraggable
 
    private float SnapRotation(float v)
    {
-      var precision = ModifyHoveredLightRotationDeltaRotationCommand._precisions
+      var precision = CustomPrecisions.RotationPrecisionFloat
          [_beatmapState.scrollPrecision];
       return
          Mathf.Round(v / precision) * precision;
