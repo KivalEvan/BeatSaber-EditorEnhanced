@@ -128,6 +128,6 @@ public sealed class RandomSeedClipboardView : IInitializable, IDisposable
 
    private void PasteSeed()
    {
-      _eventBoxView._indexFilterView._randomSeedValidator.SetValue(_rscm.Seed);
+      _eventBoxView._indexFilterView._randomSeedValidator.ValidateParsedInput(_rscm.Seed);
    }
 }

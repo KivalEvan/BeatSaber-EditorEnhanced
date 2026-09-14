@@ -43,11 +43,11 @@ public sealed class OffsetDurationDistributionView : IInitializable
 
    private void OffsetNegative()
    {
-      _ebv._beatDistributionInput.SetValue(_ebv._eventBox.beatDistributionParam - 0.001f);
+      _ebv._beatDistributionInput.ValidateParsedInput(_ebv._eventBox.beatDistributionParam - 0.001f);
    }
 
    private void OffsetPositive()
    {
-      _ebv._beatDistributionInput.SetValue(_ebv._eventBox.beatDistributionParam + 0.001f);
+      _ebv._beatDistributionInput.ValidateParsedInput(_ebv._eventBox.beatDistributionParam + 0.001f);
    }
 }
